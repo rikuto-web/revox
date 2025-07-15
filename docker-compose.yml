@@ -1,25 +1,35 @@
-# docker-compose.yml
+version: '3.8'
 
 services:
   db:
     image: mysql:8.0
     container_name: revox_mysql_db
+    restart: always
     ports:
       - "3308:3306"
-    environment: # コンテナ内で利用する環境変数
+    environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_DATABASE: ${MYSQL_DATABASE}
       MYSQL_USER: ${MYSQL_USERNAME}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
       TZ: Asia/Tokyo
-      healthcheck: # ★追加または修正
-        test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "${MYSQL_USERNAME}", "-p${MYSQL_PASSWORD}" ]
-        timeout: 20s
-        retries: 10
+    # ...
+    command: --default-authentication-plugin=mysql_native_password --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    # ...
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}"]
+      timeout: 20s
+      retries: 10
+      interval: 30s
     volumes:
-      - mysql_data:/var/lib/mysql # データベースのデータを永続化するためのボリューム
-      # 開発中に初回のみSQLを実行したい場合は、以下の行をコメント解除してSQLファイルを配置
-      # - ./docker/mysql/initdb:/docker-entrypoint-initdb.d
+      - mysql_data:/var/lib/mysql
+    networks:
+      - revox-network
 
 volumes:
   mysql_data:
+    driver: local
+
+networks:
+  revox-network:
+    driver: bridge
