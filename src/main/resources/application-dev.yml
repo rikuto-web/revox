@@ -1,0 +1,20 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:revoxdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    username: root
+    password: rootroot
+
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop  # TODO: 本番では update か none に変更する
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+# TODO: 本番移行前にMySQL設定へ切り替えること

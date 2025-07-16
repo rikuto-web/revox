@@ -2,7 +2,6 @@
 *.bat text eol=crlf
 *.jar binary
 
-*.properties text=auto eol=lf working-tree-encoding=UTF-8
 *.yml      text=auto eol=lf working-tree-encoding=UTF-8
 *.java     text=auto eol=lf working-tree-encoding=UTF-8
 *.md       text=auto eol=lf working-tree-encoding=UTF-8
