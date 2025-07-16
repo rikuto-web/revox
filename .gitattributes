@@ -2,8 +2,6 @@
 *.bat text eol=crlf
 *.jar binary
 
-# UTF-8テキストファイルとして扱うべきファイルを指定
-*.properties text=auto eol=lf working-tree-encoding=UTF-8
 *.yml      text=auto eol=lf working-tree-encoding=UTF-8
 *.java     text=auto eol=lf working-tree-encoding=UTF-8
 *.md       text=auto eol=lf working-tree-encoding=UTF-8
