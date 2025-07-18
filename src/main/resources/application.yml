@@ -1,3 +1,22 @@
+# 共通設定
 spring:
   profiles:
     active: dev  # dev または prod に切り替えて使用
+
+# TODO: 本番移行前にprodへ切り替えること
+
+# 共通のログ設定
+logging:
+  level:
+    root: INFO
+    org:
+      springframework:
+        security: DEBUG
+      hibernate:
+        SQL: DEBUG
+        type:
+          descriptor:
+            sql:
+              BasicBinder: TRACE
+
+# TODO: Flywayマイグレーション確認済みかチェック

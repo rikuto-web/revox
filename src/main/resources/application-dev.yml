@@ -1,8 +1,9 @@
+# 開発環境用設定
 spring:
   datasource:
-    url: jdbc:h2:mem:revoxdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
-    username: root
-    password: rootroot
+    url: jdbc:h2:file:./data/revoxdb;DB_CLOSE_ON_EXIT=FALSE  # fileで残すため適宜削除が必要です
+    username: ${H2_USERNAME}
+    password: ${H2_PASSWORD}
 
   h2:
     console:
@@ -11,10 +12,8 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: create-drop  # TODO: 本番では update か none に変更する
+      ddl-auto: update  # validateを使って適宜Flywayとの差分を確認する
     show-sql: true
     properties:
       hibernate:
         format_sql: true
-
-# TODO: 本番移行前にMySQL設定へ切り替えること
