@@ -1,6 +1,6 @@
 CREATE TABLE users (
     id INT AUTO_INCREMENT PRIMARY KEY COMMENT 'ユーザーID（主キー）',
-    nickname VARCHAR(50) COMMENT 'ユーザーのニックネーム',
+    nickname VARCHAR(50) NOT NULL COMMENT 'ユーザーのニックネーム',
     email VARCHAR(255) COMMENT 'メールアドレス',
     google_id VARCHAR(100) COMMENT 'Google認証ID（OAuth用）',
     line_id VARCHAR(100) COMMENT 'LINE認証ID（OAuth用）',
