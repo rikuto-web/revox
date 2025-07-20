@@ -3,7 +3,7 @@ CREATE TABLE service_records (
     user_id INT NOT NULL COMMENT 'ユーザーID（外部キー）',
     bike_id INT NOT NULL COMMENT 'バイクID（外部キー）',
     maintenance_task_id INT NOT NULL COMMENT 'メンテナンスタスクID（外部キー）',
-    ai_advice_original TEXT NOT NULL COMMENT 'AIが生成したオリジナルアドバイス',
+    ai_advice_original TEXT COMMENT 'AIが生成したオリジナルアドバイス',
     user_edited_content TEXT NOT NULL COMMENT 'ユーザーが編集したコンテンツ',
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '作成日時',
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新日時',
