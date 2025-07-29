@@ -1,9 +1,4 @@
-# 共通設定
-spring:
-  profiles:
-    active: dev  # dev または prod に切り替えて使用
-
-# TODO: 本番移行前にprodへ切り替えること
+# application.yml (単一ファイルでの管理)
 
 # 共通のログ設定
 logging:
@@ -11,12 +6,38 @@ logging:
     root: INFO
     org:
       springframework:
-        security: DEBUG
+        security: DEBUG # 本番では通常 INFO にする
       hibernate:
-        SQL: DEBUG
+        SQL: DEBUG      # 本番では通常 INFO にする
         type:
           descriptor:
             sql:
-              BasicBinder: TRACE
+              BasicBinder: TRACE # 本番では通常 INFO にする
 
-# TODO: Flywayマイグレーション確認済みかチェック
+# メインとなるデータベース設定
+spring:
+  datasource:
+    # ローカル開発ではDocker Composeのサービス名 'db' (または 'localhost:3308') を指定し、
+    # 本番環境ではデプロイ時に本番DBのホスト名/ポートを環境変数等で上書きする想定
+    url: jdbc:mysql://localhost:3308/${MYSQL_DATABASE}?useSSL=false&serverTimezone=Asia/Tokyo&allowPublicKeyRetrieval=true&useUnicode=true&characterEncoding=utf8
+    username: ${MYSQL_USERNAME}
+    password: ${MYSQL_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    database: MYSQL
+    hibernate:
+      ddl-auto: none  # Flywayでスキーマ管理するため、JPAの自動生成は無効
+    show-sql: true    # 本番では通常 false にするべきだが、単一ファイルのため統一
+    properties:
+      hibernate:
+        format_sql: true
+
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+
+  security:
+    user:
+      name: ${SECURITY_USER_NAME}
+      password: ${SECURITY_USER_PASSWORD}

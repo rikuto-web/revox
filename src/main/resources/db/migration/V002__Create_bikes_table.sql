@@ -8,10 +8,9 @@ CREATE TABLE bikes (
     current_mileage INT COMMENT '現在の走行距離（km）',
     purchase_date DATE COMMENT '購入日',
     image_url VARCHAR(2048) COMMENT 'バイク画像のURL',
-    is_deleted BOOLEAN NOT NULL DEFAULT FALSE COMMENT '論理削除フラグ
+    is_deleted BOOLEAN NOT NULL DEFAULT FALSE COMMENT '論理削除フラグ',
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '作成日時',
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新日時',
 
     CONSTRAINT fk_bikes_user_id FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
-COMMENT ON TABLE bikes IS 'バイク情報テーブル';
