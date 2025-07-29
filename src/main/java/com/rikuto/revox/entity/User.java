@@ -88,6 +88,14 @@ public class User {
 	private String lineId;
 
 	/**
+	 * 論理削除フラグ。
+	 * trueの場合、レコードは削除済みとして扱われます。
+	 */
+	@Column(name = "is_deleted", nullable = false)
+	@Builder.Default
+	private boolean isDeleted = false;
+
+	/**
 	 * レコードが作成された日時
 	 */
 	@Column(name = "created_at", nullable = false)
