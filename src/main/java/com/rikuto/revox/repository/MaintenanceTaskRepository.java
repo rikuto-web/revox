@@ -11,13 +11,12 @@ import java.util.List;
  * JpaRepositoryを継承しています。
  */
 @Repository
-public interface MaintenanceRepository extends JpaRepository<MaintenanceTask, Integer> {
+public interface MaintenanceTaskRepository extends JpaRepository<MaintenanceTask, Integer> {
 
 	/**
 	 * カテゴリーIDに紐づいた整備タスクの検索を行います
 	 * @param categoryId カテゴリーID
 	 * @return カテゴリーIDに紐づいた整備タスクリスト
 	 */
-	List<MaintenanceTask> findByCategoryId(Integer categoryId);
-
+	List<MaintenanceTask> findByCategoryIdAndIsDeletedFalse(Integer categoryId);
 }

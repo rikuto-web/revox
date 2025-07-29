@@ -7,7 +7,6 @@ CREATE TABLE categories (
 
     CONSTRAINT uk_categories_name UNIQUE (name)
 );
-COMMENT ON TABLE categories IS '整備カテゴリテーブル';
 
 INSERT INTO categories (name, display_order) VALUES
     ('エンジン', 1),

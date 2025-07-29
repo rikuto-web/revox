@@ -18,6 +18,5 @@ public interface BikeRepository extends JpaRepository<Bike, Integer> {
 	 * @param userId 一意のユーザID
 	 * @return ユーザーに紐づいたバイク情報リスト
 	 */
-	List<Bike> findByUserId(Integer userId);
-
+	List<Bike> findByUserIdAndIsDeletedFalse(Integer userId);
 }

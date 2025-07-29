@@ -5,6 +5,7 @@ CREATE TABLE service_records (
     maintenance_task_id INT NOT NULL COMMENT 'メンテナンスタスクID（外部キー）',
     ai_advice_original TEXT COMMENT 'AIが生成したオリジナルアドバイス',
     user_edited_content TEXT NOT NULL COMMENT 'ユーザーが編集したコンテンツ',
+    is_deleted BOOLEAN NOT NULL DEFAULT FALSE COMMENT '論理削除フラグ',
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '作成日時',
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新日時',
 
@@ -20,6 +21,5 @@ CREATE TABLE service_records (
         FOREIGN KEY (maintenance_task_id) REFERENCES maintenance_tasks(id)
         ON DELETE CASCADE ON UPDATE CASCADE
 );
-COMMENT ON TABLE service_records IS 'サービス記録テーブル（AIアドバイス＋ユーザー編集内容）';
 
 CREATE INDEX idx_service_records_user_id ON service_records(user_id);
