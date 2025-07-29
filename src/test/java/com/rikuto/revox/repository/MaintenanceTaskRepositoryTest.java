@@ -52,14 +52,14 @@ class MaintenanceTaskRepositoryTest {
 		MaintenanceTask testSecondTask = MaintenanceTask.builder()
 				.category(savedTestCategory)
 				.name("テストタスク")
-				.description("testtest")
+				.description("testTest")
 				.createdAt(now)
 				.updatedAt(now)
 				.build();
 
 		// 意図しないデータが取得されないことを確認するため、別カテゴリーの整備タスクも作成
 		Category anotherCategory = Category.builder()
-				.name("testCategory")
+				.name("categoryTest")
 				.displayOrder(888888888)
 				.createdAt(now)
 				.updatedAt(now)
@@ -69,7 +69,7 @@ class MaintenanceTaskRepositoryTest {
 		MaintenanceTask anotherCategoryByTask = MaintenanceTask.builder()
 				.category(savedAnotherCategory)
 				.name("テストタスク")
-				.description("testtest")
+				.description("testTest")
 				.createdAt(now)
 				.updatedAt(now)
 				.build();

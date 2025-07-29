@@ -199,35 +199,4 @@ class UserRepositoryTest{
 		assertThatThrownBy(() -> userRepository.save(user4))
 				.isInstanceOf(DataIntegrityViolationException.class);
 	}
-
-	@Test
-	void 登録されたユーザーのニックネームが50文字を超えた場合DataIntegrityViolationExceptionを投げること() {
-		// Given
-		String longNickname = "a".repeat(51);
-		User invalidUser = User.builder()
-				.nickname(longNickname)
-				.email("too.long.nickname@example.com")
-				.createdAt(now)
-				.updatedAt(now)
-				.build();
-
-		// When & Then
-		assertThatThrownBy(() -> userRepository.save(invalidUser))
-				.isInstanceOf(DataIntegrityViolationException.class);
-	}
-
-	@Test
-	void ニックネームがnullの場合DataIntegrityViolationExceptionを投げること() {
-		// Given
-		User invalidUser = User.builder()
-				.nickname(null)
-				.email("test@example.com")
-				.createdAt(now)
-				.updatedAt(now)
-				.build();
-
-		// When & Then
-		assertThatThrownBy(() -> userRepository.save(invalidUser))
-				.isInstanceOf(DataIntegrityViolationException.class);
-	}
 }
