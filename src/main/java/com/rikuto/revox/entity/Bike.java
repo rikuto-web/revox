@@ -1,5 +1,6 @@
 package com.rikuto.revox.entity;
 
+import com.rikuto.revox.dto.bike.BikeCreateRequest;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -15,7 +16,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
-import lombok.Setter;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -23,11 +23,11 @@ import java.time.LocalDateTime;
 /**
  * バイク情報を表すエンティティです。
  * データベースのbikesテーブルにマッピングされています。
+ * setterの使用を避けるためEntity・DTOの変換メソッドを含みます。
  */
 @Entity
 @Table(name = "bikes")
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder
@@ -119,4 +119,37 @@ public class Bike {
 	@Column(name = "updated_at", nullable = false)
 	@NonNull
 	private LocalDateTime updatedAt;
+
+
+	public Bike(User user, String manufacturer, String modelName, String modelCode,
+	            Integer modelYear, Integer currentMileage, LocalDate purchaseDate,
+	            String imageUrl) {
+		this.user = user;
+		this.manufacturer = manufacturer;
+		this.modelName = modelName;
+		this.modelCode = modelCode;
+		this.modelYear = modelYear;
+		this.currentMileage = currentMileage;
+		this.purchaseDate = purchaseDate;
+		this.imageUrl = imageUrl;
+		this.createdAt = LocalDateTime.now();
+		this.updatedAt = LocalDateTime.now();
+		this.isDeleted = false;
+	}
+
+	public void updateFrom(BikeCreateRequest request) {
+		this.manufacturer = request.getManufacturer();
+		this.modelName = request.getModelName();
+		this.modelCode = request.getModelCode();
+		this.modelYear = request.getModelYear();
+		this.currentMileage = request.getCurrentMileage();
+		this.purchaseDate = request.getPurchaseDate();
+		this.imageUrl = request.getImageUrl();
+		this.updatedAt = LocalDateTime.now();
+	}
+
+	public void softDelete() {
+		this.isDeleted = true;
+		this.updatedAt = LocalDateTime.now();
+	}
 }
