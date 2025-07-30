@@ -62,6 +62,8 @@ dependencies {
 tasks.withType(JavaCompile).configureEach {
 	options.encoding = "UTF-8"
 }
+
 tasks.test {
 	useJUnitPlatform()
+	jvmArgs += "-javaagent:${classpath.find { it.name.contains("byte-buddy-agent") }.absolutePath}"
 }

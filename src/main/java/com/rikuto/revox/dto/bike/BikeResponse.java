@@ -2,7 +2,6 @@ package com.rikuto.revox.dto.bike;
 
 import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
@@ -10,7 +9,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder

@@ -1,6 +1,6 @@
 package com.rikuto.revox.service;
 
-import com.rikuto.revox.converter.BikeConverter;
+import com.rikuto.revox.mapper.BikeMapper;
 import com.rikuto.revox.dto.bike.BikeCreateRequest;
 import com.rikuto.revox.dto.bike.BikeResponse;
 import com.rikuto.revox.entity.Bike;
@@ -11,19 +11,17 @@ import com.rikuto.revox.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
-
 @Service
 public class BikeService {
 
 	private final BikeRepository bikeRepository;
 	private final UserRepository userRepository;
-	private final BikeConverter bikeConverter;
+	private final BikeMapper bikeMapper;
 
-	public BikeService(UserRepository userRepository, BikeRepository bikeRepository, BikeConverter bikeConverter) {
+	public BikeService(UserRepository userRepository, BikeRepository bikeRepository, BikeMapper bikeMapper) {
 		this.userRepository = userRepository;
 		this.bikeRepository = bikeRepository;
-		this.bikeConverter = bikeConverter;
+		this.bikeMapper = bikeMapper;
 	}
 
 	/**
@@ -35,7 +33,7 @@ public class BikeService {
 	public BikeResponse findBikeByUserId(Integer userId) {
 		Bike bike = bikeRepository.findByUserIdAndIsDeletedFalse(userId)
 				.orElseThrow(() -> new ResourceNotFoundException("User ID " + userId + " に紐づくバイクが見つかりません。"));
-		return bikeConverter.convertToBikeResponse(bike);
+		return bikeMapper.toResponse(bike);
 	}
 
 	/**
@@ -49,10 +47,10 @@ public class BikeService {
 		User user = userRepository.findById(request.getUserId())
 				.orElseThrow(() -> new ResourceNotFoundException("ユーザーID " + request.getUserId() + " が見つかりません。"));
 
-		Bike bike = bikeConverter.convertToBikeEntity(request, user);
+		Bike bike = bikeMapper.toEntity(request, user);
 
 		Bike savedBike = bikeRepository.save(bike);
-		return bikeConverter.convertToBikeResponse(savedBike);
+		return bikeMapper.toResponse(savedBike);
 	}
 
 	/**
@@ -67,11 +65,12 @@ public class BikeService {
 		Bike existingBike = bikeRepository.findById(bikeId)
 				.orElseThrow(() -> new ResourceNotFoundException("バイクID " + bikeId + " が見つかりません。"));
 
-		Bike updated = bikeConverter.updateBikeEntityFromDto(updatedBikeRequest, existingBike);
+		bikeMapper.updateEntityFromDto(updatedBikeRequest, existingBike);
 
-		Bike savedBike = bikeRepository.save(updated);
-		return bikeConverter.convertToBikeResponse(savedBike);
+		Bike savedBike = bikeRepository.save(existingBike);
+		return bikeMapper.toResponse(savedBike);
 	}
+
 
 	/**
 	 * 登録されているバイクを論理削除します。
@@ -83,8 +82,7 @@ public class BikeService {
 		Bike existingBike = bikeRepository.findById(bikeId)
 				.orElseThrow(() -> new ResourceNotFoundException("バイクID " + bikeId + " が見つかりません。"));
 
-		existingBike.setDeleted(true);
-		existingBike.setUpdatedAt(LocalDateTime.now());
+		existingBike.softDelete();
 		bikeRepository.save(existingBike);
 	}
 }
