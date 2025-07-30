@@ -1,0 +1,69 @@
+package com.rikuto.revox.controller;
+
+import com.rikuto.revox.dto.bike.BikeCreateRequest;
+import com.rikuto.revox.dto.bike.BikeResponse;
+import com.rikuto.revox.service.BikeService;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping("/api/bikes")
+public class BikeController {
+
+	private final BikeService bikeService;
+
+	public BikeController(BikeService bikeService) {
+		this.bikeService = bikeService;
+	}
+
+	/**
+	 * 指定されたユーザーIDに紐づくバイク情報を取得します。
+	 * GET /api/bikes/user/{userId}
+	 * @param userId バイクを検索するユーザーのID
+	 * @return 検索されたバイク情報（BikeResponse）とHTTPステータス200 OK
+	 */
+	@GetMapping("/user/{userId}")
+	public ResponseEntity<BikeResponse> getBikeByUserId(@PathVariable Integer userId) {
+		BikeResponse bikeResponse = bikeService.findBikeByUserId(userId);
+		return ResponseEntity.ok(bikeResponse);
+	}
+
+	/**
+	 * 新しいバイク情報を登録します。
+	 * POST /api/bikes
+	 * @param request 登録するバイク情報を含むリクエストDTO
+	 * @return 登録されたバイク情報（BikeResponse）とHTTPステータス201 Created
+	 */
+	@PostMapping
+	public ResponseEntity<BikeResponse> registerBike(@RequestBody @Valid BikeCreateRequest request) {
+		BikeResponse registeredBike = bikeService.registerBike(request);
+		return new ResponseEntity<>(registeredBike, HttpStatus.CREATED);
+	}
+
+	/**
+	 * 既存のバイク情報を更新します。
+	 * PUT /api/bikes/{bikeId}
+	 * @param bikeId 更新するバイクのID
+	 * @param request 更新されたバイク情報を含むリクエストDTO
+	 * @return 更新されたバイク情報（BikeResponse）とHTTPステータス200 OK
+	 */
+	@PutMapping("/{bikeId}")
+	public ResponseEntity<BikeResponse> updateBike(@PathVariable Integer bikeId, @RequestBody @Valid BikeCreateRequest request) {
+		BikeResponse bikeResponse = bikeService.updateBike(bikeId, request);
+		return ResponseEntity.ok(bikeResponse);
+	}
+
+	/**
+	 * バイク情報を論理削除します。
+	 * DELETE /api/bikes/{bikeId}
+	 * @param bikeId 論理削除するバイクのID
+	 * @return HTTPステータス204 No Content
+	 */
+	@DeleteMapping("/{bikeId}")
+	public ResponseEntity<Void> softDeleteBike(@PathVariable Integer bikeId) {
+		bikeService.softDeleteBike(bikeId);
+		return ResponseEntity.noContent().build();
+	}
+}

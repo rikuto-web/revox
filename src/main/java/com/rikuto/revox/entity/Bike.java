@@ -9,14 +9,13 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
+import lombok.Setter;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -28,6 +27,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "bikes")
 @Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder
@@ -53,8 +53,6 @@ public class Bike {
 	 * 「ホンダ」「HONDA」などユーザーの好みの入力を受け付けます。
 	 */
 	@Column(name = "manufacturer", length = 50, nullable = false)
-	@Size(max = 50)
-	@NotBlank
 	private String manufacturer;
 
 	/**
@@ -62,8 +60,6 @@ public class Bike {
 	 * 「レブル」「Rebel」など好みの入力を受け付けます。
 	 */
 	@Column(name = "model_name", length = 100, nullable = false)
-	@Size(max = 100)
-	@NotBlank
 	private String modelName;
 
 	/**
@@ -71,7 +67,6 @@ public class Bike {
 	 * 分からないユーザーもいるためnullは許容しています。
 	 */
 	@Column(name = "model_code", length = 20)
-	@Size(max = 20)
 	private String modelCode;
 
 	/**
@@ -101,7 +96,6 @@ public class Bike {
 	 * 未入力でも許容するためnullを許容しています。
 	 */
 	@Column(name = "image_url", length = 2048)
-	@Size(max = 2048)
 	private String imageUrl;
 
 	/**

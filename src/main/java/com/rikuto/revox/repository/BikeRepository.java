@@ -4,7 +4,7 @@ import com.rikuto.revox.entity.Bike;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
+import java.util.Optional;
 
 /**
  * バイクに関するリポジトリです。
@@ -18,5 +18,5 @@ public interface BikeRepository extends JpaRepository<Bike, Integer> {
 	 * @param userId 一意のユーザID
 	 * @return ユーザーに紐づいたバイク情報リスト
 	 */
-	List<Bike> findByUserIdAndIsDeletedFalse(Integer userId);
+	Optional<Bike> findByUserIdAndIsDeletedFalse(Integer userId);
 }
