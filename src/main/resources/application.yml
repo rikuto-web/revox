@@ -6,7 +6,6 @@ logging:
     root: INFO
     org:
       springframework:
-        security: DEBUG # 本番では通常 INFO にする
       hibernate:
         SQL: DEBUG      # 本番では通常 INFO にする
         type:
@@ -36,8 +35,3 @@ spring:
   flyway:
     enabled: true
     locations: classpath:db/migration
-
-  security:
-    user:
-      name: ${SECURITY_USER_NAME}
-      password: ${SECURITY_USER_PASSWORD}
