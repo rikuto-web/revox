@@ -41,9 +41,9 @@ public class AiQuestionService {
 		User user = userRepository.findByIdAndIsDeletedFalse(request.getUserId())
 				.orElseThrow(() -> new ResourceNotFoundException("ユーザーID " + request.getUserId() + " が見つかりません。"));
 		Bike bike = bikeRepository.findByUserIdAndIsDeletedFalse(request.getBikeId())
-				.orElseThrow(() -> new ResourceNotFoundException("ユーザーID " + request.getUserId() + " が見つかりません。"));
+				.orElseThrow(() -> new ResourceNotFoundException("バイクID " + request.getBikeId() + " が見つかりません。"));
 		Category category = categoryRepository.findById(request.getCategoryId())
-				.orElseThrow(() -> new ResourceNotFoundException("ユーザーID " + request.getUserId() + " が見つかりません。"));
+				.orElseThrow(() -> new ResourceNotFoundException("カテゴリーID " + request.getCategoryId() + " が見つかりません。"));
 
 //ToDo		ここに動的に回答を生成させる
 		String aiAnswer = generateAiAnswer(request.getQuestion(), bike, category);
