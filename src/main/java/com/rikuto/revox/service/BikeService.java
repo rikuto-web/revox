@@ -15,11 +15,11 @@ import org.springframework.transaction.annotation.Transactional;
 public class BikeService {
 
 	private final BikeRepository bikeRepository;
-	private final UserRepository userRepository;
+	private final UserService userService;
 	private final BikeMapper bikeMapper;
 
-	public BikeService(UserRepository userRepository, BikeRepository bikeRepository, BikeMapper bikeMapper) {
-		this.userRepository = userRepository;
+	public BikeService(UserService userService, BikeRepository bikeRepository, BikeMapper bikeMapper) {
+		this.userService = userService;
 		this.bikeRepository = bikeRepository;
 		this.bikeMapper = bikeMapper;
 	}
@@ -44,11 +44,8 @@ public class BikeService {
 	 */
 	@Transactional
 	public BikeResponse registerBike(BikeCreateRequest request) {
-		User user = userRepository.findById(request.getUserId())
-				.orElseThrow(() -> new ResourceNotFoundException("ユーザーID " + request.getUserId() + " が見つかりません。"));
-
+		User user = userService.findById(request.getUserId());
 		Bike bike = bikeMapper.toEntity(request, user);
-
 		Bike savedBike = bikeRepository.save(bike);
 		return bikeMapper.toResponse(savedBike);
 	}
