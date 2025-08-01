@@ -2,10 +2,10 @@ package com.rikuto.revox.service;
 
 import com.rikuto.revox.dto.aiquestion.AiQuestionCreateRequest;
 import com.rikuto.revox.dto.aiquestion.AiQuestionResponse;
-import com.rikuto.revox.entity.AiQuestion;
-import com.rikuto.revox.entity.Bike;
-import com.rikuto.revox.entity.Category;
-import com.rikuto.revox.entity.User;
+import com.rikuto.revox.domain.AiQuestion;
+import com.rikuto.revox.domain.Bike;
+import com.rikuto.revox.domain.Category;
+import com.rikuto.revox.domain.User;
 import com.rikuto.revox.exception.ResourceNotFoundException;
 import com.rikuto.revox.mapper.AiQuestionMapper;
 import com.rikuto.revox.repository.AiQuestionRepository;
@@ -41,9 +41,9 @@ public class AiQuestionService {
 		User user = userRepository.findByIdAndIsDeletedFalse(request.getUserId())
 				.orElseThrow(() -> new ResourceNotFoundException("ユーザーID " + request.getUserId() + " が見つかりません。"));
 		Bike bike = bikeRepository.findByUserIdAndIsDeletedFalse(request.getBikeId())
-				.orElseThrow(() -> new ResourceNotFoundException("ユーザーID " + request.getUserId() + " が見つかりません。"));
+				.orElseThrow(() -> new ResourceNotFoundException("バイクID " + request.getBikeId() + " が見つかりません。"));
 		Category category = categoryRepository.findById(request.getCategoryId())
-				.orElseThrow(() -> new ResourceNotFoundException("ユーザーID " + request.getUserId() + " が見つかりません。"));
+				.orElseThrow(() -> new ResourceNotFoundException("カテゴリーID " + request.getCategoryId() + " が見つかりません。"));
 
 //ToDo		ここに動的に回答を生成させる
 		String aiAnswer = generateAiAnswer(request.getQuestion(), bike, category);

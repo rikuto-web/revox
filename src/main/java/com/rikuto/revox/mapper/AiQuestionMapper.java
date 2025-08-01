@@ -2,11 +2,10 @@ package com.rikuto.revox.mapper;
 
 import com.rikuto.revox.dto.aiquestion.AiQuestionCreateRequest;
 import com.rikuto.revox.dto.aiquestion.AiQuestionResponse;
-import com.rikuto.revox.entity.AiQuestion;
-import com.rikuto.revox.entity.Bike;
-import com.rikuto.revox.entity.Category;
-import com.rikuto.revox.entity.User;
-import com.rikuto.revox.exception.ResourceNotFoundException;
+import com.rikuto.revox.domain.AiQuestion;
+import com.rikuto.revox.domain.Bike;
+import com.rikuto.revox.domain.Category;
+import com.rikuto.revox.domain.User;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;

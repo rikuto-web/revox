@@ -1,6 +1,6 @@
 package com.rikuto.revox.service;
 
-import com.rikuto.revox.entity.User;
+import com.rikuto.revox.domain.User;
 import com.rikuto.revox.exception.ResourceNotFoundException;
 import com.rikuto.revox.repository.UserRepository;
 import org.springframework.stereotype.Service;

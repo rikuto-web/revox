@@ -2,8 +2,8 @@ package com.rikuto.revox.service;
 
 import com.rikuto.revox.dto.bike.BikeCreateRequest;
 import com.rikuto.revox.dto.bike.BikeResponse;
-import com.rikuto.revox.entity.Bike;
-import com.rikuto.revox.entity.User;
+import com.rikuto.revox.domain.Bike;
+import com.rikuto.revox.domain.User;
 import com.rikuto.revox.exception.ResourceNotFoundException;
 import com.rikuto.revox.mapper.BikeMapper;
 import com.rikuto.revox.repository.BikeRepository;

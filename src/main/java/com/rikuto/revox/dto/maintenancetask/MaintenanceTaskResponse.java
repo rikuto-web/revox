@@ -7,6 +7,10 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
+/**
+ * 内部処理を行った後ユーザーへ返すレスポンス内容のDTOです。
+ *
+ */
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
@@ -14,10 +18,10 @@ import java.time.LocalDateTime;
 public class MaintenanceTaskResponse {
 
 	private Integer id;
-	private Integer categoryId;
-	private String categoryName; // カテゴリー名も含める
 	private String name;
 	private String description;
 	private LocalDateTime createdAt;
 	private LocalDateTime updatedAt;
+
+	private Integer categoryId;
 }

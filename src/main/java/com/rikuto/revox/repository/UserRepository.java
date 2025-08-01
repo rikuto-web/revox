@@ -1,6 +1,6 @@
 package com.rikuto.revox.repository;
 
-import com.rikuto.revox.entity.User;
+import com.rikuto.revox.domain.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

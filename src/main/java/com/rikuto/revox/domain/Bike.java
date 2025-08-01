@@ -1,4 +1,4 @@
-package com.rikuto.revox.entity;
+package com.rikuto.revox.domain;
 
 import com.rikuto.revox.dto.bike.BikeCreateRequest;
 import jakarta.persistence.Column;

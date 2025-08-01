@@ -1,4 +1,4 @@
-package com.rikuto.revox.entity;
+package com.rikuto.revox.domain;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;

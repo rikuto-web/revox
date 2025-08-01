@@ -1,7 +1,7 @@
 package com.rikuto.revox.repository;
 
-import com.rikuto.revox.entity.Category;
-import com.rikuto.revox.entity.MaintenanceTask;
+import com.rikuto.revox.domain.Category;
+import com.rikuto.revox.domain.MaintenanceTask;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
