@@ -1,4 +1,4 @@
-package com.rikuto.revox.entity;
+package com.rikuto.revox.domain;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;

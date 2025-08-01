@@ -1,6 +1,6 @@
 package com.rikuto.revox.repository;
 
-import com.rikuto.revox.entity.AiQuestion;
+import com.rikuto.revox.domain.AiQuestion;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import java.util.List;
