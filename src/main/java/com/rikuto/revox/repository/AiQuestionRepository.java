@@ -13,7 +13,9 @@ import java.util.List;
 public interface AiQuestionRepository extends JpaRepository<AiQuestion, Integer> {
 
 	/**
-	 * ユーザーIDに紐づいたAI質問履歴を取得します。論理削除された情報は取得しません。
+	 * ユーザーIDに紐づいたAI質問履歴を取得します。
+	 * 論理削除された情報は取得しません。
+	 *
 	 * @param userId ユーザーID
 	 * @return ユーザーのAI質問履歴リスト
 	 */

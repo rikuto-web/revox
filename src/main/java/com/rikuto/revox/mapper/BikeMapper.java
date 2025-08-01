@@ -9,16 +9,16 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 /**
- * Bikeエンティティと関連するDTO間のマッピングおよび更新処理を行うクラスです。
+ * Bikeドメインと関連するDTO間のマッピングおよび更新処理を行うクラスです。
  * ドメインの振る舞い（更新・削除などのロジック）は保持せず、純粋なデータ変換に専念します。
  */
 @Component
 public class BikeMapper {
 
 	/**
-	 * 単一のBikeエンティティをBikeResponse DTOに変換します。
+	 * 単一のBikeドメインをBikeResponse DTOに変換します。
 	 *
-	 * @param bike 変換する Bikeエンティティ。
+	 * @param bike 変換する Bikeドメイン。
 	 * @return 変換された BikeResponse DTO。
 	 */
 	public BikeResponse toResponse(Bike bike) {
@@ -37,11 +37,10 @@ public class BikeMapper {
 	}
 
 	/**
-	 * ユーザーへレスポンスする内容へ変換します。
-	 * バイク情報をList化します
+	 * BikeドメインのリストをBikeResponse DTOのリストに変換します。
 	 *
-	 * @param bikeList ユーザーが保有するバイク
-	 * @return バイクリスト
+	 * @param bikeList 変換対象のBikeドメインのリスト。
+	 * @return 変換されたBikeResponse DTOのリスト。
 	 */
 	public List<BikeResponse> toResponseList(List<Bike> bikeList) {
 		return bikeList.stream()
@@ -50,11 +49,11 @@ public class BikeMapper {
 	}
 
 	/**
-	 * BikeCreateRequest DTOと Userエンティティから新しい Bikeエンティティを作成します。
+	 * BikeCreateRequest DTOと Userドメインから新しい Bikeドメインを作成します。
 	 *
 	 * @param request バイク作成リクエストを含む BikeCreateRequest DTO。
-	 * @param user    バイクを所有する Userエンティティ。
-	 * @return 作成された Bikeエンティティ。
+	 * @param user    バイクを所有する Userドメイン。
+	 * @return 作成された Bikeドメイン。
 	 */
 	public Bike toEntity(BikeCreateRequest request, User user) {
 		return Bike.builder()

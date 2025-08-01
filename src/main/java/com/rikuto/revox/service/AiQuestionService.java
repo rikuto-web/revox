@@ -45,17 +45,24 @@ public class AiQuestionService {
 	 */
 	@Transactional
 	public AiQuestionResponse createAiQuestion(AiQuestionCreateRequest request){
+
 		User user = userRepository.findByIdAndIsDeletedFalse(request.getUserId())
-				.orElseThrow(() -> new ResourceNotFoundException("ユーザーID " + request.getUserId() + " が見つかりません。"));
+				.orElseThrow(() -> new ResourceNotFoundException(
+						"ユーザーID " + request.getUserId() + " が見つかりません。"));
+
 		Bike bike = bikeRepository.findByIdAndUserIdAndIsDeletedFalse(request.getBikeId(), request.getUserId())
-				.orElseThrow(() -> new ResourceNotFoundException("User ID " + request.getUserId() + " に紐づくバイクID " + request.getBikeId() + "が見つかりません。"));
+				.orElseThrow(() -> new ResourceNotFoundException(
+						"ユーザー ID " + request.getUserId() + " に紐づくバイクID " + request.getBikeId() + "が見つかりません。"));
+
 		Category category = categoryRepository.findById(request.getCategoryId())
-				.orElseThrow(() -> new ResourceNotFoundException("カテゴリーID " + request.getCategoryId() + " が見つかりません。"));
+				.orElseThrow(() -> new ResourceNotFoundException(
+						"カテゴリーID " + request.getCategoryId() + " が見つかりません。"));
 
 //ToDo		ここに動的に回答を生成させる
 		String aiAnswer = generateAiAnswer(request.getQuestion(), bike, category);
 
 		AiQuestion aiQuestion = aiQuestionMapper.toEntity(request, user, bike ,category, aiAnswer);
+
 		AiQuestion savedAiQuestion = aiQuestionRepository.save(aiQuestion);
 
 		return aiQuestionMapper.toResponse(savedAiQuestion);
@@ -69,7 +76,9 @@ public class AiQuestionService {
 	 */
 	@Transactional(readOnly = true)
 	public List<AiQuestionResponse> getAiQuestionByUserId(Integer userId) {
+
 		List<AiQuestion> aiQuestions = aiQuestionRepository.findByUserIdAndIsDeletedFalse(userId);
+
 		return aiQuestions.stream()
 				.map(aiQuestionMapper::toResponse)
 				.toList();

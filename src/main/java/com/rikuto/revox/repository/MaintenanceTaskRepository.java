@@ -15,6 +15,7 @@ public interface MaintenanceTaskRepository extends JpaRepository<MaintenanceTask
 
 	/**
 	 * カテゴリーIDに紐づいた整備タスクの検索を行います
+	 *
 	 * @param categoryId カテゴリーID
 	 * @return カテゴリーIDに紐づいた整備タスクリスト
 	 */

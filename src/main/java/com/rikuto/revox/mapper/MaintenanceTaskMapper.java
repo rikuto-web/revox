@@ -9,16 +9,16 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 /**
- * MaintenanceTaskエンティティと関連するDTOの相互変換を担うクラスです。
+ * MaintenanceTaskドメインと関連するDTOの相互変換を担うクラスです。
  * ドメインの振る舞い（更新・削除などのロジック）は保持せず、純粋なデータ変換に専念します。
  */
 @Component
 public class MaintenanceTaskMapper {
 
 	/**
-	 * ユーザーへレスポンスする内容へ変換します。
-	 * @param task 整備タスク情報
-	 * @return フロント側へ渡す単一の整備タスク情報
+	 * 単一のMaintenanceTaskドメインをMaintenanceTaskResponse DTOに変換します。
+	 * @param task 変換する MaintenanceTaskドメイン。
+	 * @return 変換された MaintenanceTaskResponse DTO。
 	 */
 	public MaintenanceTaskResponse toResponse(MaintenanceTask task) {
 		return MaintenanceTaskResponse.builder()
@@ -32,11 +32,10 @@ public class MaintenanceTaskMapper {
 	}
 
 	/**
-	 * ユーザーへレスポンスする内容へ変換します。
-	 * 整備タスクをList化します
+	 * MaintenanceTaskドメインのリストをMaintenanceTaskResponse DTOのリストに変換します。
 	 *
-	 * @param maintenanceTaskList 複数の整備タスク
-	 * @return List化された整備タスク
+	 * @param maintenanceTaskList 変換対象のMaintenanceTaskドメインのリスト。
+	 * @return 変換されたMaintenanceTaskResponse DTOのリスト。
 	 */
 	public List<MaintenanceTaskResponse> toResponseList(List<MaintenanceTask> maintenanceTaskList) {
 		return maintenanceTaskList.stream()
@@ -46,10 +45,11 @@ public class MaintenanceTaskMapper {
 
 
 	/**
-	 * 受け取ったリクエスト情報をEntityに変換します
-	 * @param request リクエストとして受け取った整備タスク情報
-	 * @param category カテゴリー情報
-	 * @return Entity情報
+	 * MaintenanceTaskRequest DTOと Categoryドメインから新しい MaintenanceTaskドメインを作成します。
+	 *
+	 * @param request 整備タスク作成リクエストを含む MaintenanceTaskRequest DTO。
+	 * @param category  整備タスクを所有する Categoryドメイン。
+	 * @return 作成された MaintenanceTaskドメイン。
 	 */
 	public MaintenanceTask toEntity (MaintenanceTaskRequest request, Category category) {
 	return MaintenanceTask.builder()

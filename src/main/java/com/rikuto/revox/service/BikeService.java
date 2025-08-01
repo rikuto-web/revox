@@ -30,43 +30,57 @@ public class BikeService {
 
 	/**
 	 * ユーザーが保有する特定のバイクを検索します。
+	 * 該当するバイクが見つからない場合は例外をスローします。
+	 *
 	 * @param userId ユーザーID
 	 * @param bikeId ユーザーが保有する特定のバイクID
 	 * @return レスポンスへ返還後のバイク情報
 	 */
 	@Transactional(readOnly = true)
 	public BikeResponse findByIdAndUserId (Integer userId, Integer bikeId){
+
 		Bike bike = bikeRepository.findByIdAndUserIdAndIsDeletedFalse(bikeId, userId)
-				.orElseThrow(() -> new ResourceNotFoundException("ユーザーID " + userId + " に紐づくバイクID " + bikeId + " が見つかりません。"));
+				.orElseThrow(() -> new ResourceNotFoundException(
+						"ユーザーID " + userId + " に紐づくバイクID " + bikeId + " が見つかりません。"));
+
 		return bikeMapper.toResponse(bike);
 	}
 
 	/**
 	 * ユーザーIDに紐づいた全てのバイク情報を検索します。
+	 *
 	 * @param userId ユーザーID
 	 * @return レスポンスへ返還後のバイクリスト
 	 */
 	public List<BikeResponse> findBikeByUserId(Integer userId) {
+
 		List<Bike> bikeList = bikeRepository.findByUserIdAndIsDeletedFalse(userId);
+
 		return bikeMapper.toResponseList(bikeList);
 	}
 
 	/**
 	 * 新しいバイク情報を登録します。
+	 *
 	 * @param request 登録するバイク情報を含むリクエストDTO
 	 * @return 登録されたバイク情報（BikeResponse）
 	 * @throws ResourceNotFoundException 指定されたユーザーが見つからない場合
 	 */
 	@Transactional
 	public BikeResponse registerBike(BikeCreateRequest request) {
+
 		User user = userService.findById(request.getUserId());
+
 		Bike bike = bikeMapper.toEntity(request, user);
+
 		Bike savedBike = bikeRepository.save(bike);
+
 		return bikeMapper.toResponse(savedBike);
 	}
 
 	/**
 	 * 既存のバイク情報を更新します。
+	 *
 	 * @param bikeId 更新するバイクのID
 	 * @param updatedBikeRequest 更新されたバイク情報を含むリクエストDTO
 	 * @return 更新されたバイク情報（BikeResponse）
@@ -74,25 +88,34 @@ public class BikeService {
 	 */
 	@Transactional
 	public BikeResponse updateBike(Integer bikeId, BikeCreateRequest updatedBikeRequest) {
+
 		Bike existingBike = bikeRepository.findByIdAndUserIdAndIsDeletedFalse(bikeId, updatedBikeRequest.getUserId())
-				.orElseThrow(() -> new ResourceNotFoundException("ユーザーID " + updatedBikeRequest.getUserId() + " に紐づくバイクID " + bikeId + " が見つかりません。"));
+				.orElseThrow(() -> new ResourceNotFoundException(
+						"ユーザーID " + updatedBikeRequest.getUserId() + " に紐づくバイクID " + bikeId + " が見つかりません。"));
+
 		existingBike.updateFrom(updatedBikeRequest);
+
 		Bike savedBike = bikeRepository.save(existingBike);
+
 		return bikeMapper.toResponse(savedBike);
 	}
 
 
 	/**
 	 * 登録されているバイクを論理削除します。
+	 *
 	 * @param bikeId 更新するバイクID
 	 * @throws ResourceNotFoundException 指定されたバイクが見つからない場合
 	 */
 	@Transactional
-	public void softDeleteBike(Integer bikeId) {
-		Bike existingBike = bikeRepository.findById(bikeId)
-				.orElseThrow(() -> new ResourceNotFoundException("バイクID " + bikeId + " が見つかりません。"));
+	public void softDeleteBike(Integer userId, Integer bikeId) {
+
+		Bike existingBike = bikeRepository.findByIdAndUserIdAndIsDeletedFalse(userId, bikeId)
+				.orElseThrow(() -> new ResourceNotFoundException(
+						"ユーザー ID " + userId + " に紐づくバイクID " + bikeId + "が見つかりません。"));
 
 		existingBike.softDelete();
+
 		bikeRepository.save(existingBike);
 	}
 }

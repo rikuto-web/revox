@@ -7,7 +7,7 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 /**
- * 整備タスク情報を表すエンティティです。
+ * 整備タスク情報を表すドメインです。
  * データベースのmaintenance_tasksテーブルにマッピングされています。
  */
 @Entity
@@ -75,7 +75,7 @@ public class MaintenanceTask {
 
 
 	/**
-	 * リクエスト内容への更新メソッドです。
+	 * 受け取ったリクエスト内容えお更新するメソッドです。
 	 * 日時はDBで自動設定されるためシステム側では日時の更新は行いません。
 	 * @param request 更新する整備タスク
 	 */

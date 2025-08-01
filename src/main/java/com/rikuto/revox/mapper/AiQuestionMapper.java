@@ -11,15 +11,15 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDateTime;
 
 /**
- * AiQuestionエンティティと関連するDTO間のマッピングを行うクラスです。
+ * AiQuestionドメインと関連するDTO間のマッピングを行うクラスです。
  */
 @Component
 public class AiQuestionMapper {
 
 	/**
-	 * AiQuestionエンティティをAiQuestionResponse DTOに変換します。
+	 * AiQuestionドメインをAiQuestionResponse DTOに変換します。
 	 *
-	 * @param aiQuestion 変換するAiQuestionエンティティ
+	 * @param aiQuestion 変換するAiQuestionドメイン
 	 * @return 変換されたAiQuestionResponse DTO
 	 */
 	public AiQuestionResponse toResponse(AiQuestion aiQuestion) {
@@ -36,13 +36,13 @@ public class AiQuestionMapper {
 	}
 
 	/**
-	 * リクエストDTOと関連エンティティから新しいAiQuestionエンティティを作成します。
+	 * リクエストDTOと関連ドメインから新しいAiQuestionドメインを作成します。
 	 * @param request AI質問作成リクエスト
-	 * @param user ユーザーエンティティ
-	 * @param bike バイクエンティティ
-	 * @param category カテゴリーエンティティ
+	 * @param user ユーザードメイン
+	 * @param bike バイクドメイン
+	 * @param category カテゴリードメイン
 	 * @param answer AI生成回答
-	 * @return 作成されたAiQuestionエンティティ
+	 * @return 作成されたAiQuestionドメイン
 	 */
 	public AiQuestion toEntity(AiQuestionCreateRequest request, User user, Bike bike, Category category, String answer){
 		LocalDateTime now = LocalDateTime.now();
