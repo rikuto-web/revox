@@ -17,6 +17,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+/**
+ * AIに関するビジネスロジックを処理するサービスクラスです。
+ */
 @Service
 public class AiQuestionService {
 
@@ -35,13 +38,17 @@ public class AiQuestionService {
 	}
 
 
+	/**
+	 * AIへの質問に対する回答を生成します。
+	 * ユーザーと紐づく単一のバイク情報とカテゴリー情報を渡して回答を生成します。
+	 * 現在固定の回答へ返答する設計になっており、今後外部APIの連携を予定しています。
+	 */
 	@Transactional
 	public AiQuestionResponse createAiQuestion(AiQuestionCreateRequest request){
-		//Entityの存在確認
 		User user = userRepository.findByIdAndIsDeletedFalse(request.getUserId())
 				.orElseThrow(() -> new ResourceNotFoundException("ユーザーID " + request.getUserId() + " が見つかりません。"));
-		Bike bike = bikeRepository.findByUserIdAndIsDeletedFalse(request.getBikeId())
-				.orElseThrow(() -> new ResourceNotFoundException("バイクID " + request.getBikeId() + " が見つかりません。"));
+		Bike bike = bikeRepository.findByIdAndUserIdAndIsDeletedFalse(request.getBikeId(), request.getUserId())
+				.orElseThrow(() -> new ResourceNotFoundException("User ID " + request.getUserId() + " に紐づくバイクID " + request.getBikeId() + "が見つかりません。"));
 		Category category = categoryRepository.findById(request.getCategoryId())
 				.orElseThrow(() -> new ResourceNotFoundException("カテゴリーID " + request.getCategoryId() + " が見つかりません。"));
 
@@ -56,17 +63,17 @@ public class AiQuestionService {
 
 	/**
 	 * ユーザーのAI質問・回答履歴を取得します。
+	 *
 	 * @param userId ユーザーID
 	 * @return AI質問・回答履歴リスト
 	 */
+	@Transactional(readOnly = true)
 	public List<AiQuestionResponse> getAiQuestionByUserId(Integer userId) {
 		List<AiQuestion> aiQuestions = aiQuestionRepository.findByUserIdAndIsDeletedFalse(userId);
 		return aiQuestions.stream()
 				.map(aiQuestionMapper::toResponse)
 				.toList();
 	}
-
-
 
 //	ToDO 外部APIを今後導入
 	private String generateAiAnswer(String question, Bike bike, Category category) {
@@ -87,28 +94,4 @@ public class AiQuestionService {
 				bike.getModelName()
 		);
 	}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 }
