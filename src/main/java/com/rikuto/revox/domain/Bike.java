@@ -15,7 +15,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.NonNull;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -23,7 +22,6 @@ import java.time.LocalDateTime;
 /**
  * バイク情報を表すエンティティです。
  * データベースのbikesテーブルにマッピングされています。
- * setterの使用を避けるためEntity・DTOの変換メソッドを含みます。
  */
 @Entity
 @Table(name = "bikes")
@@ -108,35 +106,24 @@ public class Bike {
 
 	/**
 	 * レコードが作成された日時
+	 * 日時はDBで自動設定されるためシステム側では日時の更新は行いません。
 	 */
-	@Column(name = "created_at", nullable = false)
-	@NonNull
+	@Column(name = "created_at", nullable = false, insertable = false, updatable = false)
 	private LocalDateTime createdAt;
 
 	/**
 	 * レコードが更新された最終日時
+	 * 日時はDBで自動設定されるためシステム側では日時の更新は行いません。
 	 */
-	@Column(name = "updated_at", nullable = false)
-	@NonNull
+	@Column(name = "updated_at", nullable = false, insertable = false, updatable = false)
 	private LocalDateTime updatedAt;
 
 
-	public Bike(User user, String manufacturer, String modelName, String modelCode,
-	            Integer modelYear, Integer currentMileage, LocalDate purchaseDate,
-	            String imageUrl) {
-		this.user = user;
-		this.manufacturer = manufacturer;
-		this.modelName = modelName;
-		this.modelCode = modelCode;
-		this.modelYear = modelYear;
-		this.currentMileage = currentMileage;
-		this.purchaseDate = purchaseDate;
-		this.imageUrl = imageUrl;
-		this.createdAt = LocalDateTime.now();
-		this.updatedAt = LocalDateTime.now();
-		this.isDeleted = false;
-	}
-
+	/**
+	 * リクエスト内容への更新メソッドです。
+	 * 日時はDBで自動設定されるためシステム側では日時の更新は行いません。
+	 * @param request 更新するバイク情報
+	 */
 	public void updateFrom(BikeCreateRequest request) {
 		this.manufacturer = request.getManufacturer();
 		this.modelName = request.getModelName();
@@ -145,11 +132,13 @@ public class Bike {
 		this.currentMileage = request.getCurrentMileage();
 		this.purchaseDate = request.getPurchaseDate();
 		this.imageUrl = request.getImageUrl();
-		this.updatedAt = LocalDateTime.now();
 	}
 
+	/**
+	 * 論理削除のためのメソッドです。
+	 *日時はDBで自動設定されるためシステム側では日時の更新は行いません。
+	 */
 	public void softDelete() {
 		this.isDeleted = true;
-		this.updatedAt = LocalDateTime.now();
 	}
 }

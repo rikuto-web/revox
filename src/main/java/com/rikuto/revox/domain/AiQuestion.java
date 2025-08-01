@@ -9,13 +9,11 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.NotBlank;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.NonNull;
 
 import java.time.LocalDateTime;
 
@@ -87,7 +85,6 @@ public class AiQuestion {
 	 * レコードが作成された日時
 	 */
 	@Column(name = "created_at", nullable = false, insertable = false, updatable = false)
-	@NonNull
 	private LocalDateTime createdAt;
 
 	/**

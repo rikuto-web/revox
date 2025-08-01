@@ -4,29 +4,24 @@ import com.rikuto.revox.dto.bike.BikeCreateRequest;
 import com.rikuto.revox.dto.bike.BikeResponse;
 import com.rikuto.revox.domain.Bike;
 import com.rikuto.revox.domain.User;
-import com.rikuto.revox.exception.ResourceNotFoundException;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 /**
  * Bikeエンティティと関連するDTO間のマッピングおよび更新処理を行うクラスです。
- * 主に、エンティティからレスポンスDTOへの変換、リクエストDTOからエンティティへの作成、
- * および既存のエンティティの更新ロジックを提供します。
+ * ドメインの振る舞い（更新・削除などのロジック）は保持せず、純粋なデータ変換に専念します。
  */
 @Component
 public class BikeMapper {
 
 	/**
-	 * BikeエンティティをBikeResponse DTOに変換します。
-	 * 変換対象のバイクが見つからない場合は ResourceNotFoundException をスローします。
+	 * 単一のBikeエンティティをBikeResponse DTOに変換します。
 	 *
-	 * @param bike 変換する Bikeエンティティ。nullであってはなりません。
+	 * @param bike 変換する Bikeエンティティ。
 	 * @return 変換された BikeResponse DTO。
-	 * @throws ResourceNotFoundException 引数 bike が null の場合。
 	 */
 	public BikeResponse toResponse(Bike bike) {
-		if (bike == null) {
-			throw new ResourceNotFoundException("変換対象のバイクが見つかりません。");
-		}
 		return BikeResponse.builder()
 				.id(bike.getId())
 				.manufacturer(bike.getManufacturer())
@@ -36,41 +31,41 @@ public class BikeMapper {
 				.currentMileage(bike.getCurrentMileage())
 				.purchaseDate(bike.getPurchaseDate())
 				.imageUrl(bike.getImageUrl())
-				.createdAt(bike.getCreatedAt())
-				.updatedAt(bike.getUpdatedAt())
 
 				.userId(bike.getUser() != null ? bike.getUser().getId() : null)
 				.build();
 	}
 
 	/**
-	 * BikeCreateRequest DTOと Userエンティティから新しい Bikeエンティティを作成します。
+	 * ユーザーへレスポンスする内容へ変換します。
+	 * バイク情報をList化します
 	 *
-	 * @param request バイク作成リクエストを含む BikeCreateRequest DTO。
-	 * @param user バイクを所有する Userエンティティ。
-	 * @return 作成された Bikeエンティティ。
+	 * @param bikeList ユーザーが保有するバイク
+	 * @return バイクリスト
 	 */
-	public Bike toEntity(BikeCreateRequest request, User user) {
-		return new Bike(
-				user,
-				request.getManufacturer(),
-				request.getModelName(),
-				request.getModelCode(),
-				request.getModelYear(),
-				request.getCurrentMileage(),
-				request.getPurchaseDate(),
-				request.getImageUrl()
-		);
+	public List<BikeResponse> toResponseList(List<Bike> bikeList) {
+		return bikeList.stream()
+				.map(this::toResponse)
+				.toList();
 	}
 
 	/**
-	 * BikeCreateRequest DTOのデータを使用して、既存の Bikeエンティティの状態を更新（論理削除）します。
-	 * 実際にエンティティの更新（論理削除）を行うのは existingBike オブジェクトの updateFrom メソッドです。
+	 * BikeCreateRequest DTOと Userエンティティから新しい Bikeエンティティを作成します。
 	 *
-	 * @param request 更新データを含む BikeCreateRequest DTO。このメソッドでは主に論理削除のトリガーとして使用される場合があります。
-	 * @param existingBike 更新対象の既存の Bikeエンティティ。
+	 * @param request バイク作成リクエストを含む BikeCreateRequest DTO。
+	 * @param user    バイクを所有する Userエンティティ。
+	 * @return 作成された Bikeエンティティ。
 	 */
-	public void updateEntityFromDto(BikeCreateRequest request, Bike existingBike) {
-		existingBike.updateFrom(request);
+	public Bike toEntity(BikeCreateRequest request, User user) {
+		return Bike.builder()
+				.user(user)
+				.manufacturer(request.getManufacturer())
+				.modelName(request.getModelName())
+				.modelCode(request.getModelCode())
+				.modelYear(request.getModelYear())
+				.currentMileage(request.getCurrentMileage())
+				.purchaseDate(request.getPurchaseDate())
+				.imageUrl(request.getImageUrl())
+				.build();
 	}
 }

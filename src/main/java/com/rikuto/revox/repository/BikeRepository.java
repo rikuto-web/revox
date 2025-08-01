@@ -19,14 +19,14 @@ public interface BikeRepository extends JpaRepository<Bike, Integer> {
 	 * @param userId 一意のユーザID
 	 * @return ユーザーに紐づいたバイク情報リスト
 	 */
-	Optional<Bike> findByUserIdAndIsDeletedFalse(Integer userId);
+	List<Bike> findByUserIdAndIsDeletedFalse(Integer userId);
 
 	/**
 	 * ユーザーに紐づいた特定のバイクを検索します。
-	 *
-	 * @param bikeId 一意のバイクID
+	 * 該当するバイクがない場合は、Optional.empty()を返します。
 	 * @param userId ユーザーID
-	 * @return ユーザーに紐づいた単一のバイク情報
+	 * @param bikeId 一意のバイクID
+	 * @return ユーザーに紐づいた単一のバイク情報（Optionalでラップ）
 	 */
-	Optional<Bike> findByIdAndUserIdAndIsDeletedFalse(Integer userId, Integer bikeId);
+	Optional<Bike> findByIdAndUserIdAndIsDeletedFalse(Integer bikeId, Integer userId);
 }
