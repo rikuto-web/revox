@@ -88,7 +88,7 @@ class BikeServiceTest {
 		// bikeRepositoryが論理削除されていない（isDeleted=false）バイクを返すように設定
 		when(bikeRepository.findByUserIdAndIsDeletedFalse(commonBikeCreateRequest.getUserId())).thenReturn(Optional.of(testBike));
 		// bikeMapperがBikeエンティティをBikeResponseに変換するように設定
-		when(bikeMapper.toResponse(testBike)).thenReturn(expectedBikeResponse);
+		when(bikeMapper.toResponseList(testBike)).thenReturn(expectedBikeResponse);
 
 		// When: findBikeByUserIdメソッドを呼び出し
 		BikeResponse result = bikeService.findBikeByUserId(commonBikeCreateRequest.getUserId());
@@ -100,7 +100,7 @@ class BikeServiceTest {
 
 		// モックのメソッドが適切に呼び出されたことを検証
 		verify(bikeRepository, times(1)).findByUserIdAndIsDeletedFalse(commonBikeCreateRequest.getUserId());
-		verify(bikeMapper, times(1)).toResponse(testBike);
+		verify(bikeMapper, times(1)).toResponseList(testBike);
 	}
 
 	@Test
@@ -140,7 +140,7 @@ class BikeServiceTest {
 				.createdAt(LocalDateTime.now())
 				.updatedAt(LocalDateTime.now())
 				.build();
-		when(bikeMapper.toResponse(newBikeEntity)).thenReturn(expectedBikeResponse);
+		when(bikeMapper.toResponseList(newBikeEntity)).thenReturn(expectedBikeResponse);
 
 		// When: registerBikeメソッドを呼び出し
 		BikeResponse result = bikeService.registerBike(commonBikeCreateRequest);
@@ -154,7 +154,7 @@ class BikeServiceTest {
 		verify(userRepository, times(1)).findById(commonBikeCreateRequest.getUserId());
 		verify(bikeMapper, times(1)).toEntity(eq(commonBikeCreateRequest), eq(testUser));
 		verify(bikeRepository, times(1)).save(eq(newBikeEntity));
-		verify(bikeMapper, times(1)).toResponse(eq(newBikeEntity));
+		verify(bikeMapper, times(1)).toResponseList(eq(newBikeEntity));
 	}
 
 	@Test
@@ -214,7 +214,7 @@ class BikeServiceTest {
 				.updatedAt(LocalDateTime.now())
 				.userId(testUser.getId())
 				.build();
-		when(bikeMapper.toResponse(eq(testBike))).thenReturn(updatedBikeResponse);
+		when(bikeMapper.toResponseList(eq(testBike))).thenReturn(updatedBikeResponse);
 
 		// When: updateBikeメソッドを呼び出し
 		BikeResponse result = bikeService.updateBike(testBike.getId(), updateRequest);
@@ -228,7 +228,7 @@ class BikeServiceTest {
 		verify(bikeRepository, times(1)).findById(eq(testBike.getId()));
 		verify(bikeMapper, times(1)).updateEntityFromDto(eq(updateRequest), eq(testBike));
 		verify(bikeRepository, times(1)).save(eq(testBike));
-		verify(bikeMapper, times(1)).toResponse(eq(testBike));
+		verify(bikeMapper, times(1)).toResponseList(eq(testBike));
 	}
 
 	@Test

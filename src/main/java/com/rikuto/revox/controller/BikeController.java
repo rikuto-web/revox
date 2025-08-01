@@ -8,6 +8,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/bikes")
 public class BikeController {
@@ -20,13 +22,26 @@ public class BikeController {
 
 	/**
 	 * 指定されたユーザーIDに紐づくバイク情報を取得します。
-	 * GET /api/bikes/user/{userId}
+	 * GET /api/bikes/user/{userId}/{bikeId}
 	 * @param userId バイクを検索するユーザーのID
+	 * @param bikeId ユーザーが保有する特定のバイクID
 	 * @return 検索されたバイク情報（BikeResponse）とHTTPステータス200 OK
 	 */
+	@GetMapping("/user/{userId}/{bikeId}")
+	public ResponseEntity<BikeResponse> getBikeByUserIdAndBikeId(@PathVariable Integer userId, @PathVariable Integer bikeId) {
+		BikeResponse bikeResponse = bikeService.findByIdAndUserId(userId, bikeId);
+		return ResponseEntity.ok(bikeResponse);
+	}
+
+	/**
+	 * 指定されたユーザーIDに紐づく全てのバイク情報を取得します。
+	 * GET /api/bikes/user/{userId}
+	 * @param userId バイクを検索するユーザーのID
+	 * @return ユーザーが保有する全てのバイク情報
+	 */
 	@GetMapping("/user/{userId}")
-	public ResponseEntity<BikeResponse> getBikeByUserId(@PathVariable Integer userId) {
-		BikeResponse bikeResponse = bikeService.findBikeByUserId(userId);
+	public ResponseEntity<List<BikeResponse>> getBikeListByUserId (@PathVariable Integer userId){
+		List<BikeResponse> bikeResponse = bikeService.findBikeByUserId(userId);
 		return ResponseEntity.ok(bikeResponse);
 	}
 

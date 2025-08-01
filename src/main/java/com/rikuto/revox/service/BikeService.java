@@ -10,6 +10,11 @@ import com.rikuto.revox.repository.BikeRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
+/**
+ * バイクに関するビジネスロジックを処理するサービスクラスです。
+ */
 @Service
 public class BikeService {
 
@@ -24,15 +29,26 @@ public class BikeService {
 	}
 
 	/**
-	 * ユーザーIDに紐づいたバイク情報の検索をします。
+	 * ユーザーが保有する特定のバイクを検索します。
 	 * @param userId ユーザーID
-	 * @return 登録されたバイク情報（BikeResponse）
-	 * @throws ResourceNotFoundException 指定されたユーザーが見つからない場合
+	 * @param bikeId ユーザーが保有する特定のバイクID
+	 * @return レスポンスへ返還後のバイク情報
 	 */
-	public BikeResponse findBikeByUserId(Integer userId) {
-		Bike bike = bikeRepository.findByUserIdAndIsDeletedFalse(userId)
-				.orElseThrow(() -> new ResourceNotFoundException("User ID " + userId + " に紐づくバイクが見つかりません。"));
+	@Transactional(readOnly = true)
+	public BikeResponse findByIdAndUserId (Integer userId, Integer bikeId){
+		Bike bike = bikeRepository.findByIdAndUserIdAndIsDeletedFalse(bikeId, userId)
+				.orElseThrow(() -> new ResourceNotFoundException("ユーザーID " + userId + " に紐づくバイクID " + bikeId + " が見つかりません。"));
 		return bikeMapper.toResponse(bike);
+	}
+
+	/**
+	 * ユーザーIDに紐づいた全てのバイク情報を検索します。
+	 * @param userId ユーザーID
+	 * @return レスポンスへ返還後のバイクリスト
+	 */
+	public List<BikeResponse> findBikeByUserId(Integer userId) {
+		List<Bike> bikeList = bikeRepository.findByUserIdAndIsDeletedFalse(userId);
+		return bikeMapper.toResponseList(bikeList);
 	}
 
 	/**
@@ -58,11 +74,9 @@ public class BikeService {
 	 */
 	@Transactional
 	public BikeResponse updateBike(Integer bikeId, BikeCreateRequest updatedBikeRequest) {
-		Bike existingBike = bikeRepository.findById(bikeId)
-				.orElseThrow(() -> new ResourceNotFoundException("バイクID " + bikeId + " が見つかりません。"));
-
-		bikeMapper.updateEntityFromDto(updatedBikeRequest, existingBike);
-
+		Bike existingBike = bikeRepository.findByIdAndUserIdAndIsDeletedFalse(bikeId, updatedBikeRequest.getUserId())
+				.orElseThrow(() -> new ResourceNotFoundException("ユーザーID " + updatedBikeRequest.getUserId() + " に紐づくバイクID " + bikeId + " が見つかりません。"));
+		existingBike.updateFrom(updatedBikeRequest);
 		Bike savedBike = bikeRepository.save(existingBike);
 		return bikeMapper.toResponse(savedBike);
 	}
