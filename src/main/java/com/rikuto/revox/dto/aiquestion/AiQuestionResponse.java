@@ -8,8 +8,7 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
 /**
- * 内部処理を行った後ユーザーへ返すレスポンス内容のDTOです。
- *
+ * AI質問・回答に対するレスポンス内容のDTOです。
  */
 @Getter
 @NoArgsConstructor
@@ -24,6 +23,7 @@ public class AiQuestionResponse {
 
 	private String question;
 	private String answer;
+
 	private LocalDateTime createdAt;
 	private LocalDateTime updatedAt;
 }

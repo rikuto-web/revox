@@ -16,6 +16,7 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
 	/**
 	 * 登録後のユーザーIDでの検索を行います。論理削除された情報は取得しません。
+	 *
 	 * @param id　ユーザーID
 	 * @return ユーザー情報
 	 */
@@ -23,6 +24,7 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
 	/**
 	 * メールアドレスでの検索を行います。論理削除された情報は取得しません。
+	 *
 	 * @param email メールアドレス
 	 * @return メールアドレスに紐づいたユーザー情報
 	 */
@@ -30,6 +32,7 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
 	/**
 	 * グーグルIDでの検索を行います。論理削除された情報は取得しません。
+	 *
 	 * @param googleId グーグルID
 	 * @return グーグルIDに紐づいたユーザー情報
 	 */
@@ -37,6 +40,7 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
 	/**
 	 * LineIDでの検索を行います。論理削除された情報は取得しません。
+	 *
 	 * @param lineId ラインID
 	 * @return ラインIDに紐づいたユーザー情報
 	 */

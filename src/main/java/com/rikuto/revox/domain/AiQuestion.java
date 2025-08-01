@@ -18,7 +18,7 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
 /**
- * AI質問・回答情報を表すエンティティです。
+ * AI質問・回答情報を表すドメインです。
  * データベースのai_questionsテーブルにマッピングされています。
  */
 @Entity

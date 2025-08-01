@@ -77,8 +77,8 @@ public class BikeController {
 	 * @return HTTPステータス204 No Content
 	 */
 	@DeleteMapping("/{bikeId}")
-	public ResponseEntity<Void> softDeleteBike(@PathVariable Integer bikeId) {
-		bikeService.softDeleteBike(bikeId);
+	public ResponseEntity<Void> softDeleteBike(@PathVariable Integer userId, @PathVariable Integer bikeId) {
+		bikeService.softDeleteBike(userId, bikeId);
 		return ResponseEntity.noContent().build();
 	}
 }

@@ -16,6 +16,7 @@ public interface BikeRepository extends JpaRepository<Bike, Integer> {
 
 	/**
 	 * ユーザIDに紐づいた全てのバイク情報の検索を行います。
+	 *
 	 * @param userId 一意のユーザID
 	 * @return ユーザーに紐づいたバイク情報リスト
 	 */
@@ -24,9 +25,10 @@ public interface BikeRepository extends JpaRepository<Bike, Integer> {
 	/**
 	 * ユーザーに紐づいた特定のバイクを検索します。
 	 * 該当するバイクがない場合は、Optional.empty()を返します。
+	 *
 	 * @param userId ユーザーID
 	 * @param bikeId 一意のバイクID
 	 * @return ユーザーに紐づいた単一のバイク情報（Optionalでラップ）
 	 */
-	Optional<Bike> findByIdAndUserIdAndIsDeletedFalse(Integer bikeId, Integer userId);
+	Optional<Bike> findByIdAndUserIdAndIsDeletedFalse(Integer userId, Integer bikeId);
 }
