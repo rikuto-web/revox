@@ -18,11 +18,4 @@ public interface AiQuestionRepository extends JpaRepository<AiQuestion, Integer>
 	 * @return ユーザーのAI質問履歴リスト
 	 */
 	List<AiQuestion> findByUserIdAndIsDeletedFalse(Integer userId);
-
-	/**
-	 * バイクIDに紐づいたAI質問履歴を取得します。論理削除された情報は取得しません。
-	 * @param bikeId バイクID
-	 * @return バイクに関するAI質問履歴リスト
-	 */
-	List<AiQuestion> findByBikeIdAndIsDeletedFalse(Integer bikeId);
 }

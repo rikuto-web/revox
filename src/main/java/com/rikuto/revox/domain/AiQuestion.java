@@ -66,7 +66,6 @@ public class AiQuestion {
 	 * ユーザーが入力した質問内容です。
 	 */
 	@Column(name = "question", columnDefinition = "TEXT", nullable = false)
-	@NotBlank
 	private String question;
 
 	/**
@@ -74,7 +73,6 @@ public class AiQuestion {
 	 * ユーザーがコピーして使用できます。
 	 */
 	@Column(name = "answer", columnDefinition = "TEXT", nullable = false)
-	@NotBlank
 	private String answer;
 
 	/**
@@ -88,14 +86,13 @@ public class AiQuestion {
 	/**
 	 * レコードが作成された日時
 	 */
-	@Column(name = "created_at", nullable = false)
+	@Column(name = "created_at", nullable = false, insertable = false, updatable = false)
 	@NonNull
 	private LocalDateTime createdAt;
 
 	/**
 	 * レコードが更新された最終日時
 	 */
-	@Column(name = "updated_at", nullable = false)
-	@NonNull
+	@Column(name = "updated_at", nullable = false, insertable = false, updatable = false)
 	private LocalDateTime updatedAt;
 }

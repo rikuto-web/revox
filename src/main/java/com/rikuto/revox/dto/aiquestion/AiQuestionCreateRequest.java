@@ -9,6 +9,10 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+/**
+ * ユーザーから受け取るAIへの質問内容です。
+ * 各フィールドにはバリデーションがあります。
+ */
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
@@ -30,9 +34,4 @@ public class AiQuestionCreateRequest {
 	@NotBlank(message = "質問内容は必須です。")
 	@Size(max = 1000, message = "質問内容は1000文字以内で入力してください。")
 	private String question;
-
-
-
-
-
 }
