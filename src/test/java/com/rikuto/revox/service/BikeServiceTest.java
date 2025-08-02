@@ -1,5 +1,3 @@
-// src/test/java/com/rikuto/revox/service/BikeServiceTest.java
-
 package com.rikuto.revox.service;
 
 import com.rikuto.revox.domain.Bike;

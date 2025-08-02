@@ -50,7 +50,7 @@ public class AiQuestionService {
 				.orElseThrow(() -> new ResourceNotFoundException(
 						"ユーザーID " + request.getUserId() + " が見つかりません。"));
 
-		Bike bike = bikeRepository.findByIdAndUserIdAndIsDeletedFalse(request.getBikeId(), request.getUserId())
+		Bike bike = bikeRepository.findByIdAndUserIdAndIsDeletedFalse(request.getUserId(), request.getBikeId())
 				.orElseThrow(() -> new ResourceNotFoundException(
 						"ユーザー ID " + request.getUserId() + " に紐づくバイクID " + request.getBikeId() + "が見つかりません。"));
 
