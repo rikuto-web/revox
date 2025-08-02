@@ -44,11 +44,8 @@ public class MaintenanceTask {
 	/**
 	 * 整備タスクの詳細内容です。
 	 * AIから出力された結果を元にユーザーが編集を加えたものが保持されます。
-	 * タスクのみ作成しておく可能性も考慮しnullを許容しています。
-	 * DB依存性を下げるためLobを使用しています。
 	 */
-	@Lob
-	@Column
+	@Column(columnDefinition = "TEXT", nullable = false)
 	private String description;
 
 	/**

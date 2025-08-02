@@ -39,7 +39,7 @@ public class BikeService {
 	@Transactional(readOnly = true)
 	public BikeResponse findByIdAndUserId (Integer userId, Integer bikeId){
 
-		Bike bike = bikeRepository.findByIdAndUserIdAndIsDeletedFalse(bikeId, userId)
+		Bike bike = bikeRepository.findByIdAndUserIdAndIsDeletedFalse(userId, bikeId)
 				.orElseThrow(() -> new ResourceNotFoundException(
 						"ユーザーID " + userId + " に紐づくバイクID " + bikeId + " が見つかりません。"));
 
@@ -71,7 +71,7 @@ public class BikeService {
 
 		User user = userService.findById(request.getUserId());
 
-		Bike bike = bikeMapper.toEntity(request, user);
+		Bike bike = bikeMapper.toEntity(user, request);
 
 		Bike savedBike = bikeRepository.save(bike);
 
@@ -87,9 +87,9 @@ public class BikeService {
 	 * @throws ResourceNotFoundException 指定されたバイクが見つからない場合
 	 */
 	@Transactional
-	public BikeResponse updateBike(Integer bikeId, BikeCreateRequest updatedBikeRequest) {
+	public BikeResponse updateBike(BikeCreateRequest updatedBikeRequest, Integer bikeId) {
 
-		Bike existingBike = bikeRepository.findByIdAndUserIdAndIsDeletedFalse(bikeId, updatedBikeRequest.getUserId())
+		Bike existingBike = bikeRepository.findByIdAndUserIdAndIsDeletedFalse(updatedBikeRequest.getUserId(), bikeId)
 				.orElseThrow(() -> new ResourceNotFoundException(
 						"ユーザーID " + updatedBikeRequest.getUserId() + " に紐づくバイクID " + bikeId + " が見つかりません。"));
 
