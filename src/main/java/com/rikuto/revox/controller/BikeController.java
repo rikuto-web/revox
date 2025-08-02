@@ -66,17 +66,18 @@ public class BikeController {
 	 */
 	@PutMapping("/{bikeId}")
 	public ResponseEntity<BikeResponse> updateBike(@PathVariable Integer bikeId, @RequestBody @Valid BikeCreateRequest request) {
-		BikeResponse bikeResponse = bikeService.updateBike(bikeId, request);
+		BikeResponse bikeResponse = bikeService.updateBike(request, bikeId);
 		return ResponseEntity.ok(bikeResponse);
 	}
 
 	/**
 	 * バイク情報を論理削除します。
-	 * DELETE /api/bikes/{bikeId}
+	 * DELETE /api/bikes/{userId}/{bikeId}
+	 * @param userId 削除するバイクを保有しているユーザーID
 	 * @param bikeId 論理削除するバイクのID
 	 * @return HTTPステータス204 No Content
 	 */
-	@DeleteMapping("/{bikeId}")
+	@DeleteMapping("/{userId}/{bikeId}")
 	public ResponseEntity<Void> softDeleteBike(@PathVariable Integer userId, @PathVariable Integer bikeId) {
 		bikeService.softDeleteBike(userId, bikeId);
 		return ResponseEntity.noContent().build();
