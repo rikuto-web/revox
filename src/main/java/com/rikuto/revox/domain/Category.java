@@ -58,13 +58,11 @@ public class Category {
 	 * レコードが作成された日時
 	 */
 	@Column(name = "created_at", nullable = false, insertable = false, updatable = false)
-	@NonNull
 	private LocalDateTime createdAt;
 
 	/**
 	 * レコードが更新された最終日時
 	 */
 	@Column(name = "updated_at", nullable = false, insertable = false, updatable = false)
-	@NonNull
 	private LocalDateTime updatedAt;
 }
