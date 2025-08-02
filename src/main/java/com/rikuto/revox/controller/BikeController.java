@@ -12,6 +12,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/bikes")
+@CrossOrigin(origins = "http://localhost:3000")
 public class BikeController {
 
 	private final BikeService bikeService;
