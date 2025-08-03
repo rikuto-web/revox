@@ -1,6 +1,7 @@
 package com.rikuto.revox.service;
 
 import com.rikuto.revox.dto.aiquestion.AiQuestionCreateRequest;
+import com.rikuto.revox.dto.aiquestion.AiQuestionPrompt;
 import com.rikuto.revox.dto.aiquestion.AiQuestionResponse;
 import com.rikuto.revox.domain.AiQuestion;
 import com.rikuto.revox.domain.Bike;
@@ -12,6 +13,7 @@ import com.rikuto.revox.repository.AiQuestionRepository;
 import com.rikuto.revox.repository.BikeRepository;
 import com.rikuto.revox.repository.CategoryRepository;
 import com.rikuto.revox.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,15 +30,16 @@ public class AiQuestionService {
 	private final BikeRepository bikeRepository;
 	private final CategoryRepository categoryRepository;
 	private final AiQuestionMapper aiQuestionMapper;
+	private final GeminiService geminiService;
 
-	public AiQuestionService(AiQuestionRepository aiQuestionRepository, UserRepository userRepository, BikeRepository bikeRepository, CategoryRepository categoryRepository, AiQuestionMapper aiQuestionMapper) {
+	public AiQuestionService(AiQuestionRepository aiQuestionRepository, UserRepository userRepository, BikeRepository bikeRepository, CategoryRepository categoryRepository, AiQuestionMapper aiQuestionMapper, GeminiService geminiService) {
 		this.aiQuestionRepository = aiQuestionRepository;
 		this.userRepository = userRepository;
 		this.bikeRepository = bikeRepository;
 		this.categoryRepository = categoryRepository;
 		this.aiQuestionMapper = aiQuestionMapper;
+		this.geminiService = geminiService;
 	}
-
 
 	/**
 	 * AIへの質問に対する回答を生成します。
@@ -58,8 +61,19 @@ public class AiQuestionService {
 				.orElseThrow(() -> new ResourceNotFoundException(
 						"カテゴリーID " + request.getCategoryId() + " が見つかりません。"));
 
-//ToDo		ここに動的に回答を生成させる
-		String aiAnswer = generateAiAnswer(request.getQuestion(), bike, category);
+		AiQuestionPrompt promptDto = AiQuestionPrompt.builder()
+				.question(request.getQuestion())
+				.categoryId(request.getCategoryId())
+
+				.manufacturer(bike.getManufacturer())
+				.modelName(bike.getModelName())
+				.modelCode(bike.getModelCode())
+				.modelYear(bike.getModelYear())
+				.currentMileage(bike.getCurrentMileage())
+				.purchaseDate(bike.getPurchaseDate())
+				.build();
+
+		String aiAnswer = geminiService.generateContent(promptDto);
 
 		AiQuestion aiQuestion = aiQuestionMapper.toEntity(request, user, bike ,category, aiAnswer);
 
@@ -82,25 +96,5 @@ public class AiQuestionService {
 		return aiQuestions.stream()
 				.map(aiQuestionMapper::toResponse)
 				.toList();
-	}
-
-//	ToDO 外部APIを今後導入
-	private String generateAiAnswer(String question, Bike bike, Category category) {
-		// 静的な回答（後で外部API呼び出しに変更）
-		return String.format(
-				"【%s】%s %sに関するご質問ですね。\n\n" +
-						"必要な物品・工具：\n" +
-						"- 専用部品 x1\n" +
-						"- 工具セット\n" +
-						"- 作業用手袋\n\n" +
-						"作業手順：\n" +
-						"1. 安全確認\n" +
-						"2. 部品交換\n" +
-						"3. 動作確認\n\n" +
-						"※詳細は整備マニュアルをご確認ください。",
-				category.getName(),
-				bike.getManufacturer(),
-				bike.getModelName()
-		);
 	}
 }

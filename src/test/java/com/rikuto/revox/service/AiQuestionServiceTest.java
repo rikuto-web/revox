@@ -5,6 +5,7 @@ import com.rikuto.revox.domain.Bike;
 import com.rikuto.revox.domain.Category;
 import com.rikuto.revox.domain.User;
 import com.rikuto.revox.dto.aiquestion.AiQuestionCreateRequest;
+import com.rikuto.revox.dto.aiquestion.AiQuestionPrompt;
 import com.rikuto.revox.dto.aiquestion.AiQuestionResponse;
 import com.rikuto.revox.exception.ResourceNotFoundException;
 import com.rikuto.revox.mapper.AiQuestionMapper;
@@ -27,6 +28,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -47,6 +49,10 @@ class AiQuestionServiceTest {
 
 	@Mock
 	private AiQuestionMapper aiQuestionMapper;
+
+	@Mock
+	private GeminiService geminiService;
+
 
 	@InjectMocks
 	private AiQuestionService aiQuestionService;
@@ -125,6 +131,7 @@ class AiQuestionServiceTest {
 			stubBikeFound();
 			stubCategoryFound();
 
+			when(geminiService.generateContent(any(AiQuestionPrompt.class))).thenReturn("Mocked AI Answer");
 			when(aiQuestionMapper.toEntity(any(), any(), any(), any(), any())).thenReturn(testAiQuestion);
 			when(aiQuestionRepository.save(testAiQuestion)).thenReturn(testAiQuestion);
 			when(aiQuestionMapper.toResponse(testAiQuestion)).thenReturn(commonAiQuestionResponse);
@@ -138,6 +145,7 @@ class AiQuestionServiceTest {
 			verify(aiQuestionMapper).toEntity(any(), any(), any(), any(), any());
 			verify(aiQuestionRepository).save(testAiQuestion);
 			verify(aiQuestionMapper).toResponse(testAiQuestion);
+			verify(geminiService,times(1)).generateContent(any(AiQuestionPrompt.class));
 		}
 
 		@Test
