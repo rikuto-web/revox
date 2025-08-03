@@ -36,9 +36,14 @@ spring:
     enabled: true
     locations: classpath:db/migration
 
-
     mvc:
       cors:
         allowed-origins: "http://localhost:3000"
         allowed-methods: "GET,POST,PUT,DELETE,OPTIONS"
         allowed-headers: "*"
+
+    gemini:
+      model: "gemini-2.5-flash"
+      project-id: ${GOOGLE_CLOUD_PROJECT}
+      location: ${GOOGLE_CLOUD_LOCATION:us-central1}
+      system-instruction: "あなたはバイクの専門家です..."
