@@ -1,9 +1,9 @@
 package com.rikuto.revox.repository;
 
 import com.rikuto.revox.domain.AiQuestion;
+import com.rikuto.revox.domain.User;
 import com.rikuto.revox.domain.Bike;
 import com.rikuto.revox.domain.Category;
-import com.rikuto.revox.domain.User;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -29,10 +29,9 @@ class AiQuestionRepositoryTest {
 	@Autowired
 	private AiQuestionRepository aiQuestionRepository;
 
-	private User createUser(String nickname, String email) {
+	private User createUser(String nickname) {
 		return userRepository.save(User.builder()
 				.nickname(nickname)
-				.email(email)
 				.build());
 	}
 
@@ -64,7 +63,7 @@ class AiQuestionRepositoryTest {
 
 	@Test
 	void ユーザーIDに紐づくAI質問履歴を正しく取得できること() {
-		User user = createUser("TestUser", "test@example.com");
+		User user = createUser("TestUser");
 		Bike bike = createBike(user, "Honda", "CBR250RR");
 		Category category = createCategory("TestCategory", 999);
 
@@ -81,12 +80,12 @@ class AiQuestionRepositoryTest {
 
 	@Test
 	void 別ユーザーのAI質問履歴は検索結果に含まれないこと() {
-		User owner = createUser("User1", "owner@example.com");
+		User owner = createUser("User1");
 		Bike ownersBike = createBike(owner, "Honda", "CBR250RR");
 		Category category = createCategory("TestCategory", 999);
 		AiQuestion ownersQuestion = createAiQuestion(owner, ownersBike, category, "オーナーの質問", "オーナーの回答", false);
 
-		User anotherUser = createUser("User2", "another@example.com");
+		User anotherUser = createUser("User2");
 		Bike anotherbike = createBike(anotherUser, "Yamaha", "YZF-R1");
 		createAiQuestion(anotherUser, anotherbike, category, "別ユーザーの質問", "別ユーザーの回答", false);
 
@@ -107,7 +106,7 @@ class AiQuestionRepositoryTest {
 	@Test
 	void AI質問履歴がないユーザーには空のリストを返すこと(){
 
-		User owner = createUser("EmptyUser", "empty@example.com");
+		User owner = createUser("EmptyUser");
 
 		List<AiQuestion> aiQuestions = aiQuestionRepository.findByUserIdAndIsDeletedFalse(owner.getId());
 
@@ -117,7 +116,7 @@ class AiQuestionRepositoryTest {
 	@Test
 	void 論理削除されたAI質問は検索結果に含まれないこと(){
 
-		User user = createUser("User", "user@example.com");
+		User user = createUser("User");
 		Bike bike = createBike(user, "Honda", "CBR250RR");
 		Category category = createCategory("TestCategory", 999);
 
@@ -133,7 +132,7 @@ class AiQuestionRepositoryTest {
 	@Test
 	void 複数のバイクとカテゴリーに関するAI質問履歴を正しく取得できること(){
 
-		User user = createUser("MultiUser", "multi@example.com");
+		User user = createUser("MultiUser");
 
 		Bike bike1 = createBike(user, "Honda", "CBR250RR");
 		Bike bike2 = createBike(user, "Yamaha", "YZF-R1");

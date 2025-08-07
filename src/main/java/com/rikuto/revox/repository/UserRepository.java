@@ -7,15 +7,15 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 /**
- * ユーザーに関するリポジトリです。
- * JpaRepositoryを継承しています。
- * 管理者機能として論理削除を考慮しないCRUDに関してはJPAの標準機能を利用します。
+ * 外部認証専用のユーザーリポジトリです。
+ * uniqueUserIdを主キーとして使用します。
  */
 @Repository
 public interface UserRepository extends JpaRepository<User, Integer> {
 
 	/**
-	 * 登録後のユーザーIDでの検索を行います。論理削除された情報は取得しません。
+	 * ユーザーIDでの検索を行います。論理削除された情報は取得しません。
+	 * ログイン後の内部操作で使用します。。
 	 *
 	 * @param id　ユーザーID
 	 * @return ユーザー情報
@@ -23,27 +23,12 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 	Optional<User> findByIdAndIsDeletedFalse(Integer id);
 
 	/**
-	 * メールアドレスでの検索を行います。論理削除された情報は取得しません。
+	 * アプリケーション独自の一意なユーザーIDでの検索を行います。
+	 * 論理削除された情報は取得しません。
+	 * JWTフィルターでの認証に使用します。
 	 *
-	 * @param email メールアドレス
-	 * @return メールアドレスに紐づいたユーザー情報
+	 * @param uniqueUserId アプリケーション独自の一意なユーザーID
+	 * @return アプリケーション独自の一意なユーザーIDに紐づいたユーザー情報
 	 */
-	Optional<User> findByEmailAndIsDeletedFalse(String email);
-
-	/**
-	 * グーグルIDでの検索を行います。論理削除された情報は取得しません。
-	 *
-	 * @param googleId グーグルID
-	 * @return グーグルIDに紐づいたユーザー情報
-	 */
-	Optional<User> findByGoogleIdAndIsDeletedFalse(String googleId);
-
-	/**
-	 * LineIDでの検索を行います。論理削除された情報は取得しません。
-	 *
-	 * @param lineId ラインID
-	 * @return ラインIDに紐づいたユーザー情報
-	 */
-	Optional<User> findByLineIdAndIsDeletedFalse(String lineId);
-
+	Optional<User> findByUniqueUserIdAndIsDeletedFalse(String uniqueUserId);
 }

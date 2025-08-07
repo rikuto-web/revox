@@ -1,5 +1,6 @@
 package com.rikuto.revox.domain;
 
+import com.rikuto.revox.dto.user.UserUpdateRequest;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -17,14 +18,13 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.NonNull;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * ユーザ情報を表すドメインです。
+ * 外部認証専用のユーザ情報を表すドメインです。
  * データベースのusersテーブルにマッピングされています。
  * １人のユーザーは複数のバイクを保持することができます。
  */
@@ -62,30 +62,30 @@ public class User {
 	private String nickname;
 
 	/**
-	 * ユーザー認証に使用するメールアドレスです。
-	 * バリデーションで不正なデータを受け付けません。
-	 * 他認証システムがあるためnullを許容しています。
+	 * 外部認証から取得したメールアドレス（表示用のみ）。
+	 * 認証には使用しません。
 	 */
-	@Column(name = "email")
+	@Column(name = "display_email")
 	@Size(max = 255)
 	@Email
-	private String email;
+	private String displayEmail;
 
 	/**
-	 * Google認証時に取得されるGoogleユーザーID。ユニーク制約があります。
-	 * 他認証方法があるためデフォルトでNullを許容しています。
+	 * 外部認証システムから取得した一意なユーザーID。
+	 * Google認証の場合はsubクレーム、Line認証の場合はLine IDなどを格納します。
+	 * このフィールドがJWT認証の主キーとして機能します。
 	 */
-	@Column(name = "google_id", length = 100, unique = true)
-	@Size(max = 100)
-	private String googleId;
+	@Column(name = "unique_user_id", unique = true, nullable = false)
+	@NotBlank
+	private String uniqueUserId;
 
 	/**
-	 * Line認証時に取得されるLineユーザーID。ユニーク制約があります。
-	 * 他認証方法があるためデフォルトでNullを許容しています。
+	 * ユーザーの権限情報。
+	 * デフォルトは一般ユーザー（USER）です。
 	 */
-	@Column(name = "line_id", length = 100, unique = true)
-	@Size(max = 100)
-	private String lineId;
+	@Column(name = "roles")
+	@Builder.Default
+	private String roles = "USER";
 
 	/**
 	 * 論理削除フラグ。
@@ -106,4 +106,28 @@ public class User {
 	 */
 	@Column(name = "updated_at", nullable = false, insertable = false, updatable = false)
 	private LocalDateTime updatedAt;
+
+
+	/**
+	 * ユーザー情報を更新します。
+	 * 外部認証のため、ニックネームのみ更新可能です。
+	 *
+	 * @param request 更新リクエスト
+	 */
+	public void updateFrom(UserUpdateRequest request) {
+
+		if(request.getNickname() != null && !request.getNickname().isEmpty()) {
+
+			this.nickname = request.getNickname();
+		}
+	}
+
+	/**
+	 * 論理削除のためのメソッドです。
+	 * 日時はDBで自動設定されるためシステム側では日時の更新は行いません。
+	 */
+	public void softDelete() {
+
+		this.isDeleted = true;
+	}
 }

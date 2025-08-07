@@ -1,7 +1,7 @@
 package com.rikuto.revox.repository;
 
-import com.rikuto.revox.domain.Bike;
 import com.rikuto.revox.domain.User;
+import com.rikuto.revox.domain.Bike;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -24,10 +24,9 @@ class BikeRepositoryTest {
 	@Autowired
 	private BikeRepository bikeRepository;
 
-	private User createUser(String nickname, String email) {
+	private User createUser(String nickname) {
 		return userRepository.save(User.builder()
 				.nickname(nickname)
-				.email(email)
 				.build());
 	}
 
@@ -45,7 +44,7 @@ class BikeRepositoryTest {
 	@Test
 	void ユーザーIDに紐づくバイク情報を正しく取得できること() {
 
-		User user = createUser("TestUser", "test@example.com");
+		User user = createUser("TestUser");
 
 		createBike(user, "TestMfr", "Z1", "TST-001", 2023, false);
 		createBike(user, "TestTestMfr", "Z2", "TST-002", 2024, false);
@@ -61,10 +60,10 @@ class BikeRepositoryTest {
 	@Test
 	void 別ユーザーのバイクは検索結果に含まれないこと() {
 
-		User owner = createUser("User1", "owner@example.com");
+		User owner = createUser("User1");
 		Bike ownersBike = createBike(owner, "TestMfr", "Z1", "TST-001", 2023, false);
 
-		User anotherUser = createUser("User2", "anotherUser@example.com");
+		User anotherUser = createUser("User2");
 		createBike(anotherUser, "TestTestMfr", "Z2", "TST-002", 2024, false);
 
 		List<Bike> bikes = bikeRepository.findByUserIdAndIsDeletedFalse(owner.getId());
@@ -84,7 +83,7 @@ class BikeRepositoryTest {
 	@Test
 	void バイク未登録ユーザーには空のリストを返すこと() {
 
-		User user = createUser("EmptyUser", "empty@example.com");
+		User user = createUser("EmptyUser");
 
 		List<Bike> bikes = bikeRepository.findByUserIdAndIsDeletedFalse(user.getId());
 
@@ -94,7 +93,7 @@ class BikeRepositoryTest {
 	@Test
 	void 論理削除されたバイクは検索結果に含まれないこと() {
 
-		User user = createUser("User", "user@example.com");
+		User user = createUser("User");
 
 		createBike(user, "TestMfr", "Z1", "TST-001", 2023, false);
 		createBike(user, "TestTestMfr", "Z2", "TST-002", 2024, true);
@@ -108,7 +107,7 @@ class BikeRepositoryTest {
 	@Test
 	void findByIdAndUserIdでバイクを正しく取得できること() {
 
-		User user = createUser("FindUser", "find@example.com");
+		User user = createUser("FindUser");
 		Bike bike = createBike(user, "TestMfr", "Z1", "TST-001", 2023, false);
 
 		Optional<Bike> found = bikeRepository.findByIdAndUserIdAndIsDeletedFalse(user.getId(), bike.getId());
@@ -120,7 +119,7 @@ class BikeRepositoryTest {
 	@Test
 	void findByIdAndUserIdで論理削除されたバイクは取得できないこと() {
 
-		User user = createUser("DeletedFindUser", "deleted.find@example.com");
+		User user = createUser("DeletedFindUser");
 		Bike deletedBike = createBike(user, "TestMfr", "Z1", "TST-001", 2023, true);
 
 		Optional<Bike> found = bikeRepository.findByIdAndUserIdAndIsDeletedFalse(deletedBike.getId(), user.getId());
@@ -131,10 +130,10 @@ class BikeRepositoryTest {
 	@Test
 	void findByIdAndUserIdで他ユーザーのバイクは取得できないこと() {
 
-		User owner = createUser("User1", "owner@example.com");
+		User owner = createUser("User1");
 		Bike ownersBike = createBike(owner, "TestMfr", "Z1", "TST-001", 2023, false);
 
-		User anotherUser = createUser("User2", "anotherUser@example.com");
+		User anotherUser = createUser("User2");
 
 		Optional<Bike> found = bikeRepository.findByIdAndUserIdAndIsDeletedFalse(ownersBike.getId(), anotherUser.getId());
 

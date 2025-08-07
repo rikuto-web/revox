@@ -1,7 +1,7 @@
 package com.rikuto.revox.service;
 
-import com.rikuto.revox.domain.Bike;
 import com.rikuto.revox.domain.User;
+import com.rikuto.revox.domain.Bike;
 import com.rikuto.revox.dto.bike.BikeCreateRequest;
 import com.rikuto.revox.dto.bike.BikeResponse;
 import com.rikuto.revox.exception.ResourceNotFoundException;
@@ -48,7 +48,7 @@ class BikeServiceTest {
 
 	@BeforeEach
 	void setUp() {
-		testUser = User.builder().id(1).nickname("testuser").email("test@example.com").build();
+		testUser = User.builder().id(1).nickname("testuser").build();
 		testBike = Bike.builder().id(101).user(testUser).manufacturer("Honda").modelName("CBR250RR").build();
 
 		commonBikeCreateRequest = BikeCreateRequest.builder()
