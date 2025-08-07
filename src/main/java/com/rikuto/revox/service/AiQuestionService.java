@@ -13,7 +13,6 @@ import com.rikuto.revox.repository.AiQuestionRepository;
 import com.rikuto.revox.repository.BikeRepository;
 import com.rikuto.revox.repository.CategoryRepository;
 import com.rikuto.revox.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

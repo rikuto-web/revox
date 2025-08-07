@@ -23,6 +23,16 @@ public class GlobalExceptionHandler {
 		return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
 	}
 
+	@ExceptionHandler(AuthenticationException.class)
+	public ResponseEntity<String> handleAuthenticationException(AuthenticationException ex) {
+		return new ResponseEntity<>(ex.getMessage(), HttpStatus.UNAUTHORIZED);
+	}
+
+	@ExceptionHandler(UserAlreadyExistsException.class)
+	public ResponseEntity<String> handleUserAlreadyExistsException (UserAlreadyExistsException ex){
+		return new ResponseEntity<>(ex.getMessage(),HttpStatus.CONFLICT);
+	}
+
 	/**
 	 * @Valid によるバリデーションエラー (MethodArgumentNotValidException) を処理します。
 	 * 無効なリクエストボディが送信された場合に HTTP 400 Bad Request を返します。

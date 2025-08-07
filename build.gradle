@@ -1,70 +1,74 @@
 plugins {
-	id 'java'
-	id 'war'
-	id 'org.springframework.boot' version '3.5.3'
-	id 'io.spring.dependency-management' version '1.1.7'
-	id 'org.flywaydb.flyway' version '9.22.3'
+    id 'java'
+    id 'war'
+    id 'org.springframework.boot' version '3.5.3'
+    id 'io.spring.dependency-management' version '1.1.7'
+    id 'org.flywaydb.flyway' version '9.22.3'
 }
 
 group = 'com.rikuto.revox'
 version = '0.0.1-SNAPSHOT'
 
 java {
-	toolchain {
-		languageVersion = JavaLanguageVersion.of(21)
-	}
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
 }
 
 configurations {
-	compileOnly {
-		extendsFrom annotationProcessor
-	}
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
 }
 
 repositories {
-	mavenCentral()
+    mavenCentral()
 }
 
 dependencies {
-	// Spring Boot Starters (Core Functionality)
-	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	implementation 'org.springframework.boot:spring-boot-starter-validation'
-	implementation 'org.springframework.boot:spring-boot-starter-web'
+    // --- Spring Boot Core & Web ---
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
 
-	// Database Migration
-	implementation 'org.flywaydb:flyway-core'
-	implementation 'org.flywaydb:flyway-mysql'
+    // --- 認証・認可 (Security) ---
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
+    implementation 'org.springframework.security:spring-security-oauth2-jose'
+    // JWTライブラリ (jjwt)
+    implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
+    runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
+    runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
 
-	// Compile-time only
-	compileOnly 'org.projectlombok:lombok'
+    // --- データベース (Database) ---
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.flywaydb:flyway-core'
+    implementation 'org.flywaydb:flyway-mysql'
+    runtimeOnly 'com.mysql:mysql-connector-j'
 
-	// Development Tools
-	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+    // --- 開発・補助ツール (Development & Tools) ---
+    compileOnly 'org.projectlombok:lombok'
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+    annotationProcessor 'org.projectlombok:lombok'
 
-	// Runtime Drivers
-	runtimeOnly 'com.mysql:mysql-connector-j'
+    // --- 提供されるランタイム (Provided Runtime) ---
+    providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
 
-	// Annotation Processors
-	annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
-	annotationProcessor 'org.projectlombok:lombok'
+    // --- テスト (Test) ---
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    testImplementation 'com.h2database:h2'
 
-	// Provided Runtime (e.g., for WAR deployments)
-	providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
-
-	// Test Dependencies
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-	testImplementation 'com.h2database:h2'
-
-	// Google Generative AI SDK
-	implementation 'com.google.genai:google-genai:1.10.0'
+    // --- 外部サービス連携 (External Services) ---
+    implementation 'com.google.genai:google-genai:1.10.0'
+    implementation 'com.google.api-client:google-api-client:2.2.0'
 }
 
 tasks.withType(JavaCompile).configureEach {
-	options.encoding = "UTF-8"
+    options.encoding = "UTF-8"
 }
 
 tasks.test {
-	useJUnitPlatform()
-	jvmArgs += "-javaagent:${classpath.find { it.name.contains("byte-buddy-agent") }.absolutePath}"
+    useJUnitPlatform()
+    jvmArgs += "-javaagent:${classpath.find { it.name.contains("byte-buddy-agent") }.absolutePath}"
 }

@@ -66,7 +66,7 @@ class AiQuestionServiceTest {
 
 	@BeforeEach
 	void setUp() {
-		testUser = User.builder().id(1).nickname("testuser").email("test@example.com").build();
+		testUser = User.builder().id(1).nickname("testuser").build();
 		testBike = Bike.builder().id(101).user(testUser).manufacturer("Honda").modelName("CBR250RR").build();
 		testCategory = Category.builder().id(1).name("エンジン").displayOrder(1).build();
 		testAiQuestion = AiQuestion.builder()
