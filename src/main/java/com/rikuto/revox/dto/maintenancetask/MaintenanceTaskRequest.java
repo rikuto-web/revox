@@ -10,7 +10,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 /**
- * ユーザーから受け取る整備タスクの内容です。
+ * ユーザーから受け取る整備タスクのリクエストです。
  * 各フィールドにはバリデーションがあります。
  */
 @Getter

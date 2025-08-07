@@ -11,16 +11,17 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * 外部認証専用のユーザーサービスクラスです。
- * CRUDおよび認可を行います。
+ * ﾕｰｻﾞｰに関するビジネスロジックを処理するサービスクラスです。
  */
 @Service
 public class UserService {
 
 	private final UserRepository userRepository;
+
 	private final UserResponseMapper userResponseMapper;
 
-	public UserService(UserRepository userRepository, UserResponseMapper userResponseMapper) {
+	public UserService(UserRepository userRepository,
+	                   UserResponseMapper userResponseMapper) {
 		this.userRepository = userRepository;
 		this.userResponseMapper = userResponseMapper;
 	}
@@ -54,6 +55,7 @@ public class UserService {
 				.orElseThrow(() -> new ResourceNotFoundException("ユーザーが見つかりません"));
 
 		updateUser.updateFrom(updateRequest);
+
 		User savedUser = userRepository.save(updateUser);
 
 		return userResponseMapper.toResponse(savedUser);

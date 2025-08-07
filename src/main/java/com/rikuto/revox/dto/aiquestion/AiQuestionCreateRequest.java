@@ -10,8 +10,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 /**
- * ユーザーから受け取るAIへの質問内容です。
- * 各フィールドにはバリデーションがあります。
+ * AIへの質問を行うためのリクエストDTOです。
  */
 @Getter
 @NoArgsConstructor

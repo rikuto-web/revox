@@ -9,6 +9,7 @@ import lombok.Getter;
 @Getter
 @Builder
 public class GoogleTokenPayload {
+
 	private final String sub;
 	private final String email;
 	private final String name;

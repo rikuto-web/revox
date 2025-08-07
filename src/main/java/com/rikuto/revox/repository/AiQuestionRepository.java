@@ -6,7 +6,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 /**
- * AI質問・回答に関するリポジトリです。
+ * AIへの質問および回答に関するリポジトリです。
  * JpaRepositoryを継承しています。
  */
 @Repository

@@ -7,7 +7,6 @@ import org.springframework.stereotype.Repository;
 /**
  * カテゴリーに関するリポジトリです。
  * JpaRepositoryを継承しています。
- * MVPではカテゴリーIDでのCRUD操作で十分なため他メソッドはありません。
  */
 @Repository
 public interface CategoryRepository extends JpaRepository<Category, Integer> {

@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
 /**
- * AI質問・回答に対するレスポンス内容のDTOです。
+ * AIへの質問および回答に対するレスポンス内容のDTOです。
  */
 @Getter
 @NoArgsConstructor

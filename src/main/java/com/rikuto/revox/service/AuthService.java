@@ -10,7 +10,6 @@ import com.rikuto.revox.dto.auth.LoginResponse;
 import com.rikuto.revox.exception.AuthenticationException;
 import com.rikuto.revox.mapper.LoginResponseMapper;
 import com.rikuto.revox.security.jwt.JwtTokenProvider;
-import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -19,19 +18,23 @@ import java.security.GeneralSecurityException;
 import java.util.Collections;
 
 /**
- * 外部認証専用の認証サービスです。
+ * 外部認証に関するビジネスロジックを処理するサービスクラスです。
  * 認証およびJWTトークンの生成を行います。
  */
 @Service
 public class AuthService {
 
 	private final UserService userService;
-	private final LoginResponseMapper loginResponseMapper;
+
 	private final JwtTokenProvider jwtTokenProvider;
+	private final LoginResponseMapper loginResponseMapper;
+
 	private final String googleClientId;
 
-	public AuthService(UserService userService, LoginResponseMapper loginResponseMapper,
-	                   JwtTokenProvider jwtTokenProvider, @Value("${google.client-id}") String googleClientId) {
+	public AuthService(UserService userService,
+	                   JwtTokenProvider jwtTokenProvider,
+	                   LoginResponseMapper loginResponseMapper,
+	                   @Value("${google.client-id}") String googleClientId) {
 		this.userService = userService;
 		this.loginResponseMapper = loginResponseMapper;
 		this.jwtTokenProvider = jwtTokenProvider;
@@ -43,7 +46,7 @@ public class AuthService {
 	 * 検索後ユーザー情報がない場合登録を行います。
 	 *
 	 * @param googleIdToken Google IDトークン
-	 * @return ログインレスポンス（JWTトークンとユーザー情報）
+	 * @return ログインレスポンス
 	 */
 	public LoginResponse loginWithGoogle(String googleIdToken) {
 		GoogleTokenPayload idToken = verifyGoogleIdToken(googleIdToken);

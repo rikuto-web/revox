@@ -12,7 +12,7 @@ import java.util.List;
 /**
  * カテゴリー情報を表すドメインです。
  * データベースのcategoriesにマッピングされています。
- * カテゴリー情報は事前にデータベースに登録されておりユーザーからの受け付けは行いまえん。
+ * カテゴリー情報は事前にデータベースに登録されておりユーザーからの変更は受け付けないため、バリデーションはDomainで行います。
  * 管理者がカテゴリー管理するため論理削除は実装しません。
  */
 @Entity
@@ -56,12 +56,14 @@ public class Category {
 
 	/**
 	 * レコードが作成された日時
+	 * 日時はDBで自動設定されるためシステム側では日時の更新は行いません。
 	 */
 	@Column(name = "created_at", nullable = false, insertable = false, updatable = false)
 	private LocalDateTime createdAt;
 
 	/**
 	 * レコードが更新された最終日時
+	 * 日時はDBで自動設定されるためシステム側では日時の更新は行いません。
 	 */
 	@Column(name = "updated_at", nullable = false, insertable = false, updatable = false)
 	private LocalDateTime updatedAt;

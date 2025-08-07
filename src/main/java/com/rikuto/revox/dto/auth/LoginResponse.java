@@ -4,6 +4,8 @@ import com.rikuto.revox.dto.user.UserResponse;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.time.LocalDateTime;
+
 /**
  * ログイン結果をフロントへ渡すためのDTOです。
  */
@@ -13,4 +15,7 @@ public class LoginResponse {
 	private final String accessToken;
 	private final String tokenType;
 	private final UserResponse user;
+
+	private LocalDateTime createdAt;
+	private LocalDateTime updatedAt;
 }

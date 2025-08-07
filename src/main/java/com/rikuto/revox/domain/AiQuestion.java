@@ -18,7 +18,7 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
 /**
- * AI質問・回答情報を表すドメインです。
+ * AIへの質問および回答情報を表すドメインです。
  * データベースのai_questionsテーブルにマッピングされています。
  */
 @Entity
@@ -83,12 +83,14 @@ public class AiQuestion {
 
 	/**
 	 * レコードが作成された日時
+	 * 日時はDBで自動設定されるためシステム側では日時の更新は行いません。
 	 */
 	@Column(name = "created_at", nullable = false, insertable = false, updatable = false)
 	private LocalDateTime createdAt;
 
 	/**
 	 * レコードが更新された最終日時
+	 * 日時はDBで自動設定されるためシステム側では日時の更新は行いません。
 	 */
 	@Column(name = "updated_at", nullable = false, insertable = false, updatable = false)
 	private LocalDateTime updatedAt;
