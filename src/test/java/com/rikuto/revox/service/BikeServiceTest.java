@@ -48,7 +48,7 @@ class BikeServiceTest {
 
 	@BeforeEach
 	void setUp() {
-		testUser = User.builder().id(1).nickname("testuser").build();
+		testUser = User.builder().id(1).nickname("testUser").build();
 		testBike = Bike.builder().id(101).user(testUser).manufacturer("Honda").modelName("CBR250RR").build();
 
 		commonBikeCreateRequest = BikeCreateRequest.builder()

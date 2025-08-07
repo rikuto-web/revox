@@ -19,13 +19,29 @@ import java.util.List;
 public class BikeService {
 
 	private final BikeRepository bikeRepository;
+
 	private final UserService userService;
+
 	private final BikeMapper bikeMapper;
 
-	public BikeService(UserService userService, BikeRepository bikeRepository, BikeMapper bikeMapper) {
+	public BikeService(UserService userService,
+	                   BikeRepository bikeRepository,
+	                   BikeMapper bikeMapper) {
 		this.userService = userService;
 		this.bikeRepository = bikeRepository;
 		this.bikeMapper = bikeMapper;
+	}
+
+	/**
+	 * ユーザーIDに紐づいた全てのバイク情報を検索します。
+	 *
+	 * @param userId ユーザーID
+	 * @return レスポンスへ変換後のバイクリスト
+	 */
+	public List<BikeResponse> findBikeByUserId(Integer userId) {
+		List<Bike> bikeList = bikeRepository.findByUserIdAndIsDeletedFalse(userId);
+
+		return bikeMapper.toResponseList(bikeList);
 	}
 
 	/**
@@ -34,11 +50,10 @@ public class BikeService {
 	 *
 	 * @param userId ユーザーID
 	 * @param bikeId ユーザーが保有する特定のバイクID
-	 * @return レスポンスへ返還後のバイク情報
+	 * @return レスポンスへ変換後のバイク情報
 	 */
 	@Transactional(readOnly = true)
 	public BikeResponse findByIdAndUserId (Integer userId, Integer bikeId){
-
 		Bike bike = bikeRepository.findByIdAndUserIdAndIsDeletedFalse(userId, bikeId)
 				.orElseThrow(() -> new ResourceNotFoundException(
 						"ユーザーID " + userId + " に紐づくバイクID " + bikeId + " が見つかりません。"));
@@ -47,28 +62,14 @@ public class BikeService {
 	}
 
 	/**
-	 * ユーザーIDに紐づいた全てのバイク情報を検索します。
-	 *
-	 * @param userId ユーザーID
-	 * @return レスポンスへ返還後のバイクリスト
-	 */
-	public List<BikeResponse> findBikeByUserId(Integer userId) {
-
-		List<Bike> bikeList = bikeRepository.findByUserIdAndIsDeletedFalse(userId);
-
-		return bikeMapper.toResponseList(bikeList);
-	}
-
-	/**
 	 * 新しいバイク情報を登録します。
 	 *
 	 * @param request 登録するバイク情報を含むリクエストDTO
-	 * @return 登録されたバイク情報（BikeResponse）
+	 * @return 登録されたバイク情報
 	 * @throws ResourceNotFoundException 指定されたユーザーが見つからない場合
 	 */
 	@Transactional
 	public BikeResponse registerBike(BikeCreateRequest request) {
-
 		User user = userService.findById(request.getUserId());
 
 		Bike bike = bikeMapper.toEntity(user, request);
@@ -83,12 +84,11 @@ public class BikeService {
 	 *
 	 * @param bikeId 更新するバイクのID
 	 * @param updatedBikeRequest 更新されたバイク情報を含むリクエストDTO
-	 * @return 更新されたバイク情報（BikeResponse）
+	 * @return 更新されたバイク情報
 	 * @throws ResourceNotFoundException 指定されたバイクが見つからない場合
 	 */
 	@Transactional
 	public BikeResponse updateBike(BikeCreateRequest updatedBikeRequest, Integer bikeId) {
-
 		Bike existingBike = bikeRepository.findByIdAndUserIdAndIsDeletedFalse(updatedBikeRequest.getUserId(), bikeId)
 				.orElseThrow(() -> new ResourceNotFoundException(
 						"ユーザーID " + updatedBikeRequest.getUserId() + " に紐づくバイクID " + bikeId + " が見つかりません。"));
@@ -109,7 +109,6 @@ public class BikeService {
 	 */
 	@Transactional
 	public void softDeleteBike(Integer userId, Integer bikeId) {
-
 		Bike existingBike = bikeRepository.findByIdAndUserIdAndIsDeletedFalse(userId, bikeId)
 				.orElseThrow(() -> new ResourceNotFoundException(
 						"ユーザー ID " + userId + " に紐づくバイクID " + bikeId + "が見つかりません。"));

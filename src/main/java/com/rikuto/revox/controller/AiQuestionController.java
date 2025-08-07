@@ -15,6 +15,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+/**
+ * AI_APIに関するcontrollerです。
+ */
 @RestController
 @RequestMapping("/api/ai-questions")
 public class AiQuestionController {
@@ -26,19 +29,8 @@ public class AiQuestionController {
 	}
 
 	/**
-	 * AI質問を作成し、回答を生成します。
-	 *
-	 * @param request AI質問作成リクエスト
-	 * @return 作成されたAI質問・回答情報とHTTPステータス201 Created
-	 */
-	@PostMapping
-	public ResponseEntity<AiQuestionResponse> createAiQuestion(@RequestBody @Valid AiQuestionCreateRequest request) {
-		AiQuestionResponse response = aiQuestionService.createAiQuestion(request);
-		return new ResponseEntity<>(response, HttpStatus.CREATED);
-	}
-
-	/**
-	 * 指定されたユーザーのAI質問履歴を取得します。
+	 * 指定されたユーザーIDに紐づくAI質問履歴を取得します。
+	 * get /api/ai-questions/user/{userId}
 	 *
 	 * @param userId ユーザーID
 	 * @return AI質問履歴リストとHTTPステータス200 OK
@@ -46,6 +38,21 @@ public class AiQuestionController {
 	@GetMapping("/user/{userId}")
 	public ResponseEntity<List<AiQuestionResponse>> getAiQuestionsByUserId(@PathVariable Integer userId){
 		List<AiQuestionResponse> responses = aiQuestionService.getAiQuestionByUserId(userId);
+
 		return ResponseEntity.ok(responses);
+	}
+
+	/**
+	 * ユーザーからの質問を取得し、それに対するAIの回答を返します。
+	 * post /api/ai-questions
+	 *
+	 * @param request 質問リクエスト
+	 * @return 作成されたAI回答情報とHTTPステータス201 Created
+	 */
+	@PostMapping
+	public ResponseEntity<AiQuestionResponse> createAiQuestion(@RequestBody @Valid AiQuestionCreateRequest request) {
+		AiQuestionResponse response = aiQuestionService.createAiQuestion(request);
+
+		return new ResponseEntity<>(response, HttpStatus.CREATED);
 	}
 }

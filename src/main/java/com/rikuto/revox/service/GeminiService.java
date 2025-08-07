@@ -12,11 +12,19 @@ import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
+/**
+ * Google Gemini AIとの連携を担うサービスです。
+ */
 @Service
 public class GeminiService {
 
 	private final Client client;
 
+	/**
+	 * GeminiServiceのコンストラクタです。
+	 * 環境変数からGoogle CloudのプロジェクトIDとロケーションを取得し、Gemini AIクライアントを初期化します。
+	 * 初期化に失敗した場合は、RuntimeExceptionをスローします。
+	 */
 	public GeminiService() {
 		try {
 			String projectId = Optional.ofNullable(System.getenv("GOOGLE_CLOUD_PROJECT"))
@@ -31,10 +39,16 @@ public class GeminiService {
 					.httpOptions(HttpOptions.builder().apiVersion("v1").build())
 					.build();
 		} catch (Exception e) {
-			throw new RuntimeException("GenaiClientの作成に失敗しました。", e);
+			throw new RuntimeException("Gemini AIクライアントの作成に失敗しました。原因:", e);
 		}
 	}
 
+	/**
+	 * 指定されたプロンプトからGemini AIにコンテンツを生成させます。
+	 *
+	 * @param prompt AIへのプロンプト生成に必要な情報を持つDTO
+	 * @return AIが生成した回答の文字列。生成中にエラーが発生した場合は、エラーメッセージを返します。
+	 */
 	public String generateContent(AiQuestionPrompt prompt) {
 		// AIに役割を与えるシステム命令を設定（キャラ設定など）
 		String systemInstructionText = "あなたはバイクの専門家です。提供されたバイクの情報とユーザーの質問に基づき、正確・具体的かつ整備初心者にわかりやすく回答してください。";
@@ -64,6 +78,12 @@ public class GeminiService {
 		}
 	}
 
+	/**
+	 * AiQuestionPrompt DTOから、AIに送信するプロンプト文字列を構築します。
+	 *
+	 * @param prompt プロンプト生成に必要な情報を持つAiQuestionPrompt DTO
+	 * @return 構築されたプロンプト文字列を保持するStringBuilder
+	 */
 	@NotNull
 	private static StringBuilder getStringBuilder(AiQuestionPrompt prompt) {
 		StringBuilder promptBuilder = new StringBuilder();

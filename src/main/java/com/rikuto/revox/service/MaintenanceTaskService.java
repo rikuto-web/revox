@@ -19,26 +19,26 @@ import java.util.List;
 @Service
 public class MaintenanceTaskService {
 
-	private final MaintenanceTaskRepository maintenanceTaskRepository;
-	private final MaintenanceTaskMapper maintenanceTaskMapper;
 	private final CategoryRepository categoryRepository;
+	private final MaintenanceTaskRepository maintenanceTaskRepository;
 
-	public MaintenanceTaskService(MaintenanceTaskRepository maintenanceTaskRepository, MaintenanceTaskMapper maintenanceTaskMapper, CategoryRepository categoryRepository) {
+	private final MaintenanceTaskMapper maintenanceTaskMapper;
+
+	public MaintenanceTaskService(CategoryRepository categoryRepository,
+	                              MaintenanceTaskRepository maintenanceTaskRepository,
+	                              MaintenanceTaskMapper maintenanceTaskMapper) {
+		this.categoryRepository = categoryRepository;
 		this.maintenanceTaskRepository = maintenanceTaskRepository;
 		this.maintenanceTaskMapper = maintenanceTaskMapper;
-		this.categoryRepository = categoryRepository;
 	}
 
 	/**
 	 * カテゴリーIDに紐づいた整備タスクの検索機能です。
-	 * 複数のタスクをMapperで変換処理します。
-	 * 空のListの場合もそのまま処理します。
 	 *
 	 * @param categoryId カテゴリーID
 	 * @return レスポンスへ返還後の整備タスク
 	 */
 	public List<MaintenanceTaskResponse> findMaintenanceTaskByCategoryId(Integer categoryId) {
-
 		List<MaintenanceTask> maintenanceTask = maintenanceTaskRepository.findByCategoryIdAndIsDeletedFalse(categoryId);
 
 		return maintenanceTaskMapper.toResponseList(maintenanceTask);
@@ -52,7 +52,6 @@ public class MaintenanceTaskService {
 	 */
 	@Transactional
 	public MaintenanceTaskResponse registerMaintenanceTask(MaintenanceTaskRequest request) {
-
 		Category category = categoryRepository.findById(request.getCategoryId())
 				.orElseThrow(() -> new ResourceNotFoundException(
 						"カテゴリーID " + request.getCategoryId() + " が見つかりません。"));
@@ -66,7 +65,6 @@ public class MaintenanceTaskService {
 
 	/**
 	 * 整備タスクの更新を行います。
-	 * 更新処理はdomainで行い、mapperで変換します。
 	 *
 	 * @param maintenanceTaskId 整備タスクID
 	 * @param updateMaintenance 更新するリクエスト情報
@@ -75,7 +73,6 @@ public class MaintenanceTaskService {
 	@Transactional
 	public MaintenanceTaskResponse updateMaintenanceTask(Integer maintenanceTaskId ,
 	                                                     MaintenanceTaskRequest updateMaintenance) {
-
 		MaintenanceTask existingMaintenanceTask = maintenanceTaskRepository.findById(maintenanceTaskId)
 				.orElseThrow(() -> new ResourceNotFoundException(
 						"整備タスクID " + maintenanceTaskId + " が見つかりません。"));
@@ -89,13 +86,11 @@ public class MaintenanceTaskService {
 
 	/**
 	 * 整備タスクの論理削除を行います。
-	 * 論理削除の変換操作はdomainで行います。
 	 *
 	 * @param maintenanceTaskId 整備タスクID
 	 */
 	@Transactional
 	public void softDeleteMaintenanceTask(Integer maintenanceTaskId) {
-
 		MaintenanceTask existingMaintenanceTask = maintenanceTaskRepository.findById(maintenanceTaskId)
 				.orElseThrow(() -> new ResourceNotFoundException(
 						"整備タスクID " + maintenanceTaskId + " が見つかりません。"));

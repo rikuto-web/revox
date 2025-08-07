@@ -23,6 +23,7 @@ public class ExternalAuthUserDetails implements UserDetails {
 	private final int id;
 	@Getter
 	private final String uniqueUserId;
+
 	private final Collection<? extends GrantedAuthority> authorities;
 
 	/**

@@ -25,17 +25,24 @@ import java.util.List;
 public class AiQuestionService {
 
 	private final AiQuestionRepository aiQuestionRepository;
-	private final UserRepository userRepository;
 	private final BikeRepository bikeRepository;
 	private final CategoryRepository categoryRepository;
+	private final UserRepository userRepository;
+
 	private final AiQuestionMapper aiQuestionMapper;
+
 	private final GeminiService geminiService;
 
-	public AiQuestionService(AiQuestionRepository aiQuestionRepository, UserRepository userRepository, BikeRepository bikeRepository, CategoryRepository categoryRepository, AiQuestionMapper aiQuestionMapper, GeminiService geminiService) {
+	public AiQuestionService(AiQuestionRepository aiQuestionRepository,
+	                         BikeRepository bikeRepository,
+	                         CategoryRepository categoryRepository,
+	                         UserRepository userRepository,
+	                         AiQuestionMapper aiQuestionMapper,
+	                         GeminiService geminiService) {
 		this.aiQuestionRepository = aiQuestionRepository;
-		this.userRepository = userRepository;
 		this.bikeRepository = bikeRepository;
 		this.categoryRepository = categoryRepository;
+		this.userRepository = userRepository;
 		this.aiQuestionMapper = aiQuestionMapper;
 		this.geminiService = geminiService;
 	}
@@ -43,7 +50,6 @@ public class AiQuestionService {
 	/**
 	 * AIへの質問に対する回答を生成します。
 	 * ユーザーと紐づく単一のバイク情報とカテゴリー情報を渡して回答を生成します。
-	 * 現在固定の回答へ返答する設計になっており、今後外部APIの連携を予定しています。
 	 */
 	@Transactional
 	public AiQuestionResponse createAiQuestion(AiQuestionCreateRequest request){
@@ -82,7 +88,7 @@ public class AiQuestionService {
 	}
 
 	/**
-	 * ユーザーのAI質問・回答履歴を取得します。
+	 * ユーザーのAI履歴を取得します。
 	 *
 	 * @param userId ユーザーID
 	 * @return AI質問・回答履歴リスト

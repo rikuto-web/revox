@@ -1,43 +1,62 @@
-package com.rikuto.revox.exception; // または com.rikuto.revox.advice
+package com.rikuto.revox.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.MethodArgumentNotValidException; // バリデーションエラー用
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.context.support.DefaultMessageSourceResolvable; // エラーメッセージ取得用
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * 全てのコントローラーで発生する例外をグローバルに処理するハンドラーです。
+
+ * アプリケーション全体で発生する特定の例外（例：リソースが見つからない、認証エラー、バリデーションエラー）
+ * を捕捉し、適切なHTTPステータスコードとエラーメッセージを含むレスポンスを返します。
+ */
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
 	/**
-	 * ResourceNotFoundException を処理します。
-	 * リソースが見つからない場合に HTTP 404 Not Found を返します。
-	 * @param ex 発生した ResourceNotFoundException
-	 * @return エラーメッセージと HTTP 404 ステータス
+	 * リソースが見つからない場合に発生するResourceNotFoundExceptionを処理します。
+	 * クライアントにはHTTP 404 Not Foundステータスコードを返します。
+	 * * @param ex 発生したResourceNotFoundException
+	 * @return エラーメッセージを含むResponseEntity
 	 */
 	@ExceptionHandler(ResourceNotFoundException.class)
 	public ResponseEntity<String> handleResourceNotFoundException(ResourceNotFoundException ex) {
 		return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
 	}
 
+	/**
+	 * 認証に失敗した場合に発生するAuthenticationExceptionを処理します。
+	 * クライアントにはHTTP 401 Unauthorizedステータスコードを返します。
+	 * * @param ex 発生したAuthenticationException
+	 * @return エラーメッセージを含むResponseEntity
+	 */
 	@ExceptionHandler(AuthenticationException.class)
 	public ResponseEntity<String> handleAuthenticationException(AuthenticationException ex) {
 		return new ResponseEntity<>(ex.getMessage(), HttpStatus.UNAUTHORIZED);
 	}
 
+	/**
+	 * ユーザーが既に存在する場合に発生するUserAlreadyExistsExceptionを処理します。
+	 * クライアントにはHTTP 409 Conflictステータスコードを返します。
+	 * * @param ex 発生したUserAlreadyExistsException
+	 * @return エラーメッセージを含むResponseEntity
+	 */
 	@ExceptionHandler(UserAlreadyExistsException.class)
 	public ResponseEntity<String> handleUserAlreadyExistsException (UserAlreadyExistsException ex){
 		return new ResponseEntity<>(ex.getMessage(),HttpStatus.CONFLICT);
 	}
 
 	/**
-	 * @Valid によるバリデーションエラー (MethodArgumentNotValidException) を処理します。
-	 * 無効なリクエストボディが送信された場合に HTTP 400 Bad Request を返します。
-	 * @param ex 発生した MethodArgumentNotValidException
-	 * @return エラーメッセージのリストと HTTP 400 ステータス
+	 * ValidアノテーションによるバリデーションエラーであるMethodArgumentNotValidExceptionを処理します。
+	 * 無効なリクエストボディが送信された場合に発生し、すべてのバリデーションエラーメッセージをリスト形式で返します。
+	 * クライアントにはHTTP 400 Bad Requestステータスコードを返します。
+	 * * @param ex 発生したMethodArgumentNotValidException
+	 * @return エラーメッセージのリストを含むResponseEntity
 	 */
 	@ExceptionHandler(MethodArgumentNotValidException.class)
 	public ResponseEntity<List<String>> handleValidationExceptions(MethodArgumentNotValidException ex) {
@@ -46,20 +65,19 @@ public class GlobalExceptionHandler {
 				.stream()
 				.map(DefaultMessageSourceResolvable::getDefaultMessage)
 				.collect(Collectors.toList());
+
 		return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
 	}
 
 	/**
-	 * その他の予期せぬ例外を処理します。
-	 * アプリケーションで捕捉されなかったすべての例外に対して HTTP 500 Internal Server Error を返します。
-	 * @param ex 発生した例外
-	 * @return エラーメッセージと HTTP 500 ステータス
+	 * 上記で捕捉されなかった予期せぬすべての例外を処理します。
+	 * アプリケーションの内部エラーをクライアントに直接詳細に開示しないため、汎用的なエラーメッセージを返します。
+	 * クライアントにはHTTP 500 Internal Server Errorステータスコードを返します。
+	 * * @param ex 発生した例外
+	 * @return 汎用的なエラーメッセージを含むResponseEntity
 	 */
 	@ExceptionHandler(Exception.class)
 	public ResponseEntity<String> handleAllUncaughtException(Exception ex) {
-		// 本番環境では、詳細なエラーメッセージをクライアントに直接返さず、ログに記録し、
-		// 汎用的なエラーメッセージを返すことを検討してください。
-		ex.printStackTrace(); // デバッグ目的でスタックトレースを出力
 		return new ResponseEntity<>("内部サーバーエラーが発生しました。", HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 }

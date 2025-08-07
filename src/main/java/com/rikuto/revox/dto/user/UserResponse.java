@@ -10,9 +10,12 @@ import java.time.LocalDateTime;
 @Getter
 @Builder
 public class UserResponse {
+
 	private final int id;
 	private final String nickname;
 	private final String displayEmail;
 	private final String uniqueUserId;
-	private final LocalDateTime createdAt;
+
+	private LocalDateTime createdAt;
+	private LocalDateTime updatedAt;
 }

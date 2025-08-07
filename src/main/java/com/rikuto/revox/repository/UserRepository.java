@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 /**
- * 外部認証専用のユーザーリポジトリです。
+ * ユーザーに関するリポジトリです。
  * uniqueUserIdを主キーとして使用します。
  */
 @Repository

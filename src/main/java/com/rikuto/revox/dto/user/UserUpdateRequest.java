@@ -13,6 +13,7 @@ import lombok.Setter;
 @Setter
 @Builder
 public class UserUpdateRequest {
+
 	@Size(max = 50, message = "ニックネームは50文字以内で入力してください。")
 	private String nickname;
 }

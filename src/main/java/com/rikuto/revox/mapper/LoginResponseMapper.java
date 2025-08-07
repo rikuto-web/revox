@@ -6,7 +6,8 @@ import com.rikuto.revox.dto.user.UserResponse;
 import org.springframework.stereotype.Component;
 
 /**
- * 外部認証専用のLoginResponseMapperです。
+ * 認証成功時のユーザー情報とJWTトークンを、ログインレスポンスDTOにマッピングするクラスです。
+ * 変換した後、アクセストークンと組み合わせて最終的なログインレスポンスを作成します。
  */
 @Component
 public class LoginResponseMapper {
@@ -17,12 +18,11 @@ public class LoginResponseMapper {
 	}
 
 	/**
-	 * AuthUserドメインをLoginResponseに変換します。
-	 * 認証成功時のユーザー情報をフロントへ渡すためのレスポンスマッパーです。
+	 * ユーザー情報とアクセストークンをLoginResponseに変換します。
 	 *
-	 * @param user ユーザー情報
-	 * @param accessToken 外部認証のJWTトークン
-	 * @return 認証成功時のユーザー情報
+	 * @param user 認証されたユーザー情報
+	 * @param accessToken JWTトークン
+	 * @return 認証成功時のログインレスポンスDTO
 	 */
 	public LoginResponse toLoginResponse(User user, String accessToken) {
 		UserResponse userResponse = userResponseMapper.toResponse(user);

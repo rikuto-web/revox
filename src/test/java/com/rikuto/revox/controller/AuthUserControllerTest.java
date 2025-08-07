@@ -82,7 +82,7 @@ class AuthUserControllerTest {
 				.andExpect(jsonPath("$.accessToken").value(dummyAccessToken))
 				.andExpect(jsonPath("$.tokenType").value("Bearer"))
 				.andExpect(jsonPath("$.user.id").value(999999))
-				.andExpect(jsonPath("$.user.nickname").value("testuser"))
+				.andExpect(jsonPath("$.user.nickname").value("testUser"))
 				.andExpect(jsonPath("$.user.displayEmail").value("test@example.com"));
 	}
 

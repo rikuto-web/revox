@@ -8,8 +8,6 @@ import com.rikuto.revox.domain.Bike;
 import com.rikuto.revox.domain.Category;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDateTime;
-
 /**
  * AiQuestionドメインと関連するDTO間のマッピングを行うクラスです。
  */
@@ -23,13 +21,16 @@ public class AiQuestionMapper {
 	 * @return 変換されたAiQuestionResponse DTO
 	 */
 	public AiQuestionResponse toResponse(AiQuestion aiQuestion) {
+
 		return AiQuestionResponse.builder()
 				.id(aiQuestion.getId())
 				.userId(aiQuestion.getUser().getId())
 				.bikeId(aiQuestion.getBike().getId())
 				.categoryId(aiQuestion.getCategory().getId())
+
 				.question(aiQuestion.getQuestion())
 				.answer(aiQuestion.getAnswer())
+
 				.createdAt(aiQuestion.getCreatedAt())
 				.updatedAt(aiQuestion.getUpdatedAt())
 				.build();
@@ -44,16 +45,19 @@ public class AiQuestionMapper {
 	 * @param answer AI生成回答
 	 * @return 作成されたAiQuestionドメイン
 	 */
-	public AiQuestion toEntity(AiQuestionCreateRequest request, User user, Bike bike, Category category, String answer){
-		LocalDateTime now = LocalDateTime.now();
+	public AiQuestion toEntity(AiQuestionCreateRequest request,
+	                           User user,
+	                           Bike bike,
+	                           Category category,
+	                           String answer){
+
 		return AiQuestion.builder()
 				.user(user)
 				.bike(bike)
 				.category(category)
+
 				.question(request.getQuestion())
 				.answer(answer)
-				.createdAt(now)
-				.updatedAt(now)
 				.build();
 	}
 }

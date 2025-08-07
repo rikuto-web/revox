@@ -45,11 +45,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	 * @throws IOException 入出力例外
 	 */
 	@Override
-	protected void doFilterInternal(@NotNull HttpServletRequest request, @NotNull HttpServletResponse response,
+	protected void doFilterInternal(@NotNull HttpServletRequest request,
+	                                @NotNull HttpServletResponse response,
 	                                @NotNull FilterChain filterChain) throws ServletException, IOException {
 		try {
 			String jwt = getJwtFromRequest(request);
-
 			if (StringUtils.hasText(jwt) && jwtTokenProvider.validateToken(jwt)) {
 
 				String uniqueUserId = jwtTokenProvider.getUniqueUserIdFromToken(jwt);
@@ -75,9 +75,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	 * @return JWTトークン文字列（Bearerプレフィックスを除く）
 	 */
 	private String getJwtFromRequest(HttpServletRequest request) {
-
 		String bearerToken = request.getHeader("Authorization");
-
 		if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
 
 			return bearerToken.substring(7);

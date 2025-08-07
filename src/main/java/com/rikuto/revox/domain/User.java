@@ -24,9 +24,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 外部認証専用のユーザ情報を表すドメインです。
+ * ユーザ情報を表すドメインです。
  * データベースのusersテーブルにマッピングされています。
- * １人のユーザーは複数のバイクを保持することができます。
  */
 @Entity
 @Table(name = "users")
@@ -37,7 +36,7 @@ import java.util.List;
 public class User {
 
 	/**
-	 * このユーザーが所有するバイクのリストです。
+	 * ユーザーが所有するバイクのリストです。
 	 * Bikeエンティティとの1対多のリレーションシップを表現しています。
 	 */
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
@@ -97,12 +96,14 @@ public class User {
 
 	/**
 	 * レコードが作成された日時
+	 * 日時はDBで自動設定されるためシステム側では日時の更新は行いません。
 	 */
 	@Column(name = "created_at", nullable = false, insertable = false, updatable = false)
 	private LocalDateTime createdAt;
 
 	/**
 	 * レコードが更新された最終日時
+	 * 日時はDBで自動設定されるためシステム側では日時の更新は行いません。
 	 */
 	@Column(name = "updated_at", nullable = false, insertable = false, updatable = false)
 	private LocalDateTime updatedAt;
