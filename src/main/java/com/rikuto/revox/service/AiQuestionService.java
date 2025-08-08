@@ -4,7 +4,7 @@ import com.rikuto.revox.dto.aiquestion.AiQuestionCreateRequest;
 import com.rikuto.revox.dto.aiquestion.AiQuestionPrompt;
 import com.rikuto.revox.dto.aiquestion.AiQuestionResponse;
 import com.rikuto.revox.domain.AiQuestion;
-import com.rikuto.revox.domain.Bike;
+import com.rikuto.revox.domain.bike.Bike;
 import com.rikuto.revox.domain.Category;
 import com.rikuto.revox.domain.User;
 import com.rikuto.revox.exception.ResourceNotFoundException;

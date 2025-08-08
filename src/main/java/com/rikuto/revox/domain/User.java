@@ -1,5 +1,6 @@
 package com.rikuto.revox.domain;
 
+import com.rikuto.revox.domain.bike.Bike;
 import com.rikuto.revox.dto.user.UserUpdateRequest;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;

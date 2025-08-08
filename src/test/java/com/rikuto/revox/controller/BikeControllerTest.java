@@ -149,7 +149,7 @@ class BikeControllerTest {
 	@Test
 	void バイク情報が正常に更新されること() throws Exception {
 
-		when(bikeService.updateBike(any(), eq(testBikeId))).thenReturn(commonBikeResponse);
+		when(bikeService.updateBike(any(), eq(testBikeId), eq(testUserId))).thenReturn(commonBikeResponse);
 
 		mockMvc.perform(put("/api/bikes/{bikeId}", testBikeId)
 						.contentType(MediaType.APPLICATION_JSON)
@@ -158,13 +158,13 @@ class BikeControllerTest {
 				.andExpect(jsonPath("$.id").value(testBikeId))
 				.andExpect(jsonPath("$.modelName").value("CBR250RR"));
 
-		verify(bikeService).updateBike(any(), eq(testBikeId));
+		verify(bikeService).updateBike(any(), eq(testBikeId), eq(testUserId));
 	}
 
 	@Test
 	void バイクが見つからない場合は更新時に404を返す() throws Exception {
 
-		when(bikeService.updateBike(any(), eq(testBikeId)))
+		when(bikeService.updateBike(any(), eq(testBikeId), eq(testUserId)))
 				.thenThrow(new ResourceNotFoundException("バイクが見つかりません"));
 
 		mockMvc.perform(put("/api/bikes/{bikeId}", testBikeId)
@@ -172,7 +172,7 @@ class BikeControllerTest {
 						.content(objectMapper.writeValueAsString(commonBikeCreateRequest)))
 				.andExpect(status().isNotFound());
 
-		verify(bikeService).updateBike(any(), eq(testBikeId));
+		verify(bikeService).updateBike(any(), eq(testBikeId), eq(testUserId));
 	}
 
 	@Test

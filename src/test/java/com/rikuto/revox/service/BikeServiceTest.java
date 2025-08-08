@@ -1,9 +1,11 @@
 package com.rikuto.revox.service;
 
 import com.rikuto.revox.domain.User;
-import com.rikuto.revox.domain.Bike;
+import com.rikuto.revox.domain.bike.Bike;
+import com.rikuto.revox.domain.bike.BikeUpdateData;
 import com.rikuto.revox.dto.bike.BikeCreateRequest;
 import com.rikuto.revox.dto.bike.BikeResponse;
+import com.rikuto.revox.dto.bike.BikeUpdateRequest;
 import com.rikuto.revox.exception.ResourceNotFoundException;
 import com.rikuto.revox.mapper.BikeMapper;
 import com.rikuto.revox.repository.BikeRepository;
@@ -150,24 +152,43 @@ class BikeServiceTest {
 		@Test
 		void 既存のバイク情報が正常に更新され更新されたバイク情報が返されること() {
 			stubBikeFound();
-			BikeCreateRequest updateRequest = BikeCreateRequest.builder().userId(testUser.getId()).modelName("Ninja 400").build();
-			when(bikeRepository.save(testBike)).thenReturn(testBike);
-			BikeResponse updatedResponse = BikeResponse.builder().id(testBike.getId()).modelName("Ninja 400").build();
-			when(bikeMapper.toResponse(testBike)).thenReturn(updatedResponse);
+			BikeUpdateRequest updateRequest = BikeUpdateRequest.builder()
+					.manufacturer("Honda")
+					.modelName("Ninja 400")
+					.build();
 
-			BikeResponse result = bikeService.updateBike(updateRequest, testBike.getId());
+			Bike updatedBike = testBike;
+			updatedBike.updateFrom(
+					BikeUpdateData.builder()
+							.manufacturer("Honda")
+							.modelName("Ninja 400")
+							.build()
+			);
 
-			assertThat(result).isEqualTo(updatedResponse);
-			verify(bikeRepository).save(testBike);
-			verify(bikeMapper).toResponse(testBike);
+			BikeResponse expectedResponse = BikeResponse.builder()
+					.id(testBike.getId())
+					.modelName("Ninja 400")
+					.manufacturer("Honda")
+					.build();
+
+			when(bikeRepository.save(any(Bike.class))).thenReturn(updatedBike);
+			when(bikeMapper.toResponse(any(Bike.class))).thenReturn(expectedResponse);
+
+			BikeResponse result = bikeService.updateBike(updateRequest, testBike.getId(), testUser.getId());
+
+			assertThat(result).isEqualTo(expectedResponse);
+			verify(bikeRepository).save(any(Bike.class));
+			verify(bikeMapper).toResponse(any(Bike.class));
 		}
 
 		@Test
 		void バイクが見つからない場合にResourceNotFoundExceptionをスローすること() {
 			stubBikeNotFound();
-			BikeCreateRequest updateRequest = BikeCreateRequest.builder().userId(testUser.getId()).build();
+			BikeUpdateRequest updateRequest = BikeUpdateRequest.builder()
+					.manufacturer("Honda")
+					.build();
 
-			assertThatThrownBy(() -> bikeService.updateBike(updateRequest, testBike.getId()))
+			assertThatThrownBy(() -> bikeService.updateBike(updateRequest, testBike.getId(), testUser.getId()))
 					.isInstanceOf(ResourceNotFoundException.class)
 					.hasMessageContaining("ユーザーID " + testUser.getId() + " に紐づくバイクID " + testBike.getId() + " が見つかりません。");
 
