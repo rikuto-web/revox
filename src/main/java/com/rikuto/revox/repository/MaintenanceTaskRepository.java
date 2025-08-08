@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * 整備タスクに関するリポジトリです。
@@ -20,4 +21,12 @@ public interface MaintenanceTaskRepository extends JpaRepository<MaintenanceTask
 	 * @return カテゴリーIDに紐づいた整備タスクリスト
 	 */
 	List<MaintenanceTask> findByCategoryIdAndIsDeletedFalse(Integer categoryId);
+
+	/**
+	 *
+	 * @param categoryId
+	 * @param MaintenanceTaskId
+	 * @return
+	 */
+	Optional<MaintenanceTask> findByCategoryIdAndIdAndIsDeletedFalse(Integer categoryId, Integer MaintenanceTaskId);
 }

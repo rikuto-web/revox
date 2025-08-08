@@ -39,8 +39,17 @@ public class MaintenanceTaskController {
 	 */
 	@GetMapping("/category/{categoryId}")
 	public ResponseEntity<List<MaintenanceTaskResponse>> getMaintenanceTaskByCategoryId(@PathVariable Integer categoryId) {
-		List<MaintenanceTaskResponse> maintenanceTaskResponse =
+		List<MaintenanceTaskResponse> maintenanceTaskResponseList =
 				maintenanceTaskService.findMaintenanceTaskByCategoryId(categoryId);
+
+		return ResponseEntity.ok(maintenanceTaskResponseList);
+	}
+
+	public ResponseEntity<MaintenanceTaskResponse> getMaintenanceTaskByCategoryIdAndMaintenanceTaskId(
+			@PathVariable Integer categoryId,
+			@PathVariable Integer maintenanceTaskId) {
+		MaintenanceTaskResponse maintenanceTaskResponse =
+				maintenanceTaskService.findByCategoryIdAndMaintenanceTaskId(categoryId, maintenanceTaskId);
 
 		return ResponseEntity.ok(maintenanceTaskResponse);
 	}
@@ -65,7 +74,7 @@ public class MaintenanceTaskController {
 	 * PUT /api/maintenance-task/{maintenanceTaskId}
 	 *
 	 * @param maintenanceTaskId 整備タスクID
-	 * @param request 更新する内容の整備タスク
+	 * @param request           更新する内容の整備タスク
 	 * @return 更新後の整備タスク情報とHttpステータス　200　ok
 	 */
 	@PutMapping("/{maintenanceTaskId}")

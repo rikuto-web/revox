@@ -33,7 +33,7 @@ public class AuthUserController {
 	 */
 	@PostMapping("/google")
 	public ResponseEntity<LoginResponse> loginWithGoogle(@Valid @RequestBody LoginRequest request) {
-		LoginResponse response = authService.loginWithGoogle(request.idToken());
+		LoginResponse response = authService.loginWithGoogle(request.getIdToken());
 
 		return ResponseEntity.ok(response);
 	}
