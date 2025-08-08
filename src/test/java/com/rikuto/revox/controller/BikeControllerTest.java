@@ -180,7 +180,7 @@ class BikeControllerTest {
 
 		doNothing().when(bikeService).softDeleteBike(testUserId, testBikeId);
 
-		mockMvc.perform(delete("/api/bikes/{userId}/{bikeId}", testUserId, testBikeId))
+		mockMvc.perform(patch("/api/bikes/{userId}/{bikeId}", testUserId, testBikeId))
 				.andExpect(status().isNoContent());
 
 		verify(bikeService).softDeleteBike(testUserId, testBikeId);

@@ -153,7 +153,7 @@ class MaintenanceTaskControllerTest {
 
 		doNothing().when(maintenanceTaskService).softDeleteMaintenanceTask(testMaintenanceTaskId);
 
-		mockMvc.perform(delete("/api/maintenance-task/{maintenanceTaskId}", testMaintenanceTaskId))
+		mockMvc.perform(patch("/api/maintenance-task/{maintenanceTaskId}", testMaintenanceTaskId))
 				.andExpect(status().isNoContent());
 
 		verify(maintenanceTaskService).softDeleteMaintenanceTask(testMaintenanceTaskId);
@@ -165,7 +165,7 @@ class MaintenanceTaskControllerTest {
 		doThrow(new ResourceNotFoundException("整備タスクが見つかりません"))
 				.when(maintenanceTaskService).softDeleteMaintenanceTask(testMaintenanceTaskId);
 
-		mockMvc.perform(delete("/api/maintenance-task/{maintenanceTaskId}", testMaintenanceTaskId))
+		mockMvc.perform(patch("/api/maintenance-task/{maintenanceTaskId}", testMaintenanceTaskId))
 				.andExpect(status().isNotFound());
 
 		verify(maintenanceTaskService).softDeleteMaintenanceTask(testMaintenanceTaskId);

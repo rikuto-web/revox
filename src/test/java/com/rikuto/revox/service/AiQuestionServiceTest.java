@@ -79,9 +79,6 @@ class AiQuestionServiceTest {
 				.build();
 
 		commonAiQuestionCreateRequest = AiQuestionCreateRequest.builder()
-				.userId(testUser.getId())
-				.bikeId(testBike.getId())
-				.categoryId(testCategory.getId())
 				.question("エンジンオイルの交換時期はいつですか？")
 				.build();
 
@@ -136,7 +133,10 @@ class AiQuestionServiceTest {
 			when(aiQuestionRepository.save(testAiQuestion)).thenReturn(testAiQuestion);
 			when(aiQuestionMapper.toResponse(testAiQuestion)).thenReturn(commonAiQuestionResponse);
 
-			AiQuestionResponse result = aiQuestionService.createAiQuestion(commonAiQuestionCreateRequest);
+			AiQuestionResponse result = aiQuestionService.createAiQuestion(commonAiQuestionCreateRequest,
+					testUser.getId(),
+					testBike.getId(),
+					testCategory.getId());
 
 			assertThat(result).isEqualTo(commonAiQuestionResponse);
 			verify(userRepository).findByIdAndIsDeletedFalse(testUser.getId());
@@ -152,7 +152,10 @@ class AiQuestionServiceTest {
 		void ユーザーが見つからない場合にResourceNotFoundExceptionをスローすること() {
 			stubUserNotFound();
 
-			assertThatThrownBy(() -> aiQuestionService.createAiQuestion(commonAiQuestionCreateRequest))
+			assertThatThrownBy(() -> aiQuestionService.createAiQuestion(commonAiQuestionCreateRequest,
+							testUser.getId(),
+							testBike.getId(),
+							testCategory.getId()))
 					.isInstanceOf(ResourceNotFoundException.class)
 					.hasMessageContaining("ユーザーID " + testUser.getId() + " が見つかりません。");
 
@@ -166,7 +169,10 @@ class AiQuestionServiceTest {
 			stubUserFound();
 			stubBikeNotFound();
 
-			assertThatThrownBy(() -> aiQuestionService.createAiQuestion(commonAiQuestionCreateRequest))
+			assertThatThrownBy(() -> aiQuestionService.createAiQuestion(commonAiQuestionCreateRequest,
+							testUser.getId(),
+							testBike.getId(),
+							testCategory.getId()))
 					.isInstanceOf(ResourceNotFoundException.class)
 					.hasMessageContaining("ユーザー ID " + testUser.getId() + " に紐づくバイクID " + testBike.getId() + "が見つかりません。");
 
@@ -180,7 +186,10 @@ class AiQuestionServiceTest {
 			stubBikeFound();
 			stubCategoryNotFound();
 
-			assertThatThrownBy(() -> aiQuestionService.createAiQuestion(commonAiQuestionCreateRequest))
+			assertThatThrownBy(() -> aiQuestionService.createAiQuestion(commonAiQuestionCreateRequest,
+					testUser.getId(),
+					testBike.getId(),
+					testCategory.getId()))
 					.isInstanceOf(ResourceNotFoundException.class)
 					.hasMessageContaining("カテゴリーID " + testCategory.getId() + " が見つかりません。");
 

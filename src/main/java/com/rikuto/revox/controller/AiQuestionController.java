@@ -44,14 +44,17 @@ public class AiQuestionController {
 
 	/**
 	 * ユーザーからの質問を取得し、それに対するAIの回答を返します。
-	 * post /api/ai-questions
+	 * post /api/ai-questions/user/{userId}/bike/{bikeId}/category/{categoryId}
 	 *
 	 * @param request 質問リクエスト
 	 * @return 作成されたAI回答情報とHTTPステータス201 Created
 	 */
-	@PostMapping
-	public ResponseEntity<AiQuestionResponse> createAiQuestion(@RequestBody @Valid AiQuestionCreateRequest request) {
-		AiQuestionResponse response = aiQuestionService.createAiQuestion(request);
+	@PostMapping("/user/{userId}/bike/{bikeId}/category/{categoryId}")
+	public ResponseEntity<AiQuestionResponse> createAiQuestion(@RequestBody @Valid AiQuestionCreateRequest request,
+	                                                           @PathVariable Integer userId,
+	                                                           @PathVariable Integer bikeId,
+	                                                           @PathVariable Integer categoryId) {
+		AiQuestionResponse response = aiQuestionService.createAiQuestion(request, userId, bikeId, categoryId);
 
 		return new ResponseEntity<>(response, HttpStatus.CREATED);
 	}

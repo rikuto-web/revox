@@ -15,7 +15,6 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/api/bikes")
-@CrossOrigin(origins = "http://localhost:3000")
 public class BikeController {
 
 	private final BikeService bikeService;
@@ -33,9 +32,9 @@ public class BikeController {
 	 */
 	@GetMapping("/user/{userId}")
 	public ResponseEntity<List<BikeResponse>> getBikeListByUserId (@PathVariable Integer userId){
-		List<BikeResponse> bikeResponse = bikeService.findBikeByUserId(userId);
+		List<BikeResponse> bikeResponseList = bikeService.findBikeByUserId(userId);
 
-		return ResponseEntity.ok(bikeResponse);
+		return ResponseEntity.ok(bikeResponseList);
 	}
 
 	/**

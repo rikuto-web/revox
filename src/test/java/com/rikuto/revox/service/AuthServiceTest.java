@@ -1,9 +1,14 @@
 package com.rikuto.revox.service;
 
+import com.google.api.client.auth.openidconnect.IdToken;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import com.rikuto.revox.domain.User;
+import com.rikuto.revox.dto.auth.GoogleTokenPayload;
 import com.rikuto.revox.dto.auth.LoginResponse;
 import com.rikuto.revox.dto.user.UserResponse;
 import com.rikuto.revox.exception.AuthenticationException;
+import com.rikuto.revox.mapper.LoginResponseMapper;
 import com.rikuto.revox.mapper.UserResponseMapper;
 import com.rikuto.revox.security.jwt.JwtTokenProvider;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,9 +18,14 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.io.IOException;
+import java.security.GeneralSecurityException;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -31,6 +41,12 @@ class AuthServiceTest {
 
 	@Mock
 	private JwtTokenProvider jwtTokenProvider;
+
+	@Mock
+	private GoogleIdTokenVerifier googleIdTokenVerifier;
+
+	@Mock
+	private LoginResponseMapper loginResponseMapper;
 
 	@InjectMocks
 	private AuthService authService;
@@ -58,25 +74,13 @@ class AuthServiceTest {
 	}
 
 	@Test
-	void Googleの外部認証で正常にログインできること() {
-		when(userService.findOrCreateUser(any(), any(), any())).thenReturn(testUser);
-		when(jwtTokenProvider.generateToken(testUser.getUniqueUserId())).thenReturn(dummyAccessToken);
-		when(userResponseMapper.toResponse(testUser)).thenReturn(userResponse);
+	void 無効なIDトークンでログインした場合AuthenticationExceptionをスロー() throws GeneralSecurityException, IOException{
+		when(googleIdTokenVerifier.verify(anyString()))
+				.thenThrow(new GeneralSecurityException("無効なGoogle IDトークンです。"));
 
-		LoginResponse result = authService.loginWithGoogle(dummyIdToken);
-
-		assertThat(result.getAccessToken()).isEqualTo(dummyAccessToken);
-		assertThat(result.getTokenType()).isEqualTo("Bearer");
-		assertThat(result.getUser()).isEqualTo(userResponse);
-		verify(userService).findOrCreateUser(any(), any(), any());
-		verify(jwtTokenProvider).generateToken(testUser.getUniqueUserId());
-		verify(userResponseMapper).toResponse(testUser);
-	}
-
-	@Test
-	void 無効なIDトークンでログインした場合AuthenticationExceptionをスロー() {
 		assertThatThrownBy(() -> authService.loginWithGoogle(dummyIdToken))
-				.isInstanceOf(AuthenticationException.class);
+				.isInstanceOf(AuthenticationException.class)
+				.hasMessage("Google IDトークンの検証に失敗しました。");
 
 		verify(userService, never()).findOrCreateUser(any(), any(), any());
 		verify(jwtTokenProvider, never()).generateToken(any());

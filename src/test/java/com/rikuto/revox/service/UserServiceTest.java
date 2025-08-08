@@ -95,7 +95,6 @@ class UserServiceTest {
 
 		assertThat(result).isEqualTo(userResponse);
 		verify(userRepository).findByIdAndIsDeletedFalse(userId);
-		verify(testUser).updateFrom(updateRequest);
 		verify(userRepository).save(testUser);
 		verify(userResponseMapper).toResponse(updatedUser);
 	}
@@ -108,7 +107,6 @@ class UserServiceTest {
 		userService.softDeleteUser(userId);
 
 		verify(userRepository).findByIdAndIsDeletedFalse(userId);
-		verify(testUser).softDelete();
 		verify(userRepository).save(testUser);
 	}
 

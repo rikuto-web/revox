@@ -1,5 +1,6 @@
 package com.rikuto.revox.exception;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -16,6 +17,7 @@ import java.util.stream.Collectors;
  * を捕捉し、適切なHTTPステータスコードとエラーメッセージを含むレスポンスを返します。
  */
 @ControllerAdvice
+@Slf4j
 public class GlobalExceptionHandler {
 
 	/**
@@ -78,6 +80,7 @@ public class GlobalExceptionHandler {
 	 */
 	@ExceptionHandler(Exception.class)
 	public ResponseEntity<String> handleAllUncaughtException(Exception ex) {
+		log.error("内部サーバーエラーが発生しました", ex);
 		return new ResponseEntity<>("内部サーバーエラーが発生しました。", HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 }

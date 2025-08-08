@@ -73,7 +73,7 @@ class AuthUserControllerTest {
 
 	@Test
 	public void Googleの外部認証で正常にログインできること()throws Exception{
-		when(authService.loginWithGoogle(LoginRequest.idToken())).thenReturn(loginResponse);
+		when(authService.loginWithGoogle(LoginRequest.getIdToken())).thenReturn(loginResponse);
 
 		mockMvc.perform(post("/api/auth/google")
 					.contentType(MediaType.APPLICATION_JSON)
