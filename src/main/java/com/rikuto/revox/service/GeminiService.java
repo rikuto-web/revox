@@ -29,6 +29,7 @@ public class GeminiService {
 		try {
 			String projectId = Optional.ofNullable(System.getenv("GOOGLE_CLOUD_PROJECT"))
 					.orElseThrow(() -> new IllegalArgumentException("GOOGLE_CLOUD_PROJECT environment variable not set."));
+
 			String location = Optional.ofNullable(System.getenv("GOOGLE_CLOUD_LOCATION"))
 					.orElseThrow(() -> new IllegalArgumentException("GOOGLE_CLOUD_LOCATION environment variable not set."));
 

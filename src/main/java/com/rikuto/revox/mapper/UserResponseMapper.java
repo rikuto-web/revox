@@ -20,9 +20,10 @@ public class UserResponseMapper {
 
 		return UserResponse.builder()
 				.id(user.getId())
+				.uniqueUserId(user.getUniqueUserId())
+
 				.nickname(user.getNickname())
 				.displayEmail(user.getDisplayEmail())
-				.uniqueUserId(user.getUniqueUserId())
 
 				.createdAt(user.getCreatedAt())
 				.build();

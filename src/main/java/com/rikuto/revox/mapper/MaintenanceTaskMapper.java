@@ -24,10 +24,11 @@ public class MaintenanceTaskMapper {
 
 		return MaintenanceTaskResponse.builder()
 				.categoryId(task.getCategory() != null ? task.getCategory().getId() : null)
-
 				.id(task.getId())
+
 				.name(task.getName())
 				.description(task.getDescription())
+
 				.createdAt(task.getCreatedAt())
 				.updatedAt(task.getUpdatedAt())
 				.build();

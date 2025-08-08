@@ -24,8 +24,8 @@ public class BikeMapper {
 
 		return BikeResponse.builder()
 				.userId(bike.getUser() != null ? bike.getUser().getId() : null)
-
 				.id(bike.getId())
+
 				.manufacturer(bike.getManufacturer())
 				.modelName(bike.getModelName())
 				.modelCode(bike.getModelCode())
