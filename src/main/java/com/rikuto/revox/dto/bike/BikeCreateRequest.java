@@ -46,6 +46,6 @@ public class BikeCreateRequest {
 	@DateTimeFormat(pattern = "yyyy-MM-dd")
 	private LocalDate purchaseDate;
 
-	@Size(max = 2048, message = "画像URLは2048文字以内で入力してください。")
+	@Size(max = 2048)
 	private String imageUrl;
 }

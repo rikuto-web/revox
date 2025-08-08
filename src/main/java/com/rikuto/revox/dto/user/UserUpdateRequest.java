@@ -9,7 +9,7 @@ import lombok.Getter;
 @Builder
 public class UserUpdateRequest {
 
-	@NotBlank
-	@Size(max = 50)
+	@NotBlank(message = "ユーザー名は必須です。")
+	@Size(max = 50, message = "50文字以内で入力してください。")
 	private String nickname;
 }

@@ -127,13 +127,27 @@ public class Bike {
 	 * @param data 更新するバイク情報
 	 */
 	public void updateFrom(BikeUpdateData data) {
-		this.manufacturer = data.getManufacturer();
-		this.modelName = data.getModelName();
-		this.modelCode = data.getModelCode();
-		this.modelYear = data.getModelYear();
-		this.currentMileage = data.getCurrentMileage();
-		this.purchaseDate = data.getPurchaseDate();
-		this.imageUrl = data.getImageUrl();
+		if(data.getManufacturer() != null) {
+			this.manufacturer = data.getManufacturer();
+		}
+		if(data.getModelName() != null) {
+			this.modelName = data.getModelName();
+		}
+		if(data.getModelCode() != null) {
+			this.modelCode = data.getModelCode();
+		}
+		if(data.getModelYear() != null) {
+			this.modelYear = data.getModelYear();
+		}
+		if(data.getCurrentMileage() != null) {
+			this.currentMileage = data.getCurrentMileage();
+		}
+		if(data.getPurchaseDate() != null) {
+			this.purchaseDate = data.getPurchaseDate();
+		}
+		if(data.getImageUrl() != null) {
+			this.imageUrl = data.getImageUrl();
+		}
 	}
 
 	/**

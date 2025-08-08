@@ -9,11 +9,11 @@ import lombok.Getter;
 @Builder
 public class MaintenanceTaskUpdateRequest {
 
-	@NotBlank
-	@Size(max = 100)
+	@NotBlank(message = "タスク名は必須です。")
+	@Size(max = 100, message = "タスク名は100文字以内で入力してください。")
 	private String name;
 
-	@NotBlank
-	@Size(max = 5000)
+	@NotBlank(message = "詳細内容は必須です。")
+	@Size(max = 5000, message = "質問内容は5000文字以内で入力してください。")
 	private String description;
 }

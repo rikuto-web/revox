@@ -79,8 +79,12 @@ public class MaintenanceTask {
 	 * @param request 更新する整備タスク
 	 */
 	public void updateFrom(MaintenanceTaskUpdateRequest request) {
-		this.name = request.getName();
-		this.description = request.getDescription();
+		if (request.getName() != null) {
+			this.name = request.getName();
+		}
+		if (request.getDescription() != null) {
+			this.description = request.getDescription();
+		}
 	}
 
 	/**
