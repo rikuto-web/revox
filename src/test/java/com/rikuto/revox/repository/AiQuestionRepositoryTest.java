@@ -32,6 +32,7 @@ class AiQuestionRepositoryTest {
 	private User createUser(String nickname) {
 		return userRepository.save(User.builder()
 				.nickname(nickname)
+				.uniqueUserId(java.util.UUID.randomUUID().toString())
 				.build());
 	}
 

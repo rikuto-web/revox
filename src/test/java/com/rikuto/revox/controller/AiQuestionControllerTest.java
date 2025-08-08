@@ -1,6 +1,7 @@
 package com.rikuto.revox.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.rikuto.revox.domain.User;
 import com.rikuto.revox.dto.aiquestion.AiQuestionCreateRequest;
 import com.rikuto.revox.dto.aiquestion.AiQuestionResponse;
 import com.rikuto.revox.exception.ResourceNotFoundException;
@@ -56,9 +57,6 @@ class AiQuestionControllerTest {
 	@BeforeEach
 	void setUp() {
 		commonAiQuestionCreateRequest = AiQuestionCreateRequest.builder()
-				.userId(testUserId)
-				.bikeId(testBikeId)
-				.categoryId(testCategoryId)
 				.question("エンジンオイルの交換時期はいつですか？")
 				.build();
 
@@ -79,9 +77,15 @@ class AiQuestionControllerTest {
 	@Test
 	void AI質問が正常に作成され201を返すこと() throws Exception {
 
-		when(aiQuestionService.createAiQuestion(any())).thenReturn(commonAiQuestionResponse);
+		when(aiQuestionService.createAiQuestion(any(AiQuestionCreateRequest.class),
+				eq(testUserId),
+				eq(testBikeId),
+				eq(testCategoryId))).thenReturn(commonAiQuestionResponse);
 
-		mockMvc.perform(post("/api/ai-questions")
+		mockMvc.perform(post("/api/ai-questions/user/{userId}/bike/{bikeId}/category/{categoryId}",
+						testUserId,
+						testBikeId,
+						testCategoryId)
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(commonAiQuestionCreateRequest)))
 				.andExpect(status().isCreated())
@@ -89,43 +93,43 @@ class AiQuestionControllerTest {
 				.andExpect(jsonPath("$.question").value("エンジンオイルの交換時期はいつですか？"))
 				.andExpect(jsonPath("$.answer").value("エンジンオイルは3,000km～5,000kmまたは6ヶ月ごとに交換することをお勧めします。"));
 
-
-		verify(aiQuestionService).createAiQuestion(any());
+		verify(aiQuestionService).createAiQuestion(any(AiQuestionCreateRequest.class),eq(testUserId), eq(testBikeId), eq(testCategoryId));
 	}
 
 	@Test
 	void バリデーションエラー時は400を返すこと() throws Exception {
 
 		AiQuestionCreateRequest invalidRequest = AiQuestionCreateRequest.builder()
-				.bikeId(testBikeId)
-				.categoryId(testCategoryId)
-				.question("エンジンオイルの交換時期はいつですか？")
+				.question("")
 				.build();
 
-		mockMvc.perform(post("/api/ai-questions")
+		mockMvc.perform(post("/api/ai-questions/user/{userId}/bike/{bikeId}/category/{categoryId}",
+						testUserId,
+						testBikeId,
+						testCategoryId)
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(invalidRequest)))
 				.andExpect(status().isBadRequest());
 
-		verify(aiQuestionService, never()).createAiQuestion(any());
+		verify(aiQuestionService, never()).createAiQuestion(any(), any(), any(), any());
 	}
 
 	@Test
 	void 質問内容が空文字の場合400を返すこと() throws Exception {
 
 		AiQuestionCreateRequest invalidRequest = AiQuestionCreateRequest.builder()
-				.userId(testUserId)
-				.bikeId(testBikeId)
-				.categoryId(testCategoryId)
 				.question("")
 				.build();
 
-		mockMvc.perform(post("/api/ai-questions")
+		mockMvc.perform(post("/api/ai-questions/user/{userId}/bike/{bikeId}/category/{categoryId}",
+						testUserId,
+						testBikeId,
+						testCategoryId)
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(invalidRequest)))
 				.andExpect(status().isBadRequest());
 
-		verify(aiQuestionService, never()).createAiQuestion(any());
+		verify(aiQuestionService, never()).createAiQuestion(any(), any(), any(), any());
 	}
 
 	@Test
@@ -158,15 +162,26 @@ class AiQuestionControllerTest {
 	@Test
 	void AI質問作成時にユーザーが見つからない場合404を返すこと() throws Exception {
 
-		when(aiQuestionService.createAiQuestion(any()))
+		Integer dummyUserId = 999;
+
+		when(aiQuestionService.createAiQuestion(any(AiQuestionCreateRequest.class),
+				eq(dummyUserId),
+				any(),
+				any()))
 				.thenThrow(new ResourceNotFoundException("ユーザーが見つかりません"));
 
-		mockMvc.perform(post("/api/ai-questions")
+		mockMvc.perform(post("/api/ai-questions/user/{userId}/bike/{bikeId}/category/{categoryId}",
+						dummyUserId,
+						testBikeId,
+						testCategoryId)
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(commonAiQuestionCreateRequest)))
 				.andExpect(status().isNotFound());
 
-		verify(aiQuestionService).createAiQuestion(any());
+		verify(aiQuestionService).createAiQuestion(any(),
+				eq(dummyUserId),
+				any(),
+				any());
 	}
 
 

@@ -2,20 +2,16 @@ package com.rikuto.revox.service;
 
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
-import com.google.api.client.http.javanet.NetHttpTransport;
-import com.google.api.client.json.gson.GsonFactory;
 import com.rikuto.revox.domain.User;
 import com.rikuto.revox.dto.auth.GoogleTokenPayload;
 import com.rikuto.revox.dto.auth.LoginResponse;
 import com.rikuto.revox.exception.AuthenticationException;
 import com.rikuto.revox.mapper.LoginResponseMapper;
 import com.rikuto.revox.security.jwt.JwtTokenProvider;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
-import java.util.Collections;
 
 /**
  * 外部認証に関するビジネスロジックを処理するサービスクラスです。
@@ -29,16 +25,16 @@ public class AuthService {
 	private final JwtTokenProvider jwtTokenProvider;
 	private final LoginResponseMapper loginResponseMapper;
 
-	private final String googleClientId;
+	private final GoogleIdTokenVerifier googleIdTokenVerifier;
 
 	public AuthService(UserService userService,
 	                   JwtTokenProvider jwtTokenProvider,
 	                   LoginResponseMapper loginResponseMapper,
-	                   @Value("${google.client-id}") String googleClientId) {
+	                   GoogleIdTokenVerifier googleIdTokenVerifier) {
 		this.userService = userService;
 		this.loginResponseMapper = loginResponseMapper;
 		this.jwtTokenProvider = jwtTokenProvider;
-		this.googleClientId = googleClientId;
+		this.googleIdTokenVerifier = googleIdTokenVerifier;
 	}
 
 	/**
@@ -72,27 +68,25 @@ public class AuthService {
 	 * @throws AuthenticationException トークンが無効な場合にスロー
 	 */
 	private GoogleTokenPayload verifyGoogleIdToken(String idTokenString) {
-		GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(new NetHttpTransport(), new GsonFactory())
-				.setAudience(Collections.singletonList(googleClientId))
-				.build();
 		try {
-			GoogleIdToken idToken = verifier.verify(idTokenString);
+			GoogleIdToken idToken = googleIdTokenVerifier.verify(idTokenString);
 			if(idToken != null) {
 				GoogleIdToken.Payload payload = idToken.getPayload();
+
+				String name = (String) payload.get("name");
+				if(name == null || name.isEmpty()) {
+					name = "名無しさん";
+				}
 
 				return GoogleTokenPayload.builder()
 						.sub(payload.getSubject())
 						.email(payload.getEmail())
-						.name((String) payload.get("name"))
+						.name(name)
 						.build();
 			} else {
-				// ここでトークンが無効な理由が分からないことが多いのでログ出力する
-				System.err.println("Google IDトークンの検証に失敗しました。トークン: " + idTokenString);
 				throw new AuthenticationException("無効なGoogle IDトークンです。");
 			}
-		} catch (GeneralSecurityException | IOException e) {
-			System.err.println("Google IDトークンの検証時に例外発生。トークン: " + idTokenString);
-			e.printStackTrace();
+		} catch(GeneralSecurityException | IOException e) {
 			throw new AuthenticationException("Google IDトークンの検証に失敗しました。", e);
 		}
 	}

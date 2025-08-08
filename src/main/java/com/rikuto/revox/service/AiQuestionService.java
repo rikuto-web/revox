@@ -52,23 +52,26 @@ public class AiQuestionService {
 	 * ユーザーと紐づく単一のバイク情報とカテゴリー情報を渡して回答を生成します。
 	 */
 	@Transactional
-	public AiQuestionResponse createAiQuestion(AiQuestionCreateRequest request){
+	public AiQuestionResponse createAiQuestion(AiQuestionCreateRequest request,
+	                                           Integer userId,
+                                               Integer bikeId,
+                                               Integer categoryId
+	                                           ){
 
-		User user = userRepository.findByIdAndIsDeletedFalse(request.getUserId())
+		User user = userRepository.findByIdAndIsDeletedFalse(userId)
 				.orElseThrow(() -> new ResourceNotFoundException(
-						"ユーザーID " + request.getUserId() + " が見つかりません。"));
+						"ユーザーID " + userId + " が見つかりません。"));
 
-		Bike bike = bikeRepository.findByIdAndUserIdAndIsDeletedFalse(request.getUserId(), request.getBikeId())
+		Bike bike = bikeRepository.findByIdAndUserIdAndIsDeletedFalse(userId, bikeId)
 				.orElseThrow(() -> new ResourceNotFoundException(
-						"ユーザー ID " + request.getUserId() + " に紐づくバイクID " + request.getBikeId() + "が見つかりません。"));
+						"ユーザー ID " + userId+ " に紐づくバイクID " + bikeId+ "が見つかりません。"));
 
-		Category category = categoryRepository.findById(request.getCategoryId())
+		Category category = categoryRepository.findById(categoryId)
 				.orElseThrow(() -> new ResourceNotFoundException(
-						"カテゴリーID " + request.getCategoryId() + " が見つかりません。"));
+						"カテゴリーID " + categoryId + " が見つかりません。"));
 
 		AiQuestionPrompt promptDto = AiQuestionPrompt.builder()
 				.question(request.getQuestion())
-				.categoryId(request.getCategoryId())
 
 				.manufacturer(bike.getManufacturer())
 				.modelName(bike.getModelName())
