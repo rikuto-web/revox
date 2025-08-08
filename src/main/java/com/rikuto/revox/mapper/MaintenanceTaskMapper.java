@@ -3,7 +3,7 @@ package com.rikuto.revox.mapper;
 import com.rikuto.revox.dto.maintenancetask.MaintenanceTaskRequest;
 import com.rikuto.revox.dto.maintenancetask.MaintenanceTaskResponse;
 import com.rikuto.revox.domain.Category;
-import com.rikuto.revox.domain.MaintenanceTask;
+import com.rikuto.revox.domain.maintenancetask.MaintenanceTask;
 import org.springframework.stereotype.Component;
 
 import java.util.List;

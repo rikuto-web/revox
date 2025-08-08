@@ -2,6 +2,7 @@ package com.rikuto.revox.controller;
 
 import com.rikuto.revox.dto.maintenancetask.MaintenanceTaskRequest;
 import com.rikuto.revox.dto.maintenancetask.MaintenanceTaskResponse;
+import com.rikuto.revox.dto.maintenancetask.MaintenanceTaskUpdateRequest;
 import com.rikuto.revox.service.MaintenanceTaskService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
@@ -95,7 +96,7 @@ public class MaintenanceTaskController {
 	@PutMapping("/{maintenanceTaskId}")
 	public ResponseEntity<MaintenanceTaskResponse> updateMaintenanceTask(
 			@PathVariable @Positive Integer maintenanceTaskId,
-			@RequestBody @Valid MaintenanceTaskRequest request) {
+			@RequestBody @Valid MaintenanceTaskUpdateRequest request) {
 
 		MaintenanceTaskResponse updateTask
 				= maintenanceTaskService.updateMaintenanceTask(maintenanceTaskId, request);

@@ -1,6 +1,8 @@
-package com.rikuto.revox.domain;
+package com.rikuto.revox.domain.maintenancetask;
 
+import com.rikuto.revox.domain.Category;
 import com.rikuto.revox.dto.maintenancetask.MaintenanceTaskRequest;
+import com.rikuto.revox.dto.maintenancetask.MaintenanceTaskUpdateRequest;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -76,7 +78,7 @@ public class MaintenanceTask {
 	 * 日時はDBで自動設定されるためシステム側では日時の更新は行いません。
 	 * @param request 更新する整備タスク
 	 */
-	public void updateFrom(MaintenanceTaskRequest request) {
+	public void updateFrom(MaintenanceTaskUpdateRequest request) {
 		this.name = request.getName();
 		this.description = request.getDescription();
 	}

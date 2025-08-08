@@ -1,9 +1,10 @@
 package com.rikuto.revox.service;
 
 import com.rikuto.revox.domain.Category;
-import com.rikuto.revox.domain.MaintenanceTask;
+import com.rikuto.revox.domain.maintenancetask.MaintenanceTask;
 import com.rikuto.revox.dto.maintenancetask.MaintenanceTaskRequest;
 import com.rikuto.revox.dto.maintenancetask.MaintenanceTaskResponse;
+import com.rikuto.revox.dto.maintenancetask.MaintenanceTaskUpdateRequest;
 import com.rikuto.revox.exception.ResourceNotFoundException;
 import com.rikuto.revox.mapper.MaintenanceTaskMapper;
 import com.rikuto.revox.repository.CategoryRepository;
@@ -157,12 +158,12 @@ class MaintenanceTaskServiceTest {
 		@Test
 		void 既存の整備タスクが正常に更新され更新された整備タスク情報が返されること() {
 			stubMaintenanceTaskFound();
-			MaintenanceTaskRequest updateRequest = MaintenanceTaskRequest.builder()
-					.categoryId(testCategory.getId())
+			MaintenanceTaskUpdateRequest updateRequest = MaintenanceTaskUpdateRequest.builder()
 					.name("更新されたタスク名")
 					.description("更新された説明")
 					.build();
 			when(maintenanceTaskRepository.save(testMaintenanceTask)).thenReturn(testMaintenanceTask);
+
 			MaintenanceTaskResponse updatedResponse = MaintenanceTaskResponse.builder()
 					.id(testMaintenanceTask.getId())
 					.name("更新されたタスク名")
@@ -180,8 +181,7 @@ class MaintenanceTaskServiceTest {
 		@Test
 		void 整備タスクが見つからない場合にResourceNotFoundExceptionをスローすること() {
 			stubMaintenanceTaskNotFound();
-			MaintenanceTaskRequest updateRequest = MaintenanceTaskRequest.builder()
-					.categoryId(testCategory.getId())
+			MaintenanceTaskUpdateRequest updateRequest = MaintenanceTaskUpdateRequest.builder()
 					.name("更新されたタスク名")
 					.description("更新された説明")
 					.build();

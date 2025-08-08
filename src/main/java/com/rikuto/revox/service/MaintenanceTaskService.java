@@ -3,7 +3,8 @@ package com.rikuto.revox.service;
 import com.rikuto.revox.dto.maintenancetask.MaintenanceTaskRequest;
 import com.rikuto.revox.dto.maintenancetask.MaintenanceTaskResponse;
 import com.rikuto.revox.domain.Category;
-import com.rikuto.revox.domain.MaintenanceTask;
+import com.rikuto.revox.domain.maintenancetask.MaintenanceTask;
+import com.rikuto.revox.dto.maintenancetask.MaintenanceTaskUpdateRequest;
 import com.rikuto.revox.exception.ResourceNotFoundException;
 import com.rikuto.revox.mapper.MaintenanceTaskMapper;
 import com.rikuto.revox.repository.CategoryRepository;
@@ -87,12 +88,17 @@ public class MaintenanceTaskService {
 	 */
 	@Transactional
 	public MaintenanceTaskResponse updateMaintenanceTask(Integer maintenanceTaskId ,
-	                                                     MaintenanceTaskRequest updateMaintenance) {
+	                                                     MaintenanceTaskUpdateRequest updateMaintenance) {
 		MaintenanceTask existingMaintenanceTask = maintenanceTaskRepository.findById(maintenanceTaskId)
 				.orElseThrow(() -> new ResourceNotFoundException(
 						"整備タスクID " + maintenanceTaskId + " が見つかりません。"));
 
-		existingMaintenanceTask.updateFrom(updateMaintenance);
+		MaintenanceTaskUpdateRequest update = MaintenanceTaskUpdateRequest.builder()
+				.name(existingMaintenanceTask.getName())
+				.description(existingMaintenanceTask.getDescription())
+				.build();
+
+		existingMaintenanceTask.updateFrom(update);
 
 		maintenanceTaskRepository.save(existingMaintenanceTask);
 
