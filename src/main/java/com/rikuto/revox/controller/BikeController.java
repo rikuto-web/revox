@@ -4,6 +4,7 @@ import com.rikuto.revox.dto.bike.BikeCreateRequest;
 import com.rikuto.revox.dto.bike.BikeResponse;
 import com.rikuto.revox.service.BikeService;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Positive;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -31,7 +32,7 @@ public class BikeController {
 	 * @return ユーザーが保有する全てのバイク情報
 	 */
 	@GetMapping("/user/{userId}")
-	public ResponseEntity<List<BikeResponse>> getBikeListByUserId (@PathVariable Integer userId){
+	public ResponseEntity<List<BikeResponse>> getBikeListByUserId (@PathVariable @Positive Integer userId){
 		List<BikeResponse> bikeResponseList = bikeService.findBikeByUserId(userId);
 
 		return ResponseEntity.ok(bikeResponseList);
@@ -46,7 +47,8 @@ public class BikeController {
 	 * @return 検索されたバイク情報とHTTPステータス200 OK
 	 */
 	@GetMapping("/user/{userId}/{bikeId}")
-	public ResponseEntity<BikeResponse> getBikeByUserIdAndBikeId(@PathVariable Integer userId, @PathVariable Integer bikeId) {
+	public ResponseEntity<BikeResponse> getBikeByUserIdAndBikeId(@PathVariable @Positive Integer userId,
+	                                                             @PathVariable @Positive Integer bikeId) {
 		BikeResponse bikeResponse = bikeService.findByIdAndUserId(userId, bikeId);
 
 		return ResponseEntity.ok(bikeResponse);
@@ -61,9 +63,9 @@ public class BikeController {
 	 */
 	@PostMapping
 	public ResponseEntity<BikeResponse> registerBike(@RequestBody @Valid BikeCreateRequest request) {
-		BikeResponse registeredBike = bikeService.registerBike(request);
+		BikeResponse registerBike = bikeService.registerBike(request);
 
-		return new ResponseEntity<>(registeredBike, HttpStatus.CREATED);
+		return new ResponseEntity<>(registerBike, HttpStatus.CREATED);
 	}
 
 	/**
@@ -75,10 +77,11 @@ public class BikeController {
 	 * @return 更新されたバイク情報（BikeResponse）とHTTPステータス200 OK
 	 */
 	@PutMapping("/{bikeId}")
-	public ResponseEntity<BikeResponse> updateBike(@PathVariable Integer bikeId, @RequestBody @Valid BikeCreateRequest request) {
-		BikeResponse bikeResponse = bikeService.updateBike(request, bikeId);
+	public ResponseEntity<BikeResponse> updateBike(@PathVariable @Positive Integer bikeId,
+	                                               @RequestBody @Valid BikeCreateRequest request) {
+		BikeResponse updateBike = bikeService.updateBike(request, bikeId);
 
-		return ResponseEntity.ok(bikeResponse);
+		return ResponseEntity.ok(updateBike);
 	}
 
 	/**
@@ -90,7 +93,8 @@ public class BikeController {
 	 * @return HTTPステータス204 No Content
 	 */
 	@PatchMapping("/{userId}/{bikeId}")
-	public ResponseEntity<Void> softDeleteBike(@PathVariable Integer userId, @PathVariable Integer bikeId) {
+	public ResponseEntity<Void> softDeleteBike(@PathVariable @Positive Integer userId,
+	                                           @PathVariable @Positive Integer bikeId) {
 		bikeService.softDeleteBike(userId, bikeId);
 
 		return ResponseEntity.noContent().build();

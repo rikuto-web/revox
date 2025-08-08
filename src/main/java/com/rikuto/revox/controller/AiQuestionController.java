@@ -4,6 +4,7 @@ import com.rikuto.revox.dto.aiquestion.AiQuestionCreateRequest;
 import com.rikuto.revox.dto.aiquestion.AiQuestionResponse;
 import com.rikuto.revox.service.AiQuestionService;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Positive;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,7 +20,7 @@ import java.util.List;
  * AI_APIに関するcontrollerです。
  */
 @RestController
-@RequestMapping("/api/ai-questions")
+@RequestMapping("/api/ai-questions/user/{userId}")
 public class AiQuestionController {
 
 	private final AiQuestionService aiQuestionService;
@@ -35,8 +36,8 @@ public class AiQuestionController {
 	 * @param userId ユーザーID
 	 * @return AI質問履歴リストとHTTPステータス200 OK
 	 */
-	@GetMapping("/user/{userId}")
-	public ResponseEntity<List<AiQuestionResponse>> getAiQuestionsByUserId(@PathVariable Integer userId){
+	@GetMapping
+	public ResponseEntity<List<AiQuestionResponse>> getAiQuestionsByUserId(@PathVariable @Positive Integer userId){
 		List<AiQuestionResponse> responses = aiQuestionService.getAiQuestionByUserId(userId);
 
 		return ResponseEntity.ok(responses);
@@ -49,12 +50,13 @@ public class AiQuestionController {
 	 * @param request 質問リクエスト
 	 * @return 作成されたAI回答情報とHTTPステータス201 Created
 	 */
-	@PostMapping("/user/{userId}/bike/{bikeId}/category/{categoryId}")
+	@PostMapping("/bike/{bikeId}/category/{categoryId}")
 	public ResponseEntity<AiQuestionResponse> createAiQuestion(@RequestBody @Valid AiQuestionCreateRequest request,
-	                                                           @PathVariable Integer userId,
-	                                                           @PathVariable Integer bikeId,
-	                                                           @PathVariable Integer categoryId) {
-		AiQuestionResponse response = aiQuestionService.createAiQuestion(request, userId, bikeId, categoryId);
+	                                                           @PathVariable @Positive Integer userId,
+	                                                           @PathVariable @Positive Integer bikeId,
+	                                                           @PathVariable @Positive Integer categoryId) {
+		AiQuestionResponse response
+				= aiQuestionService.createAiQuestion(request, userId, bikeId, categoryId);
 
 		return new ResponseEntity<>(response, HttpStatus.CREATED);
 	}
