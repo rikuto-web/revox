@@ -9,9 +9,4 @@ import lombok.Getter;
 public class MaintenanceTaskUpdateData {
 	private String name;
 	private String description;
-
-	public MaintenanceTaskUpdateData(String name, String description){
-		this.name = name;
-		this.description = description;
-	}
 }

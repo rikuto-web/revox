@@ -1,6 +1,6 @@
 package com.rikuto.revox.domain.bike;
 
-import com.rikuto.revox.domain.User;
+import com.rikuto.revox.domain.user.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;

@@ -1,7 +1,6 @@
 package com.rikuto.revox.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.rikuto.revox.domain.User;
 import com.rikuto.revox.dto.aiquestion.AiQuestionCreateRequest;
 import com.rikuto.revox.dto.aiquestion.AiQuestionResponse;
 import com.rikuto.revox.exception.ResourceNotFoundException;

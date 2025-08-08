@@ -1,6 +1,6 @@
 package com.rikuto.revox.service;
 
-import com.rikuto.revox.domain.User;
+import com.rikuto.revox.domain.user.User;
 import com.rikuto.revox.domain.bike.BikeUpdateData;
 import com.rikuto.revox.dto.bike.BikeUpdateRequest;
 import com.rikuto.revox.mapper.BikeMapper;

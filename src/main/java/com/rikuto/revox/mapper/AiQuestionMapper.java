@@ -1,6 +1,6 @@
 package com.rikuto.revox.mapper;
 
-import com.rikuto.revox.domain.User;
+import com.rikuto.revox.domain.user.User;
 import com.rikuto.revox.dto.aiquestion.AiQuestionCreateRequest;
 import com.rikuto.revox.dto.aiquestion.AiQuestionResponse;
 import com.rikuto.revox.domain.AiQuestion;

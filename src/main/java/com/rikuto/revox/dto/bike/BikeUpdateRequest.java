@@ -1,6 +1,6 @@
 package com.rikuto.revox.dto.bike;
 
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Builder;
 import lombok.Getter;
@@ -12,11 +12,11 @@ import java.time.LocalDate;
 public class BikeUpdateRequest {
 
 	@Size(max = 50)
-	@NotNull
+	@NotBlank
 	private String manufacturer;
 
 	@Size(max = 100)
-	@NotNull
+	@NotBlank
 	private String modelName;
 
 	@Size(max = 20)

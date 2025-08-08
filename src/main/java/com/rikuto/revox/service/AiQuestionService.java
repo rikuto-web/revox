@@ -6,7 +6,7 @@ import com.rikuto.revox.dto.aiquestion.AiQuestionResponse;
 import com.rikuto.revox.domain.AiQuestion;
 import com.rikuto.revox.domain.bike.Bike;
 import com.rikuto.revox.domain.Category;
-import com.rikuto.revox.domain.User;
+import com.rikuto.revox.domain.user.User;
 import com.rikuto.revox.exception.ResourceNotFoundException;
 import com.rikuto.revox.mapper.AiQuestionMapper;
 import com.rikuto.revox.repository.AiQuestionRepository;
