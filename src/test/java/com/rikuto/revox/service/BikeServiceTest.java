@@ -55,6 +55,7 @@ class BikeServiceTest {
 
 		commonBikeCreateRequest = BikeCreateRequest.builder()
 				.userId(testUser.getId())
+
 				.manufacturer("Honda")
 				.modelName("CBR250RR")
 				.modelCode("MC51")
@@ -65,7 +66,6 @@ class BikeServiceTest {
 				.build();
 	}
 
-	// 共通スタブ補助メソッド
 	private void stubUserFound() {
 		when(userService.findById(testUser.getId())).thenReturn(testUser);
 	}
@@ -119,8 +119,9 @@ class BikeServiceTest {
 		@Test
 		void 新しいバイク情報が正常に登録され登録されたバイク情報が返されること() {
 			stubUserFound();
-			when(bikeMapper.toEntity(testUser, commonBikeCreateRequest)).thenReturn(testBike);
+
 			when(bikeRepository.save(testBike)).thenReturn(testBike);
+			when(bikeMapper.toEntity(testUser, commonBikeCreateRequest)).thenReturn(testBike);
 			BikeResponse expectedResponse = BikeResponse.builder().id(testBike.getId()).build();
 			when(bikeMapper.toResponse(testBike)).thenReturn(expectedResponse);
 
@@ -128,8 +129,8 @@ class BikeServiceTest {
 
 			assertThat(result).isEqualTo(expectedResponse);
 			verify(userService).findById(testUser.getId());
-			verify(bikeMapper).toEntity(testUser, commonBikeCreateRequest);
 			verify(bikeRepository).save(testBike);
+			verify(bikeMapper).toEntity(testUser, commonBikeCreateRequest);
 			verify(bikeMapper).toResponse(testBike);
 		}
 
@@ -141,8 +142,8 @@ class BikeServiceTest {
 					.isInstanceOf(ResourceNotFoundException.class)
 					.hasMessage("ユーザーID " + testUser.getId() + " が見つかりません。");
 
-			verify(bikeMapper, never()).toEntity(any(), any());
 			verify(bikeRepository, never()).save(any());
+			verify(bikeMapper, never()).toEntity(any(), any());
 		}
 	}
 

@@ -1,12 +1,15 @@
 package com.rikuto.revox.exception;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.MessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
+import org.springframework.web.method.annotation.HandlerMethodValidationException;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -70,6 +73,23 @@ public class GlobalExceptionHandler {
 
 		return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
 	}
+
+	/**
+	 * パス変数やリクエストパラメータのバリデーションエラーであるHandlerMethodValidationExceptionを処理します。
+	 * 無効なパス変数などが送信された場合に発生し、すべてのバリデーションエラーメッセージをリスト形式で返します。
+	 * クライアントにはHTTP 400 Bad Requestステータスコードを返します。
+	 * @param ex 発生したHandlerMethodValidationException
+	 * @return エラーメッセージのリストを含むResponseEntity
+	 */
+	@ExceptionHandler(HandlerMethodValidationException.class)
+	public ResponseEntity<List<String>> handleHandlerMethodValidationException(HandlerMethodValidationException ex) {
+		List<String> errors = ex.getAllErrors().stream()
+				.map(MessageSourceResolvable::getDefaultMessage)
+				.collect(Collectors.toList());
+
+		return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+	}
+
 
 	/**
 	 * 上記で捕捉されなかった予期せぬすべての例外を処理します。

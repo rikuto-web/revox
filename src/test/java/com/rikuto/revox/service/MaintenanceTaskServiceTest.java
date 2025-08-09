@@ -71,7 +71,6 @@ class MaintenanceTaskServiceTest {
 				.build();
 	}
 
-	// 共通スタブ補助メソッド
 	private void stubCategoryFound() {
 		when(categoryRepository.findById(testCategory.getId())).thenReturn(Optional.of(testCategory));
 	}
@@ -126,16 +125,16 @@ class MaintenanceTaskServiceTest {
 		@Test
 		void 新しい整備タスクが正常に登録され登録された整備タスク情報が返されること() {
 			stubCategoryFound();
-			when(maintenanceTaskMapper.toEntity(commonMaintenanceTaskRequest, testCategory)).thenReturn(testMaintenanceTask);
 			when(maintenanceTaskRepository.save(testMaintenanceTask)).thenReturn(testMaintenanceTask);
+			when(maintenanceTaskMapper.toEntity(commonMaintenanceTaskRequest, testCategory)).thenReturn(testMaintenanceTask);
 			when(maintenanceTaskMapper.toResponse(testMaintenanceTask)).thenReturn(commonMaintenanceTaskResponse);
 
 			MaintenanceTaskResponse result = maintenanceTaskService.registerMaintenanceTask(commonMaintenanceTaskRequest);
 
 			assertThat(result).isEqualTo(commonMaintenanceTaskResponse);
 			verify(categoryRepository).findById(testCategory.getId());
-			verify(maintenanceTaskMapper).toEntity(commonMaintenanceTaskRequest, testCategory);
 			verify(maintenanceTaskRepository).save(testMaintenanceTask);
+			verify(maintenanceTaskMapper).toEntity(commonMaintenanceTaskRequest, testCategory);
 			verify(maintenanceTaskMapper).toResponse(testMaintenanceTask);
 		}
 
@@ -147,8 +146,8 @@ class MaintenanceTaskServiceTest {
 					.isInstanceOf(ResourceNotFoundException.class)
 					.hasMessageContaining("カテゴリーID " + testCategory.getId() + " が見つかりません。");
 
-			verify(maintenanceTaskMapper, never()).toEntity(any(), any());
 			verify(maintenanceTaskRepository, never()).save(any());
+			verify(maintenanceTaskMapper, never()).toEntity(any(), any());
 		}
 	}
 

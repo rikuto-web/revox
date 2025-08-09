@@ -16,6 +16,7 @@ class MaintenanceTaskRepositoryTest {
 
 	@Autowired
 	private MaintenanceTaskRepository maintenanceTaskRepository;
+
 	@Autowired
 	private CategoryRepository categoryRepository;
 
@@ -46,17 +47,17 @@ class MaintenanceTaskRepositoryTest {
 		createMaintenanceTask(category, "testタスク", "テストテスト", false);
 		createMaintenanceTask(category, "test", "テスト",false);
 
-		Category dummyCategory = creatCategory("testDummyCategory", 888888);
-		createMaintenanceTask(dummyCategory, "ダミーテスト", "ダミー",false);
+		Category otherCategory = creatCategory("testDummyCategory", 888888);
+		createMaintenanceTask(otherCategory, "ダミーテスト", "ダミー",false);
 
-		List<MaintenanceTask> maintenanceTasksForCategory =
+		List<MaintenanceTask> maintenanceTaskList =
 				maintenanceTaskRepository.findByCategoryIdAndIsDeletedFalse(testCategoryId);
 
-		assertThat(maintenanceTasksForCategory).isNotNull();
-		assertThat(maintenanceTasksForCategory).hasSize(2);
-		assertThat(maintenanceTasksForCategory)
+		assertThat(maintenanceTaskList).isNotNull();
+		assertThat(maintenanceTaskList).hasSize(2);
+		assertThat(maintenanceTaskList)
 				.extracting(MaintenanceTask::getName)
-				.containsExactlyInAnyOrder("testタスク", "テスト");
+				.containsExactlyInAnyOrder("testタスク", "test");
 	}
 
 	@Test
@@ -67,13 +68,14 @@ class MaintenanceTaskRepositoryTest {
 		MaintenanceTask maintenanceTask =
 				createMaintenanceTask(category, "testタスク", "テストテスト", false);
 		Integer maintenanceTaskId = maintenanceTask.getId();
+
 		createMaintenanceTask(category, "test", "テスト", false);
 
-		Optional<MaintenanceTask> maintenance =
+		Optional<MaintenanceTask> task =
 				maintenanceTaskRepository.findByCategoryIdAndIdAndIsDeletedFalse(testCategoryId, maintenanceTaskId);
 
-		assertThat(maintenance).isPresent();
-		assertThat(maintenance.get().getName()).isEqualTo("testタスク");
+		assertThat(task).isPresent();
+		assertThat(task.get().getName()).isEqualTo("testタスク");
 
 	}
 
@@ -89,10 +91,10 @@ class MaintenanceTaskRepositoryTest {
 	void 整備タスク未登録のカテゴリーは空のリストを返すこと() {
 		Category existingCategoryWithoutTasks = creatCategory("tテストカテゴリー", 999999999);
 
-		List<MaintenanceTask> foundTasks =
+		List<MaintenanceTask> foundTaskList =
 				maintenanceTaskRepository.findByCategoryIdAndIsDeletedFalse(existingCategoryWithoutTasks.getId());
 
-		assertThat(foundTasks).isEmpty();
+		assertThat(foundTaskList).isEmpty();
 	}
 
 	@Test
@@ -101,11 +103,11 @@ class MaintenanceTaskRepositoryTest {
 		createMaintenanceTask(testCategory, "Active Task", "This is an active task.", false);
 		createMaintenanceTask(testCategory, "Deleted Task", "This task should be deleted.", true);
 
-		List<MaintenanceTask> foundTasks =
+		List<MaintenanceTask> foundTaskList =
 				maintenanceTaskRepository.findByCategoryIdAndIsDeletedFalse(testCategory.getId());
 
-		assertThat(foundTasks).hasSize(1);
-		assertThat(foundTasks).extracting(MaintenanceTask::getName).containsExactly("Active Task");
-		assertThat(foundTasks).extracting(MaintenanceTask::getName).doesNotContain("Deleted Task");
+		assertThat(foundTaskList).hasSize(1);
+		assertThat(foundTaskList).extracting(MaintenanceTask::getName).containsExactly("Active Task");
+		assertThat(foundTaskList).extracting(MaintenanceTask::getName).doesNotContain("Deleted Task");
 	}
 }
