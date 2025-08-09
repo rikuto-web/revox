@@ -46,17 +46,6 @@ public class GlobalExceptionHandler {
 	}
 
 	/**
-	 * ユーザーが既に存在する場合に発生するUserAlreadyExistsExceptionを処理します。
-	 * クライアントにはHTTP 409 Conflictステータスコードを返します。
-	 * * @param ex 発生したUserAlreadyExistsException
-	 * @return エラーメッセージを含むResponseEntity
-	 */
-	@ExceptionHandler(UserAlreadyExistsException.class)
-	public ResponseEntity<String> handleUserAlreadyExistsException (UserAlreadyExistsException ex){
-		return new ResponseEntity<>(ex.getMessage(),HttpStatus.CONFLICT);
-	}
-
-	/**
 	 * ValidアノテーションによるバリデーションエラーであるMethodArgumentNotValidExceptionを処理します。
 	 * 無効なリクエストボディが送信された場合に発生し、すべてのバリデーションエラーメッセージをリスト形式で返します。
 	 * クライアントにはHTTP 400 Bad Requestステータスコードを返します。
