@@ -73,7 +73,6 @@ class MaintenanceTaskControllerTest {
 
 	@Test
 	void カテゴリーIDに紐づく整備タスクを正常に取得できること() throws Exception {
-
 		when(maintenanceTaskService.findMaintenanceTaskByCategoryId(testCategoryId))
 				.thenReturn(List.of(commonMaintenanceTaskResponse));
 
@@ -89,7 +88,6 @@ class MaintenanceTaskControllerTest {
 
 	@Test
 	void 整備タスクが正常に登録され201を返すこと() throws Exception {
-
 		when(maintenanceTaskService.registerMaintenanceTask(any())).thenReturn(commonMaintenanceTaskResponse);
 
 		mockMvc.perform(post("/api/maintenance-task")
@@ -104,11 +102,10 @@ class MaintenanceTaskControllerTest {
 
 	@Test
 	void バリデーションエラー時は400を返すこと() throws Exception {
-
 		MaintenanceTaskRequest invalidRequest = MaintenanceTaskRequest.builder()
 				.categoryId(testCategoryId)
 				.description("説明のみで名前が未設定")
-				.build(); // nameが未設定
+				.build();
 
 		mockMvc.perform(post("/api/maintenance-task")
 						.contentType(MediaType.APPLICATION_JSON)
@@ -120,7 +117,6 @@ class MaintenanceTaskControllerTest {
 
 	@Test
 	void 整備タスクが正常に更新されること() throws Exception {
-
 		when(maintenanceTaskService.updateMaintenanceTask(eq(testMaintenanceTaskId), any()))
 				.thenReturn(commonMaintenanceTaskResponse);
 
@@ -136,7 +132,6 @@ class MaintenanceTaskControllerTest {
 
 	@Test
 	void 整備タスクが見つからない場合は更新時に404を返すこと() throws Exception {
-
 		when(maintenanceTaskService.updateMaintenanceTask(eq(testMaintenanceTaskId), any()))
 				.thenThrow(new ResourceNotFoundException("整備タスクが見つかりません"));
 
@@ -150,7 +145,6 @@ class MaintenanceTaskControllerTest {
 
 	@Test
 	void 論理削除が成功し204を返すこと() throws Exception {
-
 		doNothing().when(maintenanceTaskService).softDeleteMaintenanceTask(testMaintenanceTaskId);
 
 		mockMvc.perform(patch("/api/maintenance-task/{maintenanceTaskId}", testMaintenanceTaskId))
@@ -161,7 +155,6 @@ class MaintenanceTaskControllerTest {
 
 	@Test
 	void 存在しない整備タスクの削除時に404を返すこと() throws Exception {
-
 		doThrow(new ResourceNotFoundException("整備タスクが見つかりません"))
 				.when(maintenanceTaskService).softDeleteMaintenanceTask(testMaintenanceTaskId);
 
@@ -173,7 +166,6 @@ class MaintenanceTaskControllerTest {
 
 	@Test
 	void カテゴリーが見つからない場合は登録時に404を返すこと() throws Exception {
-
 		when(maintenanceTaskService.registerMaintenanceTask(any()))
 				.thenThrow(new ResourceNotFoundException("カテゴリーが見つかりません"));
 

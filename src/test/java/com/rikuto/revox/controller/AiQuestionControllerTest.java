@@ -1,7 +1,6 @@
 package com.rikuto.revox.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.rikuto.revox.domain.User;
 import com.rikuto.revox.dto.aiquestion.AiQuestionCreateRequest;
 import com.rikuto.revox.dto.aiquestion.AiQuestionResponse;
 import com.rikuto.revox.exception.ResourceNotFoundException;
@@ -76,7 +75,6 @@ class AiQuestionControllerTest {
 
 	@Test
 	void AI質問が正常に作成され201を返すこと() throws Exception {
-
 		when(aiQuestionService.createAiQuestion(any(AiQuestionCreateRequest.class),
 				eq(testUserId),
 				eq(testBikeId),
@@ -97,8 +95,7 @@ class AiQuestionControllerTest {
 	}
 
 	@Test
-	void バリデーションエラー時は400を返すこと() throws Exception {
-
+	void バリデーションエラー時は400BadRequestを返すこと() throws Exception {
 		AiQuestionCreateRequest invalidRequest = AiQuestionCreateRequest.builder()
 				.question("")
 				.build();
@@ -116,7 +113,6 @@ class AiQuestionControllerTest {
 
 	@Test
 	void 質問内容が空文字の場合400を返すこと() throws Exception {
-
 		AiQuestionCreateRequest invalidRequest = AiQuestionCreateRequest.builder()
 				.question("")
 				.build();
@@ -134,7 +130,6 @@ class AiQuestionControllerTest {
 
 	@Test
 	void ユーザーIDに紐づくAI質問履歴を正常に取得できること() throws Exception {
-
 		when(aiQuestionService.getAiQuestionByUserId(testUserId)).thenReturn(List.of(commonAiQuestionResponse));
 
 		mockMvc.perform(get("/api/ai-questions/user/{userId}", testUserId)
@@ -149,7 +144,6 @@ class AiQuestionControllerTest {
 
 	@Test
 	void 存在しないユーザーのAI質問履歴取得時に404を返すこと() throws Exception {
-
 		when(aiQuestionService.getAiQuestionByUserId(testUserId))
 				.thenThrow(new ResourceNotFoundException("ユーザーが見つかりません"));
 
@@ -161,7 +155,6 @@ class AiQuestionControllerTest {
 
 	@Test
 	void AI質問作成時にユーザーが見つからない場合404を返すこと() throws Exception {
-
 		Integer dummyUserId = 999;
 
 		when(aiQuestionService.createAiQuestion(any(AiQuestionCreateRequest.class),

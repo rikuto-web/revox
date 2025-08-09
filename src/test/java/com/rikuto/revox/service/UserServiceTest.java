@@ -1,7 +1,8 @@
 package com.rikuto.revox.service;
 
-import com.rikuto.revox.domain.User;
+import com.rikuto.revox.domain.user.User;
 import com.rikuto.revox.dto.user.UserResponse;
+import com.rikuto.revox.domain.user.UserUpdateDate;
 import com.rikuto.revox.dto.user.UserUpdateRequest;
 import com.rikuto.revox.exception.ResourceNotFoundException;
 import com.rikuto.revox.mapper.UserResponseMapper;

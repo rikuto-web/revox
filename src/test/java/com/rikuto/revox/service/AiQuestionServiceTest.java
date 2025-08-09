@@ -1,9 +1,9 @@
 package com.rikuto.revox.service;
 
 import com.rikuto.revox.domain.AiQuestion;
-import com.rikuto.revox.domain.Bike;
+import com.rikuto.revox.domain.bike.Bike;
 import com.rikuto.revox.domain.Category;
-import com.rikuto.revox.domain.User;
+import com.rikuto.revox.domain.user.User;
 import com.rikuto.revox.dto.aiquestion.AiQuestionCreateRequest;
 import com.rikuto.revox.dto.aiquestion.AiQuestionPrompt;
 import com.rikuto.revox.dto.aiquestion.AiQuestionResponse;
@@ -20,6 +20,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.test.mock.mockito.MockBean;
 
 import java.util.List;
 import java.util.Optional;
@@ -52,7 +53,6 @@ class AiQuestionServiceTest {
 
 	@Mock
 	private GeminiService geminiService;
-
 
 	@InjectMocks
 	private AiQuestionService aiQuestionService;
@@ -92,7 +92,6 @@ class AiQuestionServiceTest {
 				.build();
 	}
 
-	// 共通スタブ補助メソッド
 	private void stubUserFound() {
 		when(userRepository.findByIdAndIsDeletedFalse(testUser.getId())).thenReturn(Optional.of(testUser));
 	}
@@ -129,9 +128,11 @@ class AiQuestionServiceTest {
 			stubCategoryFound();
 
 			when(geminiService.generateContent(any(AiQuestionPrompt.class))).thenReturn("Mocked AI Answer");
+
 			when(aiQuestionMapper.toEntity(any(), any(), any(), any(), any())).thenReturn(testAiQuestion);
-			when(aiQuestionRepository.save(testAiQuestion)).thenReturn(testAiQuestion);
 			when(aiQuestionMapper.toResponse(testAiQuestion)).thenReturn(commonAiQuestionResponse);
+
+			when(aiQuestionRepository.save(testAiQuestion)).thenReturn(testAiQuestion);
 
 			AiQuestionResponse result = aiQuestionService.createAiQuestion(commonAiQuestionCreateRequest,
 					testUser.getId(),
@@ -139,11 +140,12 @@ class AiQuestionServiceTest {
 					testCategory.getId());
 
 			assertThat(result).isEqualTo(commonAiQuestionResponse);
+
 			verify(userRepository).findByIdAndIsDeletedFalse(testUser.getId());
 			verify(bikeRepository).findByIdAndUserIdAndIsDeletedFalse(testUser.getId(), testBike.getId());
 			verify(categoryRepository).findById(testCategory.getId());
-			verify(aiQuestionMapper).toEntity(any(), any(), any(), any(), any());
 			verify(aiQuestionRepository).save(testAiQuestion);
+			verify(aiQuestionMapper).toEntity(any(), any(), any(), any(), any());
 			verify(aiQuestionMapper).toResponse(testAiQuestion);
 			verify(geminiService,times(1)).generateContent(any(AiQuestionPrompt.class));
 		}
@@ -203,6 +205,7 @@ class AiQuestionServiceTest {
 		@Test
 		void ユーザーIDに紐づくAI質問履歴を正しく取得できること() {
 			List<AiQuestion> aiQuestions = List.of(testAiQuestion);
+
 			when(aiQuestionRepository.findByUserIdAndIsDeletedFalse(testUser.getId())).thenReturn(aiQuestions);
 			when(aiQuestionMapper.toResponse(testAiQuestion)).thenReturn(commonAiQuestionResponse);
 
@@ -210,6 +213,7 @@ class AiQuestionServiceTest {
 
 			assertThat(result).hasSize(1);
 			assertThat(result.getFirst()).isEqualTo(commonAiQuestionResponse);
+
 			verify(aiQuestionRepository).findByUserIdAndIsDeletedFalse(testUser.getId());
 			verify(aiQuestionMapper).toResponse(testAiQuestion);
 		}
@@ -221,6 +225,7 @@ class AiQuestionServiceTest {
 			List<AiQuestionResponse> result = aiQuestionService.getAiQuestionByUserId(testUser.getId());
 
 			assertThat(result).isEmpty();
+
 			verify(aiQuestionRepository).findByUserIdAndIsDeletedFalse(testUser.getId());
 		}
 	}

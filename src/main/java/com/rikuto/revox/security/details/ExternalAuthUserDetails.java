@@ -1,6 +1,6 @@
 package com.rikuto.revox.security.details;
 
-import com.rikuto.revox.domain.User;
+import com.rikuto.revox.domain.user.User;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
@@ -21,6 +21,7 @@ public class ExternalAuthUserDetails implements UserDetails {
 
 	@Getter
 	private final int id;
+
 	@Getter
 	private final String uniqueUserId;
 
@@ -32,15 +33,10 @@ public class ExternalAuthUserDetails implements UserDetails {
 	 * @param user 認証済みユーザーのドメインオブジェクト
 	 */
 	public ExternalAuthUserDetails(User user) {
-
 		this.id = user.getId();
 		this.uniqueUserId = user.getUniqueUserId();
-
-		// カンマ区切りでロールを分け、文字列として役割を取得します。
 		this.authorities = user.getRoles() != null ?
-				Arrays.stream(user.getRoles().split(","))
-						.map(role -> new SimpleGrantedAuthority("ROLE_" + role))
-						.toList() :
+				Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + user.getRoles())) :
 				Collections.emptyList();
 	}
 

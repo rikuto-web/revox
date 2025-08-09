@@ -3,7 +3,8 @@ package com.rikuto.revox.service;
 import com.rikuto.revox.dto.maintenancetask.MaintenanceTaskRequest;
 import com.rikuto.revox.dto.maintenancetask.MaintenanceTaskResponse;
 import com.rikuto.revox.domain.Category;
-import com.rikuto.revox.domain.MaintenanceTask;
+import com.rikuto.revox.domain.maintenancetask.MaintenanceTask;
+import com.rikuto.revox.dto.maintenancetask.MaintenanceTaskUpdateRequest;
 import com.rikuto.revox.exception.ResourceNotFoundException;
 import com.rikuto.revox.mapper.MaintenanceTaskMapper;
 import com.rikuto.revox.repository.CategoryRepository;
@@ -39,22 +40,22 @@ public class MaintenanceTaskService {
 	 * @return レスポンスへ返還後の整備タスク
 	 */
 	public List<MaintenanceTaskResponse> findMaintenanceTaskByCategoryId(Integer categoryId) {
-		List<MaintenanceTask> maintenanceTask = maintenanceTaskRepository.findByCategoryIdAndIsDeletedFalse(categoryId);
+		List<MaintenanceTask> maintenanceTaskList = maintenanceTaskRepository.findByCategoryIdAndIsDeletedFalse(categoryId);
 
-		return maintenanceTaskMapper.toResponseList(maintenanceTask);
+		return maintenanceTaskMapper.toResponseList(maintenanceTaskList);
 	}
 
 	/**
+	 * 指定されたカテゴリーIDと整備タスクIDに紐づく、論理削除されていない整備タスクを検索します。
 	 *
-	 * @param categoryId
-	 * @param maintenanceTaskId
-	 * @return
+	 * @param categoryId カテゴリーのID
+	 * @param maintenanceTaskId 検索対象の整備タスクID
+	 * @return 検索条件に一致する整備タスクをOptionalで返します。
 	 */
 	public MaintenanceTaskResponse findByCategoryIdAndMaintenanceTaskId(Integer categoryId, Integer maintenanceTaskId){
 		MaintenanceTask maintenanceTask =
 				maintenanceTaskRepository.findByCategoryIdAndIdAndIsDeletedFalse(categoryId, maintenanceTaskId)
-						.orElseThrow(() -> new ResourceNotFoundException(
-								"カテゴリーID " + categoryId + " に紐づく整備タスクID " + maintenanceTaskId + " が見つかりません。"));
+						.orElseThrow(() -> new ResourceNotFoundException("カテゴリーID " + categoryId + " に紐づく整備タスクID " + maintenanceTaskId + " が見つかりません。"));
 
 		return maintenanceTaskMapper.toResponse(maintenanceTask);
 	}
@@ -68,8 +69,7 @@ public class MaintenanceTaskService {
 	@Transactional
 	public MaintenanceTaskResponse registerMaintenanceTask(MaintenanceTaskRequest request) {
 		Category category = categoryRepository.findById(request.getCategoryId())
-				.orElseThrow(() -> new ResourceNotFoundException(
-						"カテゴリーID " + request.getCategoryId() + " が見つかりません。"));
+				.orElseThrow(() -> new ResourceNotFoundException("カテゴリーID " + request.getCategoryId() + " が見つかりません。"));
 
 		MaintenanceTask maintenanceTask = maintenanceTaskMapper.toEntity(request, category);
 
@@ -82,21 +82,25 @@ public class MaintenanceTaskService {
 	 * 整備タスクの更新を行います。
 	 *
 	 * @param maintenanceTaskId 整備タスクID
-	 * @param updateMaintenance 更新するリクエスト情報
+	 * @param request 更新するリクエスト情報
 	 * @return 更新後の整備タスク情報
 	 */
 	@Transactional
 	public MaintenanceTaskResponse updateMaintenanceTask(Integer maintenanceTaskId ,
-	                                                     MaintenanceTaskRequest updateMaintenance) {
+	                                                     MaintenanceTaskUpdateRequest request) {
 		MaintenanceTask existingMaintenanceTask = maintenanceTaskRepository.findById(maintenanceTaskId)
-				.orElseThrow(() -> new ResourceNotFoundException(
-						"整備タスクID " + maintenanceTaskId + " が見つかりません。"));
+				.orElseThrow(() -> new ResourceNotFoundException("整備タスクID " + maintenanceTaskId + " が見つかりません。"));
 
-		existingMaintenanceTask.updateFrom(updateMaintenance);
+		MaintenanceTaskUpdateRequest updateTask = MaintenanceTaskUpdateRequest.builder()
+				.name(request.getName())
+				.description(request.getDescription())
+				.build();
 
-		maintenanceTaskRepository.save(existingMaintenanceTask);
+		existingMaintenanceTask.updateFrom(updateTask);
 
-		return maintenanceTaskMapper.toResponse(existingMaintenanceTask);
+		MaintenanceTask savedTask = maintenanceTaskRepository.save(existingMaintenanceTask);
+
+		return maintenanceTaskMapper.toResponse(savedTask);
 	}
 
 	/**
@@ -107,8 +111,7 @@ public class MaintenanceTaskService {
 	@Transactional
 	public void softDeleteMaintenanceTask(Integer maintenanceTaskId) {
 		MaintenanceTask existingMaintenanceTask = maintenanceTaskRepository.findById(maintenanceTaskId)
-				.orElseThrow(() -> new ResourceNotFoundException(
-						"整備タスクID " + maintenanceTaskId + " が見つかりません。"));
+				.orElseThrow(() -> new ResourceNotFoundException("整備タスクID " + maintenanceTaskId + " が見つかりません。"));
 
 		existingMaintenanceTask.softDelete();
 

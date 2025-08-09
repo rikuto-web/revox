@@ -1,11 +1,7 @@
 package com.rikuto.revox.service;
 
-import com.google.api.client.auth.openidconnect.IdToken;
-import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
-import com.rikuto.revox.domain.User;
-import com.rikuto.revox.dto.auth.GoogleTokenPayload;
-import com.rikuto.revox.dto.auth.LoginResponse;
+import com.rikuto.revox.domain.user.User;
 import com.rikuto.revox.dto.user.UserResponse;
 import com.rikuto.revox.exception.AuthenticationException;
 import com.rikuto.revox.mapper.LoginResponseMapper;
@@ -21,11 +17,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -55,7 +49,6 @@ class AuthServiceTest {
 	private UserResponse userResponse;
 
 	private final String dummyIdToken = "dummy_google_id_token";
-	private final String dummyAccessToken = "dummy_access_token";
 
 	@BeforeEach
 	void setUp() {

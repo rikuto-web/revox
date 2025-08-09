@@ -20,7 +20,6 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDateTime;
 
-import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -67,6 +66,7 @@ class AuthUserControllerTest {
 						.createdAt(LocalDateTime.now())
 						.build())
 				.build();
+
 		reset(authService);
 	}
 

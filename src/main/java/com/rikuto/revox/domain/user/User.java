@@ -1,6 +1,6 @@
-package com.rikuto.revox.domain;
+package com.rikuto.revox.domain.user;
 
-import com.rikuto.revox.dto.user.UserUpdateRequest;
+import com.rikuto.revox.domain.bike.Bike;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -115,10 +115,8 @@ public class User {
 	 *
 	 * @param request 更新リクエスト
 	 */
-	public void updateFrom(UserUpdateRequest request) {
-
-		if(request.getNickname() != null && !request.getNickname().isEmpty()) {
-
+	public void updateFrom(UserUpdateDate request) {
+		if(request.getNickname() != null) {
 			this.nickname = request.getNickname();
 		}
 	}

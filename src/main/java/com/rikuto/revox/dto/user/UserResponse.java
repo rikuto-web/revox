@@ -12,9 +12,10 @@ import java.time.LocalDateTime;
 public class UserResponse {
 
 	private final int id;
+	private final String uniqueUserId;
+
 	private final String nickname;
 	private final String displayEmail;
-	private final String uniqueUserId;
 
 	private LocalDateTime createdAt;
 	private LocalDateTime updatedAt;

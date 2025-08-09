@@ -1,6 +1,6 @@
 package com.rikuto.revox.repository;
 
-import com.rikuto.revox.domain.Bike;
+import com.rikuto.revox.domain.bike.Bike;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

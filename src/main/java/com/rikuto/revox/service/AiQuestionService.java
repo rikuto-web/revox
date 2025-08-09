@@ -4,9 +4,9 @@ import com.rikuto.revox.dto.aiquestion.AiQuestionCreateRequest;
 import com.rikuto.revox.dto.aiquestion.AiQuestionPrompt;
 import com.rikuto.revox.dto.aiquestion.AiQuestionResponse;
 import com.rikuto.revox.domain.AiQuestion;
-import com.rikuto.revox.domain.Bike;
+import com.rikuto.revox.domain.bike.Bike;
 import com.rikuto.revox.domain.Category;
-import com.rikuto.revox.domain.User;
+import com.rikuto.revox.domain.user.User;
 import com.rikuto.revox.exception.ResourceNotFoundException;
 import com.rikuto.revox.mapper.AiQuestionMapper;
 import com.rikuto.revox.repository.AiQuestionRepository;
@@ -59,18 +59,15 @@ public class AiQuestionService {
 	                                           ){
 
 		User user = userRepository.findByIdAndIsDeletedFalse(userId)
-				.orElseThrow(() -> new ResourceNotFoundException(
-						"ユーザーID " + userId + " が見つかりません。"));
+				.orElseThrow(() -> new ResourceNotFoundException("ユーザーID " + userId + " が見つかりません。"));
 
 		Bike bike = bikeRepository.findByIdAndUserIdAndIsDeletedFalse(userId, bikeId)
-				.orElseThrow(() -> new ResourceNotFoundException(
-						"ユーザー ID " + userId+ " に紐づくバイクID " + bikeId+ "が見つかりません。"));
+				.orElseThrow(() -> new ResourceNotFoundException("ユーザー ID " + userId+ " に紐づくバイクID " + bikeId+ "が見つかりません。"));
 
 		Category category = categoryRepository.findById(categoryId)
-				.orElseThrow(() -> new ResourceNotFoundException(
-						"カテゴリーID " + categoryId + " が見つかりません。"));
+				.orElseThrow(() -> new ResourceNotFoundException("カテゴリーID " + categoryId + " が見つかりません。"));
 
-		AiQuestionPrompt promptDto = AiQuestionPrompt.builder()
+		AiQuestionPrompt prompt = AiQuestionPrompt.builder()
 				.question(request.getQuestion())
 
 				.manufacturer(bike.getManufacturer())
@@ -81,13 +78,13 @@ public class AiQuestionService {
 				.purchaseDate(bike.getPurchaseDate())
 				.build();
 
-		String aiAnswer = geminiService.generateContent(promptDto);
+		String aiAnswer = geminiService.generateContent(prompt);
 
-		AiQuestion aiQuestion = aiQuestionMapper.toEntity(request, user, bike ,category, aiAnswer);
+		AiQuestion aiConversation = aiQuestionMapper.toEntity(request, user, bike ,category, aiAnswer);
 
-		AiQuestion savedAiQuestion = aiQuestionRepository.save(aiQuestion);
+		AiQuestion savedAiConversation = aiQuestionRepository.save(aiConversation);
 
-		return aiQuestionMapper.toResponse(savedAiQuestion);
+		return aiQuestionMapper.toResponse(savedAiConversation);
 	}
 
 	/**
@@ -99,9 +96,9 @@ public class AiQuestionService {
 	@Transactional(readOnly = true)
 	public List<AiQuestionResponse> getAiQuestionByUserId(Integer userId) {
 
-		List<AiQuestion> aiQuestions = aiQuestionRepository.findByUserIdAndIsDeletedFalse(userId);
+		List<AiQuestion> aiConversation = aiQuestionRepository.findByUserIdAndIsDeletedFalse(userId);
 
-		return aiQuestions.stream()
+		return aiConversation.stream()
 				.map(aiQuestionMapper::toResponse)
 				.toList();
 	}

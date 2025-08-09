@@ -2,8 +2,10 @@ package com.rikuto.revox.controller;
 
 import com.rikuto.revox.dto.maintenancetask.MaintenanceTaskRequest;
 import com.rikuto.revox.dto.maintenancetask.MaintenanceTaskResponse;
+import com.rikuto.revox.dto.maintenancetask.MaintenanceTaskUpdateRequest;
 import com.rikuto.revox.service.MaintenanceTaskService;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Positive;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,7 +23,7 @@ import java.util.List;
  * 整備タスク情報のCRUD操作を扱うコントローラーです。
  */
 @RestController
-@RequestMapping("api/maintenance-task")
+@RequestMapping("/api/maintenance-task")
 public class MaintenanceTaskController {
 
 	private final MaintenanceTaskService maintenanceTaskService;
@@ -38,20 +40,32 @@ public class MaintenanceTaskController {
 	 * @return 整備タスク情報とHttpステータス　200　OK
 	 */
 	@GetMapping("/category/{categoryId}")
-	public ResponseEntity<List<MaintenanceTaskResponse>> getMaintenanceTaskByCategoryId(@PathVariable Integer categoryId) {
-		List<MaintenanceTaskResponse> maintenanceTaskResponseList =
-				maintenanceTaskService.findMaintenanceTaskByCategoryId(categoryId);
+	public ResponseEntity<List<MaintenanceTaskResponse>> getMaintenanceTaskByCategoryId(
+			@PathVariable @Positive Integer categoryId) {
 
-		return ResponseEntity.ok(maintenanceTaskResponseList);
+		List<MaintenanceTaskResponse> responseList
+				= maintenanceTaskService.findMaintenanceTaskByCategoryId(categoryId);
+
+		return ResponseEntity.ok(responseList);
 	}
 
+	/**
+	 * カテゴリーIDと整備タスクIDで特定の整備タスクを検索します。
+	 * GET /api/maintenance-task/category/{categoryId}/{maintenanceTaskId}
+	 *
+	 * @param categoryId カテゴリーID
+	 * @param maintenanceTaskId 整備タスクID
+	 * @return 整備タスク情報とHttpステータス 200 OK
+	 */
+	@GetMapping("/category/{categoryId}/")
 	public ResponseEntity<MaintenanceTaskResponse> getMaintenanceTaskByCategoryIdAndMaintenanceTaskId(
-			@PathVariable Integer categoryId,
-			@PathVariable Integer maintenanceTaskId) {
-		MaintenanceTaskResponse maintenanceTaskResponse =
-				maintenanceTaskService.findByCategoryIdAndMaintenanceTaskId(categoryId, maintenanceTaskId);
+			@PathVariable @Positive Integer categoryId,
+			@PathVariable @Positive Integer maintenanceTaskId) {
 
-		return ResponseEntity.ok(maintenanceTaskResponse);
+		MaintenanceTaskResponse response
+				= maintenanceTaskService.findByCategoryIdAndMaintenanceTaskId(categoryId, maintenanceTaskId);
+
+		return ResponseEntity.ok(response);
 	}
 
 	/**
@@ -62,11 +76,13 @@ public class MaintenanceTaskController {
 	 * @return 登録済の整備タスク情報とHttpステータス　201
 	 */
 	@PostMapping
-	public ResponseEntity<MaintenanceTaskResponse> registerMaintenanceTask(@Valid @RequestBody MaintenanceTaskRequest request) {
-		MaintenanceTaskResponse registeredMaintenanceTask =
-				maintenanceTaskService.registerMaintenanceTask(request);
+	public ResponseEntity<MaintenanceTaskResponse> registerMaintenanceTask(
+			@RequestBody @Valid MaintenanceTaskRequest request) {
 
-		return new ResponseEntity<>(registeredMaintenanceTask, HttpStatus.CREATED);
+		MaintenanceTaskResponse registerTask
+				= maintenanceTaskService.registerMaintenanceTask(request);
+
+		return new ResponseEntity<>(registerTask, HttpStatus.CREATED);
 	}
 
 	/**
@@ -78,12 +94,14 @@ public class MaintenanceTaskController {
 	 * @return 更新後の整備タスク情報とHttpステータス　200　ok
 	 */
 	@PutMapping("/{maintenanceTaskId}")
-	public ResponseEntity<MaintenanceTaskResponse> updateMaintenanceTask(@PathVariable Integer maintenanceTaskId,
-	                                                                     @RequestBody @Valid MaintenanceTaskRequest request) {
-		MaintenanceTaskResponse maintenanceTaskResponse =
-				maintenanceTaskService.updateMaintenanceTask(maintenanceTaskId, request);
+	public ResponseEntity<MaintenanceTaskResponse> updateMaintenanceTask(
+			@PathVariable @Positive Integer maintenanceTaskId,
+			@RequestBody @Valid MaintenanceTaskUpdateRequest request) {
 
-		return ResponseEntity.ok(maintenanceTaskResponse);
+		MaintenanceTaskResponse updateTask
+				= maintenanceTaskService.updateMaintenanceTask(maintenanceTaskId, request);
+
+		return ResponseEntity.ok(updateTask);
 	}
 
 	/**
@@ -94,8 +112,9 @@ public class MaintenanceTaskController {
 	 * @return Httpステータス　204
 	 */
 	@PatchMapping("/{maintenanceTaskId}")
-	public ResponseEntity<Void> softDeleteMaintenanceTask(@PathVariable Integer maintenanceTaskId) {
+	public ResponseEntity<Void> softDeleteMaintenanceTask(@PathVariable @Positive Integer maintenanceTaskId) {
 		maintenanceTaskService.softDeleteMaintenanceTask(maintenanceTaskId);
+
 		return ResponseEntity.noContent().build();
 	}
 }

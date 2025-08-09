@@ -1,6 +1,6 @@
-package com.rikuto.revox.domain;
+package com.rikuto.revox.domain.bike;
 
-import com.rikuto.revox.dto.bike.BikeCreateRequest;
+import com.rikuto.revox.domain.user.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -124,16 +124,30 @@ public class Bike {
 	/**
 	 * 受け取ったリクエスト内容を更新するメソッドです。
 	 * 日時はDBで自動設定されるためシステム側では日時の更新は行いません。
-	 * @param request 更新するバイク情報
+	 * @param data 更新するバイク情報
 	 */
-	public void updateFrom(BikeCreateRequest request) {
-		this.manufacturer = request.getManufacturer();
-		this.modelName = request.getModelName();
-		this.modelCode = request.getModelCode();
-		this.modelYear = request.getModelYear();
-		this.currentMileage = request.getCurrentMileage();
-		this.purchaseDate = request.getPurchaseDate();
-		this.imageUrl = request.getImageUrl();
+	public void updateFrom(BikeUpdateData data) {
+		if(data.getManufacturer() != null) {
+			this.manufacturer = data.getManufacturer();
+		}
+		if(data.getModelName() != null) {
+			this.modelName = data.getModelName();
+		}
+		if(data.getModelCode() != null) {
+			this.modelCode = data.getModelCode();
+		}
+		if(data.getModelYear() != null) {
+			this.modelYear = data.getModelYear();
+		}
+		if(data.getCurrentMileage() != null) {
+			this.currentMileage = data.getCurrentMileage();
+		}
+		if(data.getPurchaseDate() != null) {
+			this.purchaseDate = data.getPurchaseDate();
+		}
+		if(data.getImageUrl() != null) {
+			this.imageUrl = data.getImageUrl();
+		}
 	}
 
 	/**

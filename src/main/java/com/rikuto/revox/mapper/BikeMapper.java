@@ -2,8 +2,8 @@ package com.rikuto.revox.mapper;
 
 import com.rikuto.revox.dto.bike.BikeCreateRequest;
 import com.rikuto.revox.dto.bike.BikeResponse;
-import com.rikuto.revox.domain.Bike;
-import com.rikuto.revox.domain.User;
+import com.rikuto.revox.domain.bike.Bike;
+import com.rikuto.revox.domain.user.User;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -24,8 +24,8 @@ public class BikeMapper {
 
 		return BikeResponse.builder()
 				.userId(bike.getUser() != null ? bike.getUser().getId() : null)
-
 				.id(bike.getId())
+
 				.manufacturer(bike.getManufacturer())
 				.modelName(bike.getModelName())
 				.modelCode(bike.getModelCode())

@@ -1,12 +1,12 @@
 package com.rikuto.revox.service;
 
-import com.rikuto.revox.domain.User;
+import com.rikuto.revox.domain.user.User;
 import com.rikuto.revox.dto.user.UserResponse;
+import com.rikuto.revox.domain.user.UserUpdateDate;
 import com.rikuto.revox.dto.user.UserUpdateRequest;
 import com.rikuto.revox.exception.ResourceNotFoundException;
 import com.rikuto.revox.mapper.UserResponseMapper;
 import com.rikuto.revox.repository.UserRepository;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,12 +28,10 @@ public class UserService {
 
 	/**
 	 * ユーザーIDでユーザー情報を検索し、フロント側でユーザー情報を取得します。
-	 * 本人または管理者のみアクセス可能です。
 	 *
 	 * @param userId 一意のユーザーID
 	 * @return ユーザー情報
 	 */
-	@PreAuthorize("hasRole('ADMIN') or #userId == authentication.principal.id")
 	public User findById(Integer userId) {
 		return userRepository.findByIdAndIsDeletedFalse(userId)
 				.orElseThrow(() -> new ResourceNotFoundException("ユーザーが見つかりません"));
@@ -41,41 +39,41 @@ public class UserService {
 
 	/**
 	 * ユーザー情報の更新を行います。
-	 * 本人および管理者のみアクセス可能です。
 	 * 外部認証のためニックネームのみ更新可能です。
 	 *
 	 * @param updateRequest 更新リクエスト
 	 * @param userId 一意のユーザーID
 	 * @return 更新後のユーザーレスポンス
 	 */
-	@PreAuthorize("hasRole('ADMIN') or #userId == authentication.principal.id")
 	@Transactional
 	public UserResponse updateUser(UserUpdateRequest updateRequest, Integer userId) {
-		User updateUser = userRepository.findByIdAndIsDeletedFalse(userId)
+		User existingUser = userRepository.findByIdAndIsDeletedFalse(userId)
 				.orElseThrow(() -> new ResourceNotFoundException("ユーザーが見つかりません"));
 
-		updateUser.updateFrom(updateRequest);
+		UserUpdateDate updateUser = UserUpdateDate.builder()
+				.nickname(updateRequest.getNickname())
+				.build();
 
-		User savedUser = userRepository.save(updateUser);
+		existingUser.updateFrom(updateUser);
+
+		User savedUser = userRepository.save(existingUser);
 
 		return userResponseMapper.toResponse(savedUser);
 	}
 
 	/**
 	 * ユーザー情報を論理削除します。
-	 * 本人および管理者のみアクセス可能です。
 	 *
 	 * @param userId 一意のユーザーID
 	 */
-	@PreAuthorize("hasRole('ADMIN') or #userId == authentication.principal.id")
 	@Transactional
 	public void softDeleteUser(Integer userId) {
-		User deleteUser = userRepository.findByIdAndIsDeletedFalse(userId)
+		User existingUser = userRepository.findByIdAndIsDeletedFalse(userId)
 				.orElseThrow(() -> new ResourceNotFoundException("ユーザーが見つかりません"));
 
-		deleteUser.softDelete();
+		existingUser.softDelete();
 
-		userRepository.save(deleteUser);
+		userRepository.save(existingUser);
 	}
 
 	/**

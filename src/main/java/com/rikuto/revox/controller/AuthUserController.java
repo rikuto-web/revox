@@ -32,7 +32,7 @@ public class AuthUserController {
 	 * @return JWTトークンとユーザー情報
 	 */
 	@PostMapping("/google")
-	public ResponseEntity<LoginResponse> loginWithGoogle(@Valid @RequestBody LoginRequest request) {
+	public ResponseEntity<LoginResponse> loginWithGoogle(@RequestBody @Valid LoginRequest request) {
 		LoginResponse response = authService.loginWithGoogle(request.getIdToken());
 
 		return ResponseEntity.ok(response);

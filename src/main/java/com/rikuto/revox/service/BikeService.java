@@ -1,11 +1,13 @@
 package com.rikuto.revox.service;
 
-import com.rikuto.revox.domain.User;
-import com.rikuto.revox.mapper.BikeMapper;
+import com.rikuto.revox.domain.bike.Bike;
+import com.rikuto.revox.domain.bike.BikeUpdateData;
+import com.rikuto.revox.domain.user.User;
 import com.rikuto.revox.dto.bike.BikeCreateRequest;
 import com.rikuto.revox.dto.bike.BikeResponse;
-import com.rikuto.revox.domain.Bike;
+import com.rikuto.revox.dto.bike.BikeUpdateRequest;
 import com.rikuto.revox.exception.ResourceNotFoundException;
+import com.rikuto.revox.mapper.BikeMapper;
 import com.rikuto.revox.repository.BikeRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -53,10 +55,9 @@ public class BikeService {
 	 * @return レスポンスへ変換後のバイク情報
 	 */
 	@Transactional(readOnly = true)
-	public BikeResponse findByIdAndUserId (Integer userId, Integer bikeId){
+	public BikeResponse findByIdAndUserId(Integer userId, Integer bikeId) {
 		Bike bike = bikeRepository.findByIdAndUserIdAndIsDeletedFalse(userId, bikeId)
-				.orElseThrow(() -> new ResourceNotFoundException(
-						"ユーザーID " + userId + " に紐づくバイクID " + bikeId + " が見つかりません。"));
+				.orElseThrow(() -> new ResourceNotFoundException("ユーザーID " + userId + " に紐づくバイクID " + bikeId + " が見つかりません。"));
 
 		return bikeMapper.toResponse(bike);
 	}
@@ -82,18 +83,27 @@ public class BikeService {
 	/**
 	 * 既存のバイク情報を更新します。
 	 *
-	 * @param bikeId 更新するバイクのID
-	 * @param updatedBikeRequest 更新されたバイク情報を含むリクエストDTO
+	 * @param bikeId  更新するバイクのID
+	 * @param request 更新されたバイク情報を含むリクエストDTO
 	 * @return 更新されたバイク情報
 	 * @throws ResourceNotFoundException 指定されたバイクが見つからない場合
 	 */
 	@Transactional
-	public BikeResponse updateBike(BikeCreateRequest updatedBikeRequest, Integer bikeId) {
-		Bike existingBike = bikeRepository.findByIdAndUserIdAndIsDeletedFalse(updatedBikeRequest.getUserId(), bikeId)
-				.orElseThrow(() -> new ResourceNotFoundException(
-						"ユーザーID " + updatedBikeRequest.getUserId() + " に紐づくバイクID " + bikeId + " が見つかりません。"));
+	public BikeResponse updateBike(BikeUpdateRequest request, Integer bikeId, Integer userId) {
+		Bike existingBike = bikeRepository.findByIdAndUserIdAndIsDeletedFalse(userId, bikeId)
+				.orElseThrow(() -> new ResourceNotFoundException("ユーザーID " + userId + " に紐づくバイクID " + bikeId + " が見つかりません。"));
 
-		existingBike.updateFrom(updatedBikeRequest);
+		BikeUpdateData updateBikeData = BikeUpdateData.builder()
+				.manufacturer(request.getManufacturer())
+				.modelName(request.getModelName())
+				.modelCode(request.getModelCode())
+				.modelYear(request.getModelYear())
+				.currentMileage(request.getCurrentMileage())
+				.purchaseDate(request.getPurchaseDate())
+				.imageUrl(request.getImageUrl())
+				.build();
+
+		existingBike.updateFrom(updateBikeData);
 
 		Bike savedBike = bikeRepository.save(existingBike);
 
@@ -110,8 +120,7 @@ public class BikeService {
 	@Transactional
 	public void softDeleteBike(Integer userId, Integer bikeId) {
 		Bike existingBike = bikeRepository.findByIdAndUserIdAndIsDeletedFalse(userId, bikeId)
-				.orElseThrow(() -> new ResourceNotFoundException(
-						"ユーザー ID " + userId + " に紐づくバイクID " + bikeId + "が見つかりません。"));
+				.orElseThrow(() -> new ResourceNotFoundException("ユーザー ID " + userId + " に紐づくバイクID " + bikeId + "が見つかりません。"));
 
 		existingBike.softDelete();
 

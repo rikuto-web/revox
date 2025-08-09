@@ -1,6 +1,6 @@
 package com.rikuto.revox.mapper;
 
-import com.rikuto.revox.domain.User;
+import com.rikuto.revox.domain.user.User;
 import com.rikuto.revox.dto.user.UserResponse;
 import org.springframework.stereotype.Component;
 
@@ -20,9 +20,10 @@ public class UserResponseMapper {
 
 		return UserResponse.builder()
 				.id(user.getId())
+				.uniqueUserId(user.getUniqueUserId())
+
 				.nickname(user.getNickname())
 				.displayEmail(user.getDisplayEmail())
-				.uniqueUserId(user.getUniqueUserId())
 
 				.createdAt(user.getCreatedAt())
 				.build();

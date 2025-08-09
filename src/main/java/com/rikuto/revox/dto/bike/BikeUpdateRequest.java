@@ -1,31 +1,17 @@
-
 package com.rikuto.revox.dto.bike;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 
-/**
- * ユーザーから受け取るバイク情報です。
- * 各フィールドにはバリデーションがあります。
- */
 @Getter
-@NoArgsConstructor
-@AllArgsConstructor
 @Builder
-public class BikeCreateRequest {
-
-	@NotNull(message = "ユーザーIDは必須です。")
-	@Min(value = 1, message = "ユーザーIDは1以上である必要があります。")
-	private Integer userId;
+public class BikeUpdateRequest {
 
 	@NotBlank(message = "メーカー名は必須です。")
 	@Size(max = 50, message = "メーカー名は50文字以内で入力してください。")

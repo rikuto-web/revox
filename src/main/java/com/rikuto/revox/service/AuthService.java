@@ -2,7 +2,7 @@ package com.rikuto.revox.service;
 
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
-import com.rikuto.revox.domain.User;
+import com.rikuto.revox.domain.user.User;
 import com.rikuto.revox.dto.auth.GoogleTokenPayload;
 import com.rikuto.revox.dto.auth.LoginResponse;
 import com.rikuto.revox.exception.AuthenticationException;
@@ -45,31 +45,31 @@ public class AuthService {
 	 * @return ログインレスポンス
 	 */
 	public LoginResponse loginWithGoogle(String googleIdToken) {
-		GoogleTokenPayload idToken = verifyGoogleIdToken(googleIdToken);
-		if(idToken.getEmail() == null) {
+		GoogleTokenPayload payload = verifyGoogleIdToken(googleIdToken);
+		if(payload.getEmail() == null) {
 			throw new AuthenticationException("Googleアカウントのメールアドレスが取得できません。");
 		}
 		User user = userService.findOrCreateUser(
-				idToken.getSub(),
-				idToken.getName(),
-				idToken.getEmail()
+				payload.getSub(),
+				payload.getName(),
+				payload.getEmail()
 		);
 
-		String token = jwtTokenProvider.generateToken(user.getUniqueUserId());
+		String accessToken = jwtTokenProvider.generateToken(user.getUniqueUserId());
 
-		return loginResponseMapper.toLoginResponse(user, token);
+		return loginResponseMapper.toLoginResponse(user, accessToken);
 	}
 
 	/**
 	 * Google IDトークンを検証し、ペイロードを抽出するヘルパーメソッドです。
 	 *
-	 * @param idTokenString Googleから受け取ったIDトークン文字列
+	 * @param googleIdToken Googleから受け取ったIDトークン文字列
 	 * @return ペイロード情報を含むDTO
 	 * @throws AuthenticationException トークンが無効な場合にスロー
 	 */
-	private GoogleTokenPayload verifyGoogleIdToken(String idTokenString) {
+	private GoogleTokenPayload verifyGoogleIdToken(String googleIdToken) {
 		try {
-			GoogleIdToken idToken = googleIdTokenVerifier.verify(idTokenString);
+			GoogleIdToken idToken = googleIdTokenVerifier.verify(googleIdToken);
 			if(idToken != null) {
 				GoogleIdToken.Payload payload = idToken.getPayload();
 

@@ -1,5 +1,6 @@
 package com.rikuto.revox.domain;
 
+import com.rikuto.revox.domain.maintenancetask.MaintenanceTask;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
