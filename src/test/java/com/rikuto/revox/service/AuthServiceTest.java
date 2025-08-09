@@ -53,14 +53,14 @@ class AuthServiceTest {
 	@BeforeEach
 	void setUp() {
 		testUser = User.builder()
-				.id(1)
+				.id(9999)
 				.uniqueUserId("google-sub-id")
 				.nickname("Test User")
 				.displayEmail("test@google.com")
 				.build();
 
 		userResponse = UserResponse.builder()
-				.id(1)
+				.id(9999)
 				.nickname("Test User")
 				.displayEmail("test@google.com")
 				.build();
