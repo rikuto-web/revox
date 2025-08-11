@@ -130,6 +130,10 @@ public class User {
 		this.isDeleted = true;
 	}
 
+	/**
+	 * 論理削除されたユーザーを復元するメソッド名です。
+	 * 日時はDBで自動設定されるためシステム側では日時の更新は行いません。
+	 */
 	public void restoreUser() {
 
 		this.isDeleted = false;

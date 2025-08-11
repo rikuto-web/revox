@@ -80,6 +80,7 @@ public class UserService {
 
 	/**
 	 * 外部認証でのユーザー検索または新規登録を行います。
+	 * 登録履歴のあるユーザーが再登録する場合、論理削除をfalseに変更して取得します。
 	 *
 	 * @param uniqueUserId 外部認証での各一意のID（Googleのsubクレームなど）
 	 * @param name 外部認証先のユーザーネーム
