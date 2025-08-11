@@ -129,4 +129,9 @@ public class User {
 
 		this.isDeleted = true;
 	}
+
+	public void restoreUser() {
+
+		this.isDeleted = false;
+	}
 }
