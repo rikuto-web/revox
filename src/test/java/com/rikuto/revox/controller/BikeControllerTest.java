@@ -56,8 +56,6 @@ class BikeControllerTest {
 	@BeforeEach
 	void setUp() {
 		commonBikeCreateRequest = BikeCreateRequest.builder()
-				.userId(testUserId)
-
 				.manufacturer("Honda")
 				.modelName("CBR250RR")
 				.modelCode("MC51")
@@ -114,7 +112,7 @@ class BikeControllerTest {
 
 	@Test
 	void 新しいバイク情報が正常に登録され201を返すこと() throws Exception {
-		when(bikeService.registerBike(any())).thenReturn(commonBikeResponse);
+		when(bikeService.registerBike(any(), any())).thenReturn(commonBikeResponse);
 
 		mockMvc.perform(post("/api/bikes/user/{userId}", testUserId)
 						.contentType(MediaType.APPLICATION_JSON)
@@ -123,13 +121,12 @@ class BikeControllerTest {
 				.andExpect(jsonPath("$.id").value(testBikeId))
 				.andExpect(jsonPath("$.modelName").value("CBR250RR"));
 
-		verify(bikeService).registerBike(any());
+		verify(bikeService).registerBike(any(), any());
 	}
 
 	@Test
 	void バリデーションエラー時は400を返すこと() throws Exception {
 		BikeCreateRequest invalidRequest = BikeCreateRequest.builder()
-				.userId(testUserId)
 
 				.modelName("CBR250RR")
 				.modelCode("MC51")
@@ -144,7 +141,7 @@ class BikeControllerTest {
 						.content(objectMapper.writeValueAsString(invalidRequest)))
 				.andExpect(status().isBadRequest());
 
-		verify(bikeService, never()).registerBike(any());
+		verify(bikeService, never()).registerBike(any(), any());
 	}
 
 	@Test

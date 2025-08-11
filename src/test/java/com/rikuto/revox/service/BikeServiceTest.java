@@ -54,7 +54,6 @@ class BikeServiceTest {
 		testBike = Bike.builder().id(101).user(testUser).manufacturer("Honda").modelName("CBR250RR").build();
 
 		commonBikeCreateRequest = BikeCreateRequest.builder()
-				.userId(testUser.getId())
 
 				.manufacturer("Honda")
 				.modelName("CBR250RR")
@@ -125,7 +124,7 @@ class BikeServiceTest {
 			BikeResponse expectedResponse = BikeResponse.builder().id(testBike.getId()).build();
 			when(bikeMapper.toResponse(testBike)).thenReturn(expectedResponse);
 
-			BikeResponse result = bikeService.registerBike(commonBikeCreateRequest);
+			BikeResponse result = bikeService.registerBike(commonBikeCreateRequest, testUser.getId());
 
 			assertThat(result).isEqualTo(expectedResponse);
 			verify(userService).findById(testUser.getId());
@@ -138,7 +137,7 @@ class BikeServiceTest {
 		void ユーザーが見つからない場合にResourceNotFoundExceptionをスローすること() {
 			stubUserNotFound();
 
-			assertThatThrownBy(() -> bikeService.registerBike(commonBikeCreateRequest))
+			assertThatThrownBy(() -> bikeService.registerBike(commonBikeCreateRequest, testUser.getId()))
 					.isInstanceOf(ResourceNotFoundException.class)
 					.hasMessage("ユーザーID " + testUser.getId() + " が見つかりません。");
 
