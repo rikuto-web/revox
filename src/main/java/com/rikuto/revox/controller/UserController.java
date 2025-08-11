@@ -49,7 +49,7 @@ public class UserController {
 	 * @param userId ユーザーID
 	 * @return HTTPステータス204 No Content
 	 */
-	@PatchMapping("/{userId}/delete")
+	@PatchMapping("/{userId}")
 	public ResponseEntity<Void> softDeleteUser (@PathVariable @Positive Integer userId){
 		userService.softDeleteUser(userId);
 
