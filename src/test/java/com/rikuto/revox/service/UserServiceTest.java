@@ -2,12 +2,12 @@ package com.rikuto.revox.service;
 
 import com.rikuto.revox.domain.user.User;
 import com.rikuto.revox.dto.user.UserResponse;
-import com.rikuto.revox.domain.user.UserUpdateDate;
 import com.rikuto.revox.dto.user.UserUpdateRequest;
 import com.rikuto.revox.exception.ResourceNotFoundException;
 import com.rikuto.revox.mapper.UserResponseMapper;
 import com.rikuto.revox.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -16,8 +16,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -39,6 +40,7 @@ class UserServiceTest {
 	@BeforeEach
 	void setUp() {
 		testUser = User.builder()
+				.id(1)
 				.uniqueUserId("test-unique-id")
 				.nickname("テストユーザー")
 				.displayEmail("test@example.com")
@@ -56,101 +58,153 @@ class UserServiceTest {
 				.build();
 	}
 
-	@Test
-	void ユーザーIDが存在する場合ユーザーを返す() {
-		Integer userId = 1;
-		when(userRepository.findByIdAndIsDeletedFalse(userId)).thenReturn(Optional.of(testUser));
+	@Nested
+	class FindByIdAndUpdateUserTests {
+		@Test
+		void ユーザーIDが存在する場合ユーザーを返す() {
+			Integer userId = 1;
+			when(userRepository.findByIdAndIsDeletedFalse(userId)).thenReturn(Optional.of(testUser));
 
-		User result = userService.findById(userId);
+			User result = userService.findById(userId);
 
-		assertThat(result).isEqualTo(testUser);
-		verify(userRepository).findByIdAndIsDeletedFalse(userId);
+			assertThat(result).isEqualTo(testUser);
+			verify(userRepository).findByIdAndIsDeletedFalse(userId);
+		}
+
+		@Test
+		void ユーザーが存在しない場合ResourceNotFoundExceptionをスロー() {
+			Integer userId = 999;
+			when(userRepository.findByIdAndIsDeletedFalse(userId)).thenReturn(Optional.empty());
+
+			assertThatThrownBy(() -> userService.findById(userId))
+					.isInstanceOf(ResourceNotFoundException.class)
+					.hasMessage("ユーザーが見つかりません");
+			verify(userRepository).findByIdAndIsDeletedFalse(userId);
+		}
+
+		@Test
+		void 正常にユーザー情報を更新() {
+			Integer userId = 1;
+			User updatedUser = User.builder()
+					.id(1)
+					.uniqueUserId("test-unique-id")
+					.nickname("更新後ニックネーム")
+					.displayEmail("test@example.com")
+					.isDeleted(false)
+					.build();
+
+			when(userRepository.findByIdAndIsDeletedFalse(userId)).thenReturn(Optional.of(testUser));
+			when(userRepository.save(testUser)).thenReturn(updatedUser);
+			when(userResponseMapper.toResponse(updatedUser)).thenReturn(userResponse);
+
+			UserResponse result = userService.updateUser(updateRequest, userId);
+
+			assertThat(result).isEqualTo(userResponse);
+			verify(userRepository).findByIdAndIsDeletedFalse(userId);
+			verify(userRepository).save(testUser);
+			verify(userResponseMapper).toResponse(updatedUser);
+		}
 	}
 
-	@Test
-	void ユーザーが存在しない場合ResourceNotFoundExceptionをスロー() {
-		Integer userId = 999;
-		when(userRepository.findByIdAndIsDeletedFalse(userId)).thenReturn(Optional.empty());
+	@Nested
+	class SoftDeleteUserTests {
+		@Test
+		void 正常にユーザーを論理削除() {
+			Integer userId = 1;
+			when(userRepository.findByIdAndIsDeletedFalse(userId)).thenReturn(Optional.of(testUser));
 
-		assertThatThrownBy(() -> userService.findById(userId))
-				.isInstanceOf(ResourceNotFoundException.class)
-				.hasMessage("ユーザーが見つかりません");
-		verify(userRepository).findByIdAndIsDeletedFalse(userId);
+			userService.softDeleteUser(userId);
+
+			verify(userRepository).findByIdAndIsDeletedFalse(userId);
+			verify(userRepository).save(testUser);
+			assertThat(testUser.isDeleted()).isTrue();
+		}
+
+		@Test
+		void 削除対象ユーザーが見つからない場合ResourceNotFoundExceptionをスロー() {
+			Integer userId = 999;
+			when(userRepository.findByIdAndIsDeletedFalse(userId)).thenReturn(Optional.empty());
+
+			assertThatThrownBy(() -> userService.softDeleteUser(userId))
+					.isInstanceOf(ResourceNotFoundException.class)
+					.hasMessage("ユーザーが見つかりません");
+
+			verify(userRepository).findByIdAndIsDeletedFalse(userId);
+			verify(userRepository, never()).save(any());
+		}
 	}
 
-	@Test
-	void 正常にユーザー情報を更新() {
-		Integer userId = 1;
-		User updatedUser = User.builder()
-				.uniqueUserId("test-unique-id")
-				.nickname("更新後ニックネーム")
-				.displayEmail("test@example.com")
-				.isDeleted(false)
-				.build();
+	@Nested
+	class FindOrCreateUserTests {
+		private String uniqueUserId;
+		private String name;
+		private String email;
 
-		when(userRepository.findByIdAndIsDeletedFalse(userId)).thenReturn(Optional.of(testUser));
-		when(userRepository.save(testUser)).thenReturn(updatedUser);
-		when(userResponseMapper.toResponse(updatedUser)).thenReturn(userResponse);
+		@BeforeEach
+		void setup() {
+			uniqueUserId = "existing-unique-id";
+			name = "既存ユーザー";
+			email = "existing@example.com";
+		}
 
-		UserResponse result = userService.updateUser(updateRequest, userId);
+		@Test
+		void 論理削除されていない既存ユーザーが存在する場合そのユーザーを返す() {
+			when(userRepository.findByUniqueUserId(uniqueUserId)).thenReturn(Optional.of(testUser));
 
-		assertThat(result).isEqualTo(userResponse);
-		verify(userRepository).findByIdAndIsDeletedFalse(userId);
-		verify(userRepository).save(testUser);
-		verify(userResponseMapper).toResponse(updatedUser);
-	}
+			User result = userService.findOrCreateUser(uniqueUserId, name, email);
 
-	@Test
-	void 正常にユーザーを論理削除() {
-		Integer userId = 1;
-		when(userRepository.findByIdAndIsDeletedFalse(userId)).thenReturn(Optional.of(testUser));
+			assertThat(result).isEqualTo(testUser);
+			verify(userRepository).findByUniqueUserId(uniqueUserId);
+			verify(userRepository, never()).save(any());
+		}
 
-		userService.softDeleteUser(userId);
+		@Test
+		void 論理削除されたユーザーが存在する場合復元して返す() {
+			User deletedUser = User.builder()
+					.id(2)
+					.uniqueUserId(uniqueUserId)
+					.nickname("削除済みユーザー")
+					.displayEmail("deleted@example.com")
+					.isDeleted(true)
+					.build();
 
-		verify(userRepository).findByIdAndIsDeletedFalse(userId);
-		verify(userRepository).save(testUser);
-	}
+			when(userRepository.findByUniqueUserId(uniqueUserId)).thenReturn(Optional.of(deletedUser));
+			when(userRepository.save(any(User.class))).thenReturn(deletedUser);
 
-	@Test
-	void 既存ユーザーが存在する場合既存ユーザーを返す() {
-		String uniqueUserId = "existing-unique-id";
-		String name = "既存ユーザー";
-		String email = "existing@example.com";
+			User result = userService.findOrCreateUser(uniqueUserId, name, email);
 
-		when(userRepository.findByUniqueUserIdAndIsDeletedFalse(uniqueUserId))
-				.thenReturn(Optional.of(testUser));
+			assertThat(result).isEqualTo(deletedUser);
+			assertThat(result.isDeleted()).isFalse();
+			verify(userRepository).findByUniqueUserId(uniqueUserId);
+			verify(userRepository).save(deletedUser);
+		}
 
-		User result = userService.findOrCreateUser(uniqueUserId, name, email);
+		@Test
+		void 新規ユーザーの場合新しいユーザーを作成して返す() {
+			String newUniqueUserId = "new-unique-id";
+			String newName = "新規ユーザー";
+			String newEmail = "new@example.com";
 
-		assertThat(result).isEqualTo(testUser);
-		verify(userRepository).findByUniqueUserIdAndIsDeletedFalse(uniqueUserId);
-		verify(userRepository, never()).save(any());
-	}
+			when(userRepository.findByUniqueUserId(newUniqueUserId)).thenReturn(Optional.empty());
+			when(userRepository.save(any(User.class))).thenReturn(
+					User.builder()
+							.id(3)
+							.uniqueUserId(newUniqueUserId)
+							.nickname(newName)
+							.displayEmail(newEmail)
+							.isDeleted(false)
+							.build()
+			);
 
-	@Test
-	void  新規ユーザーの場合新しいユーザーを作成して返す() {
-		String uniqueUserId = "new-unique-id";
-		String name = "新規ユーザー";
-		String email = "new@example.com";
+			User result = userService.findOrCreateUser(newUniqueUserId, newName, newEmail);
 
-		User savedUser = User.builder()
-				.uniqueUserId(uniqueUserId)
-				.nickname(name)
-				.displayEmail(email)
-				.build();
+			assertThat(result).isNotNull();
+			assertThat(result.getUniqueUserId()).isEqualTo(newUniqueUserId);
+			assertThat(result.getNickname()).isEqualTo(newName);
+			assertThat(result.getDisplayEmail()).isEqualTo(newEmail);
 
-		when(userRepository.findByUniqueUserIdAndIsDeletedFalse(uniqueUserId))
-				.thenReturn(Optional.empty());
-		when(userRepository.save(any(User.class))).thenReturn(savedUser);
-
-		User result = userService.findOrCreateUser(uniqueUserId, name, email);
-
-		assertThat(result).isEqualTo(savedUser);
-		verify(userRepository).findByUniqueUserIdAndIsDeletedFalse(uniqueUserId);
-		verify(userRepository).save(argThat(user ->
-				user.getUniqueUserId().equals(uniqueUserId) &&
-						user.getNickname().equals(name) &&
-						user.getDisplayEmail().equals(email)
-		));
+			verify(userRepository).findByUniqueUserId(newUniqueUserId);
+			verify(userRepository).save(any(User.class));
+		}
 	}
 }

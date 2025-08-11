@@ -53,6 +53,19 @@ class UserRepositoryTest {
 	}
 
 	@Test
+	void 論理削除されたユーザーも含めて外部認証IDでの検索が適切に行えること() {
+		User deletedUser = createUser("DeletedUser", "unique_id_deleted");
+		deletedUser.softDelete();
+		userRepository.save(deletedUser);
+
+		Optional<User> foundDeletedUser = userRepository.findByUniqueUserId("unique_id_deleted");
+
+		assertThat(foundDeletedUser).isPresent();
+		assertThat(foundDeletedUser.get().getNickname()).isEqualTo("DeletedUser");
+		assertThat(foundDeletedUser.get().isDeleted()).isTrue();
+	}
+
+	@Test
 	void 論理削除されたユーザーはID検索で取得できないこと() {
 		User deleteUser = User.builder()
 				.uniqueUserId("unique_id_12345")

@@ -17,7 +17,7 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 	 * ユーザーIDでの検索を行います。論理削除された情報は取得しません。
 	 * ログイン後の内部操作で使用します。。
 	 *
-	 * @param id　ユーザーID
+	 * @param id 　ユーザーID
 	 * @return ユーザー情報
 	 */
 	Optional<User> findByIdAndIsDeletedFalse(Integer id);
@@ -31,4 +31,12 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 	 * @return アプリケーション独自の一意なユーザーIDに紐づいたユーザー情報
 	 */
 	Optional<User> findByUniqueUserIdAndIsDeletedFalse(String uniqueUserId);
+
+	/**
+	 * アプリケーション独自の一意なユーザーIDでの検索を行います。
+	 * 論理削除されたユーザーを復元するために使用します。
+	 * @param uniqueUserId アプリケーション独自の一意なユーザーID
+	 * @return DBに存在する全てのユーザー情報
+	 */
+	Optional<User> findByUniqueUserId(String uniqueUserId);
 }

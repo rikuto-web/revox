@@ -10,6 +10,8 @@ import com.rikuto.revox.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 /**
  * ﾕｰｻﾞｰに関するビジネスロジックを処理するサービスクラスです。
  */
@@ -78,6 +80,7 @@ public class UserService {
 
 	/**
 	 * 外部認証でのユーザー検索または新規登録を行います。
+	 * 登録履歴のあるユーザーが再登録する場合、論理削除をfalseに変更して取得します。
 	 *
 	 * @param uniqueUserId 外部認証での各一意のID（Googleのsubクレームなど）
 	 * @param name 外部認証先のユーザーネーム
@@ -86,14 +89,22 @@ public class UserService {
 	 */
 	@Transactional
 	public User findOrCreateUser(String uniqueUserId, String name, String email) {
-		return userRepository.findByUniqueUserIdAndIsDeletedFalse(uniqueUserId)
-				.orElseGet(() -> {
-					User newUser = User.builder()
-							.uniqueUserId(uniqueUserId)
-							.nickname(name)
-							.displayEmail(email)
-							.build();
-					return userRepository.save(newUser);
-				});
+		Optional<User> alluser = userRepository.findByUniqueUserId(uniqueUserId);
+
+		if (alluser.isPresent()) {
+			User existingUser = alluser.get();
+			if (existingUser.isDeleted()) {
+				existingUser.restoreUser();
+				userRepository.save(existingUser);
+			}
+			return existingUser;
+		} else {
+			User newUser = User.builder()
+					.uniqueUserId(uniqueUserId)
+					.nickname(name)
+					.displayEmail(email)
+					.build();
+			return userRepository.save(newUser);
+		}
 	}
 }
