@@ -33,6 +33,9 @@ public class BikeMapper {
 				.currentMileage(bike.getCurrentMileage())
 				.purchaseDate(bike.getPurchaseDate())
 				.imageUrl(bike.getImageUrl())
+
+				.createdAt(bike.getCreatedAt())
+				.updatedAt(bike.getUpdatedAt())
 				.build();
 	}
 

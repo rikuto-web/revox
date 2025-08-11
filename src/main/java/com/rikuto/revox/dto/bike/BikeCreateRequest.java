@@ -23,10 +23,6 @@ import java.time.LocalDate;
 @Builder
 public class BikeCreateRequest {
 
-	@NotNull(message = "ユーザーIDは必須です。")
-	@Min(value = 1, message = "ユーザーIDは1以上である必要があります。")
-	private Integer userId;
-
 	@NotBlank(message = "メーカー名は必須です。")
 	@Size(max = 50, message = "メーカー名は50文字以内で入力してください。")
 	private String manufacturer;

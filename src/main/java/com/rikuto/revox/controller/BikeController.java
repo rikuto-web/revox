@@ -63,8 +63,9 @@ public class BikeController {
 	 * @return 登録されたバイク情報とHTTPステータス201 Created
 	 */
 	@PostMapping
-	public ResponseEntity<BikeResponse> registerBike(@RequestBody @Valid BikeCreateRequest request) {
-		BikeResponse registerBike = bikeService.registerBike(request);
+	public ResponseEntity<BikeResponse> registerBike(@RequestBody @Valid BikeCreateRequest request,
+	                                                 @PathVariable @Positive Integer userId) {
+		BikeResponse registerBike = bikeService.registerBike(request, userId);
 
 		return new ResponseEntity<>(registerBike, HttpStatus.CREATED);
 	}

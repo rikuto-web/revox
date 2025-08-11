@@ -70,8 +70,8 @@ public class BikeService {
 	 * @throws ResourceNotFoundException 指定されたユーザーが見つからない場合
 	 */
 	@Transactional
-	public BikeResponse registerBike(BikeCreateRequest request) {
-		User user = userService.findById(request.getUserId());
+	public BikeResponse registerBike(BikeCreateRequest request, Integer userId) {
+		User user = userService.findById(userId);
 
 		Bike bike = bikeMapper.toEntity(user, request);
 
