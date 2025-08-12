@@ -22,7 +22,7 @@ public interface MaintenanceTaskRepository extends JpaRepository<MaintenanceTask
 	 * @param pageable ページング情報
 	 * @return 整備タスクList
 	 */
-	List<MaintenanceTask> findByUserIdAndIsDeletedFalse(Integer userId, Pageable pageable);
+	List<MaintenanceTask> findByBike_UserIdAndIsDeletedFalse(Integer userId, Pageable pageable);
 
 	/**
 	 * 指定されたバイクIDに紐づく、論理削除されていないすべての整備タスクを検索します。
@@ -42,20 +42,12 @@ public interface MaintenanceTaskRepository extends JpaRepository<MaintenanceTask
 	List<MaintenanceTask> findByBikeIdAndCategoryIdAndIsDeletedFalse(Integer bikeId, Integer categoryId);
 
 	/**
-	 * カテゴリーIDに紐づいた論理削除されていない整備タスクを検索します。
-	 *
-	 * @param categoryId カテゴリーID
-	 * @return カテゴリーIDに紐づいた整備タスクList
-	 */
-	List<MaintenanceTask> findByCategoryIdAndIsDeletedFalse(Integer categoryId);
-
-	/**
 	 * カテゴリーID、整備タスクIDに紐づく、論理削除されていない整備タスクを検索します。
 	 *
 	 * @param categoryId カテゴリーのID
-	 * @param maintenanceTaskId 整備タスクID
+	 * @param id 整備タスクID
 	 * @return 整備タスクをOptionalで返します。
 	 */
-	Optional<MaintenanceTask> findByCategoryIdAndTaskIdAndIsDeletedFalse(Integer categoryId, Integer maintenanceTaskId);
+	Optional<MaintenanceTask> findByCategoryIdAndIdAndIsDeletedFalse(Integer categoryId, Integer id);
 
 }

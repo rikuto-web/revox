@@ -70,12 +70,12 @@ public class MaintenanceTaskService {
 	 * ユーザーIDに紐づく最新の整備タスクを指定件数分検索します。
 	 *
 	 * @param userId ユーザーID
-	 * @return ユーザーIDに紐づく最新の整備タスクList
+	 * @return ユーザーIDに紐づく最新の整備タスクリスト
 	 */
 	public List<MaintenanceTaskResponse> findLatestMaintenanceTasksByUserId(Integer userId) {
 		Pageable pageable = PageRequest.of(0, 5, Sort.by("createdAt").descending());
 
-		List<MaintenanceTask> tasks = maintenanceTaskRepository.findByUserIdAndIsDeletedFalse(userId, pageable);
+		List<MaintenanceTask> tasks = maintenanceTaskRepository.findByBike_UserIdAndIsDeletedFalse(userId, pageable);
 
 		return maintenanceTaskMapper.toResponseList(tasks);
 	}
@@ -84,7 +84,7 @@ public class MaintenanceTaskService {
 	 * 指定されたバイクIDに紐づく、論理削除されていないすべての整備タスクを検索します。
 	 *
 	 * @param bikeId バイクID
-	 * @return バイクIDに紐づく整備タスクList
+	 * @return バイクIDに紐づく整備タスクリスト
 	 */
 	public List<MaintenanceTaskResponse> findByBikeId(Integer bikeId) {
 		List<MaintenanceTask> tasks = maintenanceTaskRepository.findByBikeIdAndIsDeletedFalse(bikeId);
@@ -93,23 +93,11 @@ public class MaintenanceTaskService {
 	}
 
 	/**
-	 * 指定されたカテゴリーIDに紐づく、論理削除されていないすべての整備タスクを検索します。
-	 *
-	 * @param categoryId カテゴリーID
-	 * @return カテゴリーIDに紐づく整備タスクList
-	 */
-	public List<MaintenanceTaskResponse> findMaintenanceTaskByCategoryId(Integer categoryId) {
-		List<MaintenanceTask> maintenanceTaskList = maintenanceTaskRepository.findByCategoryIdAndIsDeletedFalse(categoryId);
-
-		return maintenanceTaskMapper.toResponseList(maintenanceTaskList);
-	}
-
-	/**
 	 * 指定されたバイクIDとカテゴリーIDに紐づく、論理削除されていないすべての整備タスクを検索します。
 	 *
 	 * @param bikeId バイクID
 	 * @param categoryId カテゴリーID
-	 * @return バイクIDとカテゴリーIDで絞り込んだ整備タスクList
+	 * @return バイクIDとカテゴリーIDで絞り込んだ整備タスクリスト
 	 */
 	public List<MaintenanceTaskResponse> findByBikeIdAndCategoryId(Integer bikeId, Integer categoryId) {
 		List<MaintenanceTask> tasks = maintenanceTaskRepository.findByBikeIdAndCategoryIdAndIsDeletedFalse(bikeId, categoryId);
@@ -125,8 +113,7 @@ public class MaintenanceTaskService {
 	 * @return 検索条件に一致する整備タスクをOptionalで返します。
 	 */
 	public MaintenanceTaskResponse findByCategoryIdAndMaintenanceTaskId(Integer categoryId, Integer maintenanceTaskId) {
-		MaintenanceTask maintenanceTask =
-				maintenanceTaskRepository.findByCategoryIdAndTaskIdAndIsDeletedFalse(categoryId, maintenanceTaskId)
+		MaintenanceTask maintenanceTask = maintenanceTaskRepository.findByCategoryIdAndIdAndIsDeletedFalse(categoryId, maintenanceTaskId)
 						.orElseThrow(() -> new ResourceNotFoundException("カテゴリーID " + categoryId + " に紐づく整備タスクID " + maintenanceTaskId + " が見つかりません。"));
 
 		return maintenanceTaskMapper.toResponse(maintenanceTask);
