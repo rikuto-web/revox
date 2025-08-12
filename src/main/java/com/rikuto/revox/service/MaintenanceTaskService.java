@@ -105,20 +105,6 @@ public class MaintenanceTaskService {
 		return maintenanceTaskMapper.toResponseList(tasks);
 	}
 
-	/**
-	 * 指定されたカテゴリーIDと整備タスクIDに紐づく、論理削除されていない整備タスクを検索します。
-	 *
-	 * @param categoryId カテゴリーID
-	 * @param maintenanceTaskId 整備タスクID
-	 * @return 検索条件に一致する整備タスクをOptionalで返します。
-	 */
-	public MaintenanceTaskResponse findByCategoryIdAndMaintenanceTaskId(Integer categoryId, Integer maintenanceTaskId) {
-		MaintenanceTask maintenanceTask = maintenanceTaskRepository.findByCategoryIdAndIdAndIsDeletedFalse(categoryId, maintenanceTaskId)
-						.orElseThrow(() -> new ResourceNotFoundException("カテゴリーID " + categoryId + " に紐づく整備タスクID " + maintenanceTaskId + " が見つかりません。"));
-
-		return maintenanceTaskMapper.toResponse(maintenanceTask);
-	}
-
 	// UPDATE
 	//------------------------------------------------------------------------------------------------------------------
 	/**

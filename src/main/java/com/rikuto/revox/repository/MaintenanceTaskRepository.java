@@ -40,14 +40,4 @@ public interface MaintenanceTaskRepository extends JpaRepository<MaintenanceTask
 	 * @return 整備タスクList
 	 */
 	List<MaintenanceTask> findByBikeIdAndCategoryIdAndIsDeletedFalse(Integer bikeId, Integer categoryId);
-
-	/**
-	 * カテゴリーID、整備タスクIDに紐づく、論理削除されていない整備タスクを検索します。
-	 *
-	 * @param categoryId カテゴリーのID
-	 * @param id 整備タスクID
-	 * @return 整備タスクをOptionalで返します。
-	 */
-	Optional<MaintenanceTask> findByCategoryIdAndIdAndIsDeletedFalse(Integer categoryId, Integer id);
-
 }

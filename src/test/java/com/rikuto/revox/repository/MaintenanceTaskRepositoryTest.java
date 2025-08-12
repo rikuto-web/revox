@@ -193,37 +193,4 @@ class MaintenanceTaskRepositoryTest {
 			assertThat(tasks).isEmpty();
 		}
 	}
-
-	@Nested
-	class FindByCategoryIdAndTaskIdTests {
-		@Test
-		void 指定されたカテゴリーIDで整備タスクIDに紐づく単一の整備タスク情報を正しく取得できること() {
-			MaintenanceTask maintenanceTask = createMaintenanceTask(testCategory, testBike, "testタスク", false);
-			Integer maintenanceTaskId = maintenanceTask.getId();
-
-			createMaintenanceTask(testCategory, testBike, "test", false);
-
-			Optional<MaintenanceTask> task =
-					maintenanceTaskRepository.findByCategoryIdAndIdAndIsDeletedFalse(testCategory.getId(), maintenanceTaskId);
-
-			assertThat(task).isPresent();
-			assertThat(task.get().getName()).isEqualTo("testタスク");
-		}
-
-		@Test
-		void 指定されたカテゴリーIDで存在しない整備タスクIDに対して空のOptionalを返すこと() {
-			Optional<MaintenanceTask> task = maintenanceTaskRepository.findByCategoryIdAndIdAndIsDeletedFalse(testCategory.getId(), 999999999);
-
-			assertThat(task).isEmpty();
-		}
-
-		@Test
-		void 論理削除されたタスクは検索結果に含まれないこと() {
-			MaintenanceTask deletedTask = createMaintenanceTask(testCategory, testBike, "Deleted Task", true);
-
-			Optional<MaintenanceTask> task = maintenanceTaskRepository.findByCategoryIdAndIdAndIsDeletedFalse(testCategory.getId(), deletedTask.getId());
-
-			assertThat(task).isEmpty();
-		}
-	}
 }

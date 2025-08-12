@@ -96,22 +96,6 @@ public class MaintenanceTaskController {
 		return ResponseEntity.ok(responseList);
 	}
 
-	/**
-	 * カテゴリーIDと整備タスクIDに紐づいた整備タスクを取得します
-	 * GET /api/maintenance-task/bike/{bikeId}/category/{categoryId}/maintenance-tasks/{maintenanceTaskId}
-	 *
-	 * @param categoryId カテゴリーID
-	 * @param maintenanceTaskId 整備タスクID
-	 * @return カテゴリーIDと整備タスクIDで絞り込んだ整備タスク
-	 */
-	@GetMapping("/{categoryId}/maintenance-tasks/{maintenanceTaskId}")
-	public ResponseEntity<MaintenanceTaskResponse> getMaintenanceTaskById(@PathVariable Integer categoryId,
-	                                                                      @PathVariable Integer maintenanceTaskId) {
-		MaintenanceTaskResponse response = maintenanceTaskService.findByCategoryIdAndMaintenanceTaskId(categoryId, maintenanceTaskId);
-
-		return ResponseEntity.ok(response);
-	}
-
 	// UPDATE
 	//------------------------------------------------------------------------------------------------------------------
 
