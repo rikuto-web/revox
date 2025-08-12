@@ -23,6 +23,10 @@ public class MaintenanceTaskRequest {
 	@Min(value = 1, message = "カテゴリーIDは1以上である必要があります。")
 	private Integer categoryId;
 
+	@NotNull(message = "バイクIDは必須です。")
+	@Min(value = 1, message = "バイクIDは1以上である必要があります。")
+	private Integer bikeId;
+
 	@NotBlank(message = "タスク名は必須です。")
 	@Size(max = 100, message = "タスク名は100文字以内で入力してください。")
 	private String name;

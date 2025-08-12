@@ -1,6 +1,7 @@
 package com.rikuto.revox.repository;
 
 import com.rikuto.revox.domain.maintenancetask.MaintenanceTask;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -15,19 +16,46 @@ import java.util.Optional;
 public interface MaintenanceTaskRepository extends JpaRepository<MaintenanceTask, Integer> {
 
 	/**
-	 * カテゴリーIDに紐づいた整備タスクの検索を行います
+	 * 指定されたユーザーIDに紐づく、論理削除されていない最新の整備タスクを指定件数分検索します。
+	 *
+	 * @param userId ユーザーID
+	 * @param pageable ページング情報
+	 * @return 整備タスクList
+	 */
+	List<MaintenanceTask> findByUserIdAndIsDeletedFalse(Integer userId, Pageable pageable);
+
+	/**
+	 * 指定されたバイクIDに紐づく、論理削除されていないすべての整備タスクを検索します。
+	 *
+	 * @param bikeId バイクID
+	 * @return 整備タスクList
+	 */
+	List<MaintenanceTask> findByBikeIdAndIsDeletedFalse(Integer bikeId);
+
+	/**
+	 * 指定されたバイクIDとカテゴリーIDに紐づく、論理削除されていないすべての整備タスクを検索します。
+	 *
+	 * @param bikeId バイクID
+	 * @param categoryId カテゴリーID
+	 * @return 整備タスクList
+	 */
+	List<MaintenanceTask> findByBikeIdAndCategoryIdAndIsDeletedFalse(Integer bikeId, Integer categoryId);
+
+	/**
+	 * カテゴリーIDに紐づいた論理削除されていない整備タスクを検索します。
 	 *
 	 * @param categoryId カテゴリーID
-	 * @return カテゴリーIDに紐づいた整備タスクリスト
+	 * @return カテゴリーIDに紐づいた整備タスクList
 	 */
 	List<MaintenanceTask> findByCategoryIdAndIsDeletedFalse(Integer categoryId);
 
 	/**
-	 * 指定されたカテゴリーID、整備タスクIDに紐づく、論理削除されていない整備タスクを検索します。
+	 * カテゴリーID、整備タスクIDに紐づく、論理削除されていない整備タスクを検索します。
 	 *
-	 * @param categoryId 整備タスクが属するカテゴリーのID
-	 * @param maintenanceTaskId 検索対象の整備タスクID
-	 * @return 指定された条件に一致する整備タスクをOptionalで返します。
+	 * @param categoryId カテゴリーのID
+	 * @param maintenanceTaskId 整備タスクID
+	 * @return 整備タスクをOptionalで返します。
 	 */
-	Optional<MaintenanceTask> findByCategoryIdAndIdAndIsDeletedFalse(Integer categoryId, Integer maintenanceTaskId);
+	Optional<MaintenanceTask> findByCategoryIdAndTaskIdAndIsDeletedFalse(Integer categoryId, Integer maintenanceTaskId);
+
 }

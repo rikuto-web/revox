@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 /**
- * 整備タスク情報のCRUD操作を扱うコントローラーです。
+ * 整備タスクに関するCRUD操作を扱うコントローラーです。
  */
 @RestController
 @RequestMapping("/api/maintenance-task")
@@ -33,39 +33,49 @@ public class MaintenanceTaskController {
 	}
 
 	/**
-	 * カテゴリーIDに紐づいた整備タスクを全件検索します。
-	 * GET /api/maintenance-task/category/{categoryId}
+	 * ユーザーIDに紐づく整備タスクを取得します。
+	 * ダッシュボードでの最新記録表示に利用します。
+	 * GET /api/maintenance-task/user/{userId}
 	 *
-	 * @param categoryId カテゴリーID
-	 * @return 整備タスク情報とHttpステータス　200　OK
+	 * @param userId ユーザーID
+	 * @return ユーザーIDに紐づく全ての整備記録
 	 */
-	@GetMapping("/category/{categoryId}")
-	public ResponseEntity<List<MaintenanceTaskResponse>> getMaintenanceTaskByCategoryId(
-			@PathVariable @Positive Integer categoryId) {
+	@GetMapping("/user/{userId}")
+	public ResponseEntity<List<MaintenanceTaskResponse>> getLatestMaintenanceTasksByUserId(@PathVariable @Positive Integer userId) {
 
-		List<MaintenanceTaskResponse> responseList
-				= maintenanceTaskService.findMaintenanceTaskByCategoryId(categoryId);
+		List<MaintenanceTaskResponse> responseList = maintenanceTaskService.findLatestMaintenanceTasksByUserId(userId);
 
 		return ResponseEntity.ok(responseList);
 	}
 
 	/**
-	 * カテゴリーIDと整備タスクIDで特定の整備タスクを検索します。
-	 * GET /api/maintenance-task/category/{categoryId}/{maintenanceTaskId}
+	 * バイクIDに紐づいた整備タスクを取得します。
+	 * GET /api/maintenance-task/bike/{bikeId}
 	 *
-	 * @param categoryId カテゴリーID
-	 * @param maintenanceTaskId 整備タスクID
-	 * @return 整備タスク情報とHttpステータス 200 OK
+	 * @param bikeId バイクID
+	 * @return バイクIDに紐づいた整備記録
 	 */
-	@GetMapping("/category/{categoryId}/")
-	public ResponseEntity<MaintenanceTaskResponse> getMaintenanceTaskByCategoryIdAndMaintenanceTaskId(
-			@PathVariable @Positive Integer categoryId,
-			@PathVariable @Positive Integer maintenanceTaskId) {
+	@GetMapping("/bike/{bikeId}")
+	public ResponseEntity<List<MaintenanceTaskResponse>> getMaintenanceTaskByBikeID(@PathVariable @Positive Integer bikeId) {
+		List<MaintenanceTaskResponse> responseList = maintenanceTaskService.findByBikeId(bikeId);
 
-		MaintenanceTaskResponse response
-				= maintenanceTaskService.findByCategoryIdAndMaintenanceTaskId(categoryId, maintenanceTaskId);
+		return ResponseEntity.ok(responseList);
+	}
 
-		return ResponseEntity.ok(response);
+	/**
+	 * バイクIDとカテゴリーIDに紐づいた整備記録を取得します。
+	 * GET /api/maintenance-task/bike/{bikeId}/category/{categoryId}
+	 *
+	 * @param bikeId バイクID
+	 * @param categoryId カテゴリーID
+	 * @return バイクIDとカテゴリーIDで絞り込んだ整備記録
+	 */
+	@GetMapping("/bike/{bikeId}/category/{categoryId}")
+	public ResponseEntity<List<MaintenanceTaskResponse>> getMaintenanceTaskByBikeIdAndCategoryId(@PathVariable @Positive Integer bikeId,
+	                                                                                             @PathVariable @Positive Integer categoryId) {
+		List<MaintenanceTaskResponse> responseList = maintenanceTaskService.findByBikeIdAndCategoryId(bikeId, categoryId);
+
+		return ResponseEntity.ok(responseList);
 	}
 
 	/**
@@ -73,14 +83,11 @@ public class MaintenanceTaskController {
 	 * POST /api/maintenance-task
 	 *
 	 * @param request 登録する整備タスク情報
-	 * @return 登録済の整備タスク情報とHttpステータス　201
+	 * @return 登録済みの整備タスク情報
 	 */
 	@PostMapping
-	public ResponseEntity<MaintenanceTaskResponse> registerMaintenanceTask(
-			@RequestBody @Valid MaintenanceTaskRequest request) {
-
-		MaintenanceTaskResponse registerTask
-				= maintenanceTaskService.registerMaintenanceTask(request);
+	public ResponseEntity<MaintenanceTaskResponse> registerMaintenanceTask(@RequestBody @Valid MaintenanceTaskRequest request) {
+		MaintenanceTaskResponse registerTask = maintenanceTaskService.registerMaintenanceTask(request);
 
 		return new ResponseEntity<>(registerTask, HttpStatus.CREATED);
 	}
@@ -91,15 +98,12 @@ public class MaintenanceTaskController {
 	 *
 	 * @param maintenanceTaskId 整備タスクID
 	 * @param request           更新する内容の整備タスク
-	 * @return 更新後の整備タスク情報とHttpステータス　200　ok
+	 * @return 更新後の整備タスク情報
 	 */
 	@PutMapping("/{maintenanceTaskId}")
-	public ResponseEntity<MaintenanceTaskResponse> updateMaintenanceTask(
-			@PathVariable @Positive Integer maintenanceTaskId,
-			@RequestBody @Valid MaintenanceTaskUpdateRequest request) {
-
-		MaintenanceTaskResponse updateTask
-				= maintenanceTaskService.updateMaintenanceTask(maintenanceTaskId, request);
+	public ResponseEntity<MaintenanceTaskResponse> updateMaintenanceTask(@PathVariable @Positive Integer maintenanceTaskId,
+	                                                                     @RequestBody @Valid MaintenanceTaskUpdateRequest request) {
+		MaintenanceTaskResponse updateTask = maintenanceTaskService.updateMaintenanceTask(maintenanceTaskId, request);
 
 		return ResponseEntity.ok(updateTask);
 	}

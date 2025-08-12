@@ -72,7 +72,7 @@ class MaintenanceTaskRepositoryTest {
 		createMaintenanceTask(category, "test", "テスト", false);
 
 		Optional<MaintenanceTask> task =
-				maintenanceTaskRepository.findByCategoryIdAndIdAndIsDeletedFalse(testCategoryId, maintenanceTaskId);
+				maintenanceTaskRepository.findByCategoryIdAndTaskIdAndIsDeletedFalse(testCategoryId, maintenanceTaskId);
 
 		assertThat(task).isPresent();
 		assertThat(task.get().getName()).isEqualTo("testタスク");

@@ -18,6 +18,7 @@ public class MaintenanceTaskResponse {
 
 	private Integer id;
 	private Integer categoryId;
+	private Integer bikeId;
 
 	private String name;
 	private String description;
