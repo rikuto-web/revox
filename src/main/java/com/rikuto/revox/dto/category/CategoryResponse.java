@@ -1,4 +1,4 @@
-package com.rikuto.revox.dto.maintenancetask;
+package com.rikuto.revox.dto.category;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -7,22 +7,17 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
-/**
- * 整備タスクに対するレスポンス内容のDTOです。
- */
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class MaintenanceTaskResponse {
+public class CategoryResponse {
 
-	private Integer id;
-	private Integer categoryId;
-	private Integer bikeId;
-
+	private int id;
 	private String name;
-	private String description;
+	private Integer displayOrder;
 
 	private LocalDateTime createdAt;
 	private LocalDateTime updatedAt;
+
 }

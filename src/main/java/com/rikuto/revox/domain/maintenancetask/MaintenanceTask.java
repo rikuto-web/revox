@@ -1,6 +1,7 @@
 package com.rikuto.revox.domain.maintenancetask;
 
 import com.rikuto.revox.domain.Category;
+import com.rikuto.revox.domain.bike.Bike;
 import com.rikuto.revox.dto.maintenancetask.MaintenanceTaskRequest;
 import com.rikuto.revox.dto.maintenancetask.MaintenanceTaskUpdateRequest;
 import jakarta.persistence.*;
@@ -26,6 +27,13 @@ public class MaintenanceTask {
 	@ManyToOne(optional = false, fetch = FetchType.LAZY)
 	@JoinColumn(name = "category_id", nullable = false)
 	private Category category;
+
+	/**
+	 * 整備タスクは必ず１台のバイクに保持されます。
+	 */
+	@ManyToOne(optional = false, fetch = FetchType.LAZY)
+	@JoinColumn(name = "bike_id", nullable = false)
+	private Bike bike;
 
 	/**
 	 * 整備タスクの一意なIDです。

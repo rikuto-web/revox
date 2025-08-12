@@ -1,6 +1,8 @@
 package com.rikuto.revox.domain.bike;
 
+import com.rikuto.revox.domain.maintenancetask.MaintenanceTask;
 import com.rikuto.revox.domain.user.User;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -9,6 +11,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -18,6 +21,8 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * バイク情報を表すドメインです。
@@ -37,6 +42,13 @@ public class Bike {
 	@ManyToOne(optional = false, fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id", nullable = false)
 	private User user;
+
+	/**
+	 * １台のバイクは必ず複数の整備タスクを保持します。
+	 */
+	@OneToMany(mappedBy = "bike", cascade = CascadeType.ALL, orphanRemoval = true)
+	@Builder.Default
+	private List<MaintenanceTask> maintenanceTasks = new ArrayList<>();
 
 	/**
 	 * バイクの一意なIDです。

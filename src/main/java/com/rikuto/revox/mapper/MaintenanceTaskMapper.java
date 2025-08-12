@@ -1,5 +1,6 @@
 package com.rikuto.revox.mapper;
 
+import com.rikuto.revox.domain.bike.Bike;
 import com.rikuto.revox.dto.maintenancetask.MaintenanceTaskRequest;
 import com.rikuto.revox.dto.maintenancetask.MaintenanceTaskResponse;
 import com.rikuto.revox.domain.Category;
@@ -23,8 +24,9 @@ public class MaintenanceTaskMapper {
 	public MaintenanceTaskResponse toResponse(MaintenanceTask task) {
 
 		return MaintenanceTaskResponse.builder()
-				.categoryId(task.getCategory() != null ? task.getCategory().getId() : null)
 				.id(task.getId())
+				.bikeId(task.getBike() != null ? task.getBike().getId() : null)
+				.categoryId(task.getCategory() != null ? task.getCategory().getId() : null)
 
 				.name(task.getName())
 				.description(task.getDescription())
@@ -54,10 +56,11 @@ public class MaintenanceTaskMapper {
 	 * @param category  整備タスクを所有する Categoryドメイン。
 	 * @return 作成された MaintenanceTaskドメイン。
 	 */
-	public MaintenanceTask toEntity (MaintenanceTaskRequest request, Category category) {
+	public MaintenanceTask toEntity (MaintenanceTaskRequest request, Bike bike, Category category) {
 
 	return MaintenanceTask.builder()
 			.category(category)
+			.bike(bike)
 
 			.name(request.getName())
 			.description(request.getDescription())
