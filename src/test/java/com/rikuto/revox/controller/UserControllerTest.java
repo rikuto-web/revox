@@ -6,101 +6,133 @@ import com.rikuto.revox.dto.user.UserUpdateRequest;
 import com.rikuto.revox.exception.ResourceNotFoundException;
 import com.rikuto.revox.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
+import org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@ExtendWith(MockitoExtension.class)
+@WebMvcTest(
+		controllers = UserController.class,
+		excludeAutoConfiguration = {
+				SecurityAutoConfiguration.class,
+				UserDetailsServiceAutoConfiguration.class
+		}
+)
+@Import(UserControllerTest.UserServiceTestConfig.class)
 class UserControllerTest {
 
+	@Autowired
 	private MockMvc mockMvc;
 
-	@Mock
+	@Autowired
+	private ObjectMapper objectMapper;
+
+	@Autowired
 	private UserService userService;
 
-	@InjectMocks
-	private UserController userController;
+	private UserUpdateRequest commonUserUpdateRequest;
+	private UserResponse commonUserResponse;
 
-	private ObjectMapper objectMapper;
+	private final Integer testUserId = 1;
+	private final Integer notFoundUserId = 999;
+	private final String updatedNickname = "更新後ニックネーム";
 
 	@BeforeEach
 	void setUp() {
-		mockMvc = MockMvcBuilders.standaloneSetup(userController)
+		commonUserUpdateRequest = UserUpdateRequest.builder()
+				.nickname(updatedNickname)
 				.build();
-		objectMapper = new ObjectMapper();
+
+		commonUserResponse = UserResponse.builder()
+				.id(testUserId)
+				.nickname(updatedNickname)
+				.build();
+
+		reset(userService);
 	}
 
-	@Test
-	void 正常にユーザーニックネームを更新し200を返す() throws Exception {
-		Integer userId = 1;
-		UserUpdateRequest request = UserUpdateRequest.builder().nickname("更新後ニックネーム").build();
-		UserResponse response = UserResponse.builder().id(userId).nickname("更新後ニックネーム").build();
+	@Nested
+	class UpdateUserTests {
+		@Test
+		void 正常にユーザーニックネームを更新し200を返すこと() throws Exception {
+			when(userService.updateUser(any(UserUpdateRequest.class), eq(testUserId))).thenReturn(commonUserResponse);
 
-		when(userService.updateUser(any(UserUpdateRequest.class), eq(userId))).thenReturn(response);
+			mockMvc.perform(patch("/api/users/{userId}", testUserId)
+							.contentType(MediaType.APPLICATION_JSON)
+							.content(objectMapper.writeValueAsString(commonUserUpdateRequest)))
+					.andExpect(status().isOk())
+					.andExpect(jsonPath("$.id").value(testUserId))
+					.andExpect(jsonPath("$.nickname").value(updatedNickname));
 
-		mockMvc.perform(put("/api/users/{userId}", userId)
-						.contentType(MediaType.APPLICATION_JSON)
-						.content(objectMapper.writeValueAsString(request)))
-				.andExpect(status().isOk())
-				.andExpect(jsonPath("$.id").value(userId))
-				.andExpect(jsonPath("$.nickname").value("更新後ニックネーム"));
+			verify(userService).updateUser(any(UserUpdateRequest.class), eq(testUserId));
+		}
 
-		verify(userService).updateUser(any(UserUpdateRequest.class), eq(userId));
+		@Test
+		void ユーザーが存在しない場合404を返すこと() throws Exception {
+			when(userService.updateUser(any(UserUpdateRequest.class), eq(notFoundUserId)))
+					.thenThrow(new ResourceNotFoundException("ユーザーが見つかりません"));
+
+			mockMvc.perform(patch("/api/users/{userId}", notFoundUserId)
+							.contentType(MediaType.APPLICATION_JSON)
+							.content(objectMapper.writeValueAsString(commonUserUpdateRequest)))
+					.andExpect(status().isNotFound());
+
+			verify(userService).updateUser(any(UserUpdateRequest.class), eq(notFoundUserId));
+		}
 	}
 
+	@Nested
+	class SoftDeleteUserTests {
+		@Test
+		void 正常にユーザーを論理削除し204を返すこと() throws Exception {
+			doNothing().when(userService).softDeleteUser(testUserId);
 
-	@Test
-	void ユーザーが存在しない場合404を返す() throws Exception {
-		Integer userId = 999;
-		UserUpdateRequest request = UserUpdateRequest.builder().nickname("更新後ニックネーム").build();
+			mockMvc.perform(patch("/api/users/{userId}/softDelete", testUserId))
+					.andExpect(status().isNoContent());
 
-		when(userService.updateUser(any(UserUpdateRequest.class), eq(userId)))
-				.thenThrow(new ResourceNotFoundException("ユーザーが見つかりません"));
+			verify(userService).softDeleteUser(testUserId);
+		}
 
-		mockMvc.perform(put("/api/users/{userId}", userId)
-						.contentType(MediaType.APPLICATION_JSON)
-						.content(objectMapper.writeValueAsString(request)))
-				.andExpect(status().isNotFound());
+		@Test
+		void 削除対象ユーザーが存在しない場合404を返すこと() throws Exception {
+			doThrow(new ResourceNotFoundException("ユーザーが見つかりません"))
+					.when(userService).softDeleteUser(notFoundUserId);
 
-		verify(userService).updateUser(any(UserUpdateRequest.class), eq(userId));
+			mockMvc.perform(patch("/api/users/{userId}/softDelete", notFoundUserId))
+					.andExpect(status().isNotFound());
+
+			verify(userService).softDeleteUser(notFoundUserId);
+		}
 	}
 
-	@Test
-	void 正常にユーザーを論理削除し204を返す() throws Exception {
-		Integer userId = 1;
-		doNothing().when(userService).softDeleteUser(userId);
-
-		mockMvc.perform(patch("/api/users/{userId}/delete", userId))
-				.andExpect(status().isNoContent());
-
-		verify(userService).softDeleteUser(userId);
-	}
-
-	@Test
-	void 削除対象ユーザーが存在しない場合404を返す() throws Exception {
-		Integer userId = 999;
-		doThrow(new ResourceNotFoundException("ユーザーが見つかりません"))
-				.when(userService).softDeleteUser(userId);
-
-		mockMvc.perform(patch("/api/users/{userId}/delete", userId))
-				.andExpect(status().isNotFound());
-
-		verify(userService).softDeleteUser(userId);
+	/**
+	 * UserServiceのモックBeanを定義するテスト用の設定クラス。
+	 * このクラスを`@Import`することで、テストコンテキストにモックが提供されます。
+	 */
+	@TestConfiguration
+	static class UserServiceTestConfig {
+		@Bean
+		public UserService userService() {
+			return Mockito.mock(UserService.class);
+		}
 	}
 }

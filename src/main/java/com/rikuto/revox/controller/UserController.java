@@ -8,7 +8,6 @@ import jakarta.validation.constraints.Positive;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -28,13 +27,13 @@ public class UserController {
 
 	/**
 	 * 既存のユーザー情報を、受け取ったリクエスト内容に更新します。
-	 * PUT　/api/users/{userId}
+	 * PATCH　/api/users/{userId}
 	 *
 	 * @param request 更新されたユーザー情報を含むリクエストDTO
 	 * @param userId ユーザーID
 	 * @return 更新されたユーザー情報とHTTPステータス200 OK
 	 */
-	@PutMapping("/{userId}")
+	@PatchMapping("/{userId}")
 	public ResponseEntity<UserResponse> updateUserNickname (@RequestBody @Valid UserUpdateRequest request,
 	                                                        @PathVariable @Positive Integer userId){
 		UserResponse response = userService.updateUser(request, userId);
@@ -44,12 +43,12 @@ public class UserController {
 
 	/**
 	 * ユーザーを論理削除します。
-	 * PATCH　/api/users/{userId}/delete
+	 * PATCH　/api/users/{userId}/softDelete
 	 *
 	 * @param userId ユーザーID
 	 * @return HTTPステータス204 No Content
 	 */
-	@PatchMapping("/{userId}")
+	@PatchMapping("/{userId}/softDelete")
 	public ResponseEntity<Void> softDeleteUser (@PathVariable @Positive Integer userId){
 		userService.softDeleteUser(userId);
 

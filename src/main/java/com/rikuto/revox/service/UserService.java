@@ -28,56 +28,8 @@ public class UserService {
 		this.userResponseMapper = userResponseMapper;
 	}
 
-	/**
-	 * ユーザーIDでユーザー情報を検索し、フロント側でユーザー情報を取得します。
-	 *
-	 * @param userId 一意のユーザーID
-	 * @return ユーザー情報
-	 */
-	public User findById(Integer userId) {
-		return userRepository.findByIdAndIsDeletedFalse(userId)
-				.orElseThrow(() -> new ResourceNotFoundException("ユーザーが見つかりません"));
-	}
-
-	/**
-	 * ユーザー情報の更新を行います。
-	 * 外部認証のためニックネームのみ更新可能です。
-	 *
-	 * @param updateRequest 更新リクエスト
-	 * @param userId 一意のユーザーID
-	 * @return 更新後のユーザーレスポンス
-	 */
-	@Transactional
-	public UserResponse updateUser(UserUpdateRequest updateRequest, Integer userId) {
-		User existingUser = userRepository.findByIdAndIsDeletedFalse(userId)
-				.orElseThrow(() -> new ResourceNotFoundException("ユーザーが見つかりません"));
-
-		UserUpdateDate updateUser = UserUpdateDate.builder()
-				.nickname(updateRequest.getNickname())
-				.build();
-
-		existingUser.updateFrom(updateUser);
-
-		User savedUser = userRepository.save(existingUser);
-
-		return userResponseMapper.toResponse(savedUser);
-	}
-
-	/**
-	 * ユーザー情報を論理削除します。
-	 *
-	 * @param userId 一意のユーザーID
-	 */
-	@Transactional
-	public void softDeleteUser(Integer userId) {
-		User existingUser = userRepository.findByIdAndIsDeletedFalse(userId)
-				.orElseThrow(() -> new ResourceNotFoundException("ユーザーが見つかりません"));
-
-		existingUser.softDelete();
-
-		userRepository.save(existingUser);
-	}
-
+	// CREATE
+	//------------------------------------------------------------------------------------------------------------------
 	/**
 	 * 外部認証でのユーザー検索または新規登録を行います。
 	 * 登録履歴のあるユーザーが再登録する場合、論理削除をfalseに変更して取得します。
@@ -106,5 +58,61 @@ public class UserService {
 					.build();
 			return userRepository.save(newUser);
 		}
+	}
+
+	// READ
+	//------------------------------------------------------------------------------------------------------------------
+	/**
+	 * ユーザーIDでユーザー情報を検索し、フロント側でユーザー情報を取得します。
+	 *
+	 * @param userId 一意のユーザーID
+	 * @return ユーザー情報
+	 */
+	public User findById(Integer userId) {
+		return userRepository.findByIdAndIsDeletedFalse(userId)
+				.orElseThrow(() -> new ResourceNotFoundException("ユーザーが見つかりません"));
+	}
+
+	// UPDATE
+	//------------------------------------------------------------------------------------------------------------------
+	/**
+	 * ユーザー情報の更新を行います。
+	 * 外部認証のためニックネームのみ更新可能です。
+	 *
+	 * @param updateRequest 更新リクエスト
+	 * @param userId 一意のユーザーID
+	 * @return 更新後のユーザーレスポンス
+	 */
+	@Transactional
+	public UserResponse updateUser(UserUpdateRequest updateRequest, Integer userId) {
+		User existingUser = userRepository.findByIdAndIsDeletedFalse(userId)
+				.orElseThrow(() -> new ResourceNotFoundException("ユーザーが見つかりません"));
+
+		UserUpdateDate updateUser = UserUpdateDate.builder()
+				.nickname(updateRequest.getNickname())
+				.build();
+
+		existingUser.updateFrom(updateUser);
+
+		User savedUser = userRepository.save(existingUser);
+
+		return userResponseMapper.toResponse(savedUser);
+	}
+
+	// DELETE
+	//------------------------------------------------------------------------------------------------------------------
+	/**
+	 * ユーザー情報を論理削除します。
+	 *
+	 * @param userId 一意のユーザーID
+	 */
+	@Transactional
+	public void softDeleteUser(Integer userId) {
+		User existingUser = userRepository.findByIdAndIsDeletedFalse(userId)
+				.orElseThrow(() -> new ResourceNotFoundException("ユーザーが見つかりません"));
+
+		existingUser.softDelete();
+
+		userRepository.save(existingUser);
 	}
 }
