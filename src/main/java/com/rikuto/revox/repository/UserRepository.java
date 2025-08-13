@@ -33,7 +33,7 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 	Optional<User> findByUniqueUserIdAndIsDeletedFalse(String uniqueUserId);
 
 	/**
-	 * アプリケーション独自の一意なユーザーIDでの検索を行います。
+	 * アプリケーション独自の一意なユーザーIDで論理削除されたユーザー含む全件検索を行います。
 	 * 論理削除されたユーザーを復元するために使用します。
 	 * @param uniqueUserId アプリケーション独自の一意なユーザーID
 	 * @return DBに存在する全てのユーザー情報
