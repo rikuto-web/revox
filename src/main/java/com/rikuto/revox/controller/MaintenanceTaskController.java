@@ -120,7 +120,7 @@ public class MaintenanceTaskController {
 
 	/**
 	 * 整備タスクの論理削除を行います。
-	 * PATCH /api/maintenance-task/{maintenanceTaskId}
+	 * PATCH /api/maintenance-task/{maintenanceTaskId}/softDelete
 	 *
 	 * @param maintenanceTaskId 整備タスクID
 	 * @return Httpステータス　204

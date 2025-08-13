@@ -34,6 +34,28 @@ public class BikeService {
 		this.bikeMapper = bikeMapper;
 	}
 
+	// CREATE
+	//------------------------------------------------------------------------------------------------------------------
+	/**
+	 * 新しいバイク情報を登録します。
+	 *
+	 * @param request 登録するバイク情報を含むリクエストDTO
+	 * @return 登録されたバイク情報
+	 * @throws ResourceNotFoundException 指定されたユーザーが見つからない場合
+	 */
+	@Transactional
+	public BikeResponse registerBike(BikeCreateRequest request, Integer userId) {
+		User user = userService.findById(userId);
+
+		Bike bike = bikeMapper.toEntity(user, request);
+
+		Bike savedBike = bikeRepository.save(bike);
+
+		return bikeMapper.toResponse(savedBike);
+	}
+
+	// READ
+	//------------------------------------------------------------------------------------------------------------------
 	/**
 	 * ユーザーIDに紐づいた全てのバイク情報を検索します。
 	 *
@@ -62,24 +84,8 @@ public class BikeService {
 		return bikeMapper.toResponse(bike);
 	}
 
-	/**
-	 * 新しいバイク情報を登録します。
-	 *
-	 * @param request 登録するバイク情報を含むリクエストDTO
-	 * @return 登録されたバイク情報
-	 * @throws ResourceNotFoundException 指定されたユーザーが見つからない場合
-	 */
-	@Transactional
-	public BikeResponse registerBike(BikeCreateRequest request, Integer userId) {
-		User user = userService.findById(userId);
-
-		Bike bike = bikeMapper.toEntity(user, request);
-
-		Bike savedBike = bikeRepository.save(bike);
-
-		return bikeMapper.toResponse(savedBike);
-	}
-
+	// UPDATE
+	//------------------------------------------------------------------------------------------------------------------
 	/**
 	 * 既存のバイク情報を更新します。
 	 *
@@ -110,7 +116,8 @@ public class BikeService {
 		return bikeMapper.toResponse(savedBike);
 	}
 
-
+	// DELETE
+	//------------------------------------------------------------------------------------------------------------------
 	/**
 	 * 登録されているバイクを論理削除します。
 	 *
