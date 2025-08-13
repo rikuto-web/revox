@@ -1,8 +1,6 @@
 package com.rikuto.revox.service;
 
 import com.rikuto.revox.domain.Category;
-import com.rikuto.revox.domain.bike.Bike;
-import com.rikuto.revox.dto.bike.BikeResponse;
 import com.rikuto.revox.dto.category.CategoryResponse;
 import com.rikuto.revox.exception.ResourceNotFoundException;
 import com.rikuto.revox.mapper.CategoryMapper;
@@ -22,15 +20,14 @@ public class CategoryService {
 		this.categoryMapper = categoryMapper;
 	}
 
-	public CategoryResponse findCategoryById(Integer categoryId) {
-		Category category = categoryRepository.findById(categoryId)
-				.orElseThrow(() -> new ResourceNotFoundException("カテゴリーが見つかりません"));
-		return categoryMapper.toResponse(category);
-	}
-
+	/**
+	 * すべてのカテゴリーを取得します。
+	 *
+	 * @return すべてのカテゴリーリスト
+	 */
 	public List<CategoryResponse> findAllCategories() {
 		List<Category> categories = categoryRepository.findAll();
+
 		return categoryMapper.toResponseList(categories);
 	}
-
 }

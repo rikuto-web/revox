@@ -175,20 +175,6 @@ class MaintenanceTaskControllerTest {
 
 			verify(maintenanceTaskService).findByBikeIdAndCategoryId(testBikeId, testCategoryId);
 		}
-
-		@Test
-		void 整備タスクIDとカテゴリIDに紐づく単一のタスクを正常に取得し200を返すこと() throws Exception {
-			when(maintenanceTaskService.findByCategoryIdAndMaintenanceTaskId(testCategoryId, testMaintenanceTaskId))
-					.thenReturn(commonMaintenanceTaskResponse);
-
-			mockMvc.perform(get("/api/maintenance-task/{categoryId}/maintenance-tasks/{maintenanceTaskId}", testCategoryId, testMaintenanceTaskId)
-							.accept(MediaType.APPLICATION_JSON))
-					.andExpect(status().isOk())
-					.andExpect(content().contentType(MediaType.APPLICATION_JSON))
-					.andExpect(jsonPath("$.id").value(testMaintenanceTaskId));
-
-			verify(maintenanceTaskService).findByCategoryIdAndMaintenanceTaskId(testCategoryId, testMaintenanceTaskId);
-		}
 	}
 
 	@Nested
