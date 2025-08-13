@@ -6,6 +6,7 @@ import com.rikuto.revox.dto.bike.BikeResponse;
 import com.rikuto.revox.exception.ResourceNotFoundException;
 import com.rikuto.revox.service.BikeService;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +35,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 				UserDetailsServiceAutoConfiguration.class
 		}
 )
-
 @Import(BikeControllerTest.BikeServiceTestConfig.class)
 class BikeControllerTest {
 
@@ -68,7 +68,6 @@ class BikeControllerTest {
 		commonBikeResponse = BikeResponse.builder()
 				.userId(testUserId)
 				.id(testBikeId)
-
 				.manufacturer("Honda")
 				.modelName("CBR250RR")
 				.modelCode("MC51")
@@ -76,7 +75,6 @@ class BikeControllerTest {
 				.currentMileage(1000)
 				.purchaseDate(LocalDate.of(2023, 1, 1))
 				.imageUrl("http://example.com/cbr.jpg")
-
 				.createdAt(LocalDateTime.now())
 				.updatedAt(LocalDateTime.now())
 				.build();
@@ -84,104 +82,141 @@ class BikeControllerTest {
 		reset(bikeService);
 	}
 
-	@Test
-	void ユーザーIDに紐づくバイク一覧を正常に取得できること() throws Exception {
+	@Nested
+	class GetTests {
+		@Test
+		void ユーザーIDに紐づくバイク一覧を正常に取得できること() throws Exception {
+			when(bikeService.findBikeByUserId(testUserId)).thenReturn(List.of(commonBikeResponse));
 
-		when(bikeService.findBikeByUserId(testUserId)).thenReturn(List.of(commonBikeResponse));
+			mockMvc.perform(get("/api/bikes/user/{userId}", testUserId)
+							.accept(MediaType.APPLICATION_JSON))
+					.andExpect(status().isOk())
+					.andExpect(content().contentType(MediaType.APPLICATION_JSON))
+					.andExpect(jsonPath("$[0].id").value(testBikeId))
+					.andExpect(jsonPath("$[0].modelName").value("CBR250RR"));
 
-		mockMvc.perform(get("/api/bikes/user/{userId}", testUserId)
-						.accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk())
-				.andExpect(content().contentType(MediaType.APPLICATION_JSON))
-				.andExpect(jsonPath("$[0].id").value(testBikeId))
-				.andExpect(jsonPath("$[0].modelName").value("CBR250RR"));
+			verify(bikeService).findBikeByUserId(testUserId);
+		}
 
-		verify(bikeService).findBikeByUserId(testUserId);
+		@Test
+		void 指定されたユーザーIDとバイクIDで単一のバイク情報を取得できること() throws Exception {
+			when(bikeService.findByIdAndUserId(testUserId, testBikeId)).thenReturn(commonBikeResponse);
+
+			mockMvc.perform(get("/api/bikes/user/{userId}/bike/{bikeId}", testUserId, testBikeId)
+							.accept(MediaType.APPLICATION_JSON))
+					.andExpect(status().isOk())
+					.andExpect(content().contentType(MediaType.APPLICATION_JSON))
+					.andExpect(jsonPath("$.id").value(testBikeId))
+					.andExpect(jsonPath("$.modelName").value("CBR250RR"));
+
+			verify(bikeService).findByIdAndUserId(testUserId, testBikeId);
+		}
+
+		@Test
+		void 指定されたユーザーIDに紐づくバイクが存在しない場合404を返すこと() throws Exception {
+			when(bikeService.findBikeByUserId(testUserId))
+					.thenThrow(new ResourceNotFoundException("見つかりません"));
+
+			mockMvc.perform(get("/api/bikes/user/{userId}", testUserId))
+					.andExpect(status().isNotFound());
+
+			verify(bikeService).findBikeByUserId(testUserId);
+		}
+
+		@Test
+		void 指定されたユーザーIDまたはバイクIDが見つからない場合404を返すこと() throws Exception {
+			when(bikeService.findByIdAndUserId(testUserId, testBikeId))
+					.thenThrow(new ResourceNotFoundException("見つかりません"));
+
+			mockMvc.perform(get("/api/bikes/user/{userId}/bike/{bikeId}", testUserId, testBikeId))
+					.andExpect(status().isNotFound());
+
+			verify(bikeService).findByIdAndUserId(testUserId, testBikeId);
+		}
 	}
 
-	@Test
-	void ユーザーIDに紐づくバイクが存在しない場合404を返すこと() throws Exception {
-		when(bikeService.findBikeByUserId(testUserId))
-				.thenThrow(new ResourceNotFoundException("見つかりません"));
+	@Nested
+	class PostTests {
+		@Test
+		void 新しいバイク情報が正常に登録され201を返すこと() throws Exception {
+			when(bikeService.registerBike(any(), any())).thenReturn(commonBikeResponse);
 
-		mockMvc.perform(get("/api/bikes/user/{userId}", testUserId))
-				.andExpect(status().isNotFound());
+			mockMvc.perform(post("/api/bikes/user/{userId}", testUserId)
+							.contentType(MediaType.APPLICATION_JSON)
+							.content(objectMapper.writeValueAsString(commonBikeCreateRequest)))
+					.andExpect(status().isCreated())
+					.andExpect(jsonPath("$.id").value(testBikeId))
+					.andExpect(jsonPath("$.modelName").value("CBR250RR"));
 
-		verify(bikeService).findBikeByUserId(testUserId);
+			verify(bikeService).registerBike(any(), any());
+		}
+
+		@Test
+		void バリデーションエラー時は400を返すこと() throws Exception {
+			BikeCreateRequest invalidRequest = BikeCreateRequest.builder()
+					.modelName("CBR250RR")
+					.modelCode("MC51")
+					.modelYear(2023)
+					.currentMileage(1000)
+					.purchaseDate(LocalDate.of(2023, 1, 1))
+					.imageUrl("http://example.com/cbr.jpg")
+					.build();
+
+			mockMvc.perform(post("/api/bikes/user/{userId}", testUserId)
+							.contentType(MediaType.APPLICATION_JSON)
+							.content(objectMapper.writeValueAsString(invalidRequest)))
+					.andExpect(status().isBadRequest());
+
+			verify(bikeService, never()).registerBike(any(), any());
+		}
 	}
 
-	@Test
-	void 新しいバイク情報が正常に登録され201を返すこと() throws Exception {
-		when(bikeService.registerBike(any(), any())).thenReturn(commonBikeResponse);
+	@Nested
+	class UpdateTests {
+		@Test
+		void バイク情報が正常に更新されること() throws Exception {
+			when(bikeService.updateBike(any(), eq(testBikeId), eq(testUserId))).thenReturn(commonBikeResponse);
 
-		mockMvc.perform(post("/api/bikes/user/{userId}", testUserId)
-						.contentType(MediaType.APPLICATION_JSON)
-						.content(objectMapper.writeValueAsString(commonBikeCreateRequest)))
-				.andExpect(status().isCreated())
-				.andExpect(jsonPath("$.id").value(testBikeId))
-				.andExpect(jsonPath("$.modelName").value("CBR250RR"));
+			mockMvc.perform(patch("/api/bikes/user/{userId}/bike/{bikeId}", testUserId, testBikeId)
+							.contentType(MediaType.APPLICATION_JSON)
+							.content(objectMapper.writeValueAsString(commonBikeCreateRequest)))
+					.andExpect(status().isOk())
+					.andExpect(jsonPath("$.id").value(testBikeId))
+					.andExpect(jsonPath("$.modelName").value("CBR250RR"));
 
-		verify(bikeService).registerBike(any(), any());
+			verify(bikeService).updateBike(any(), eq(testBikeId), eq(testUserId));
+		}
+
+		@Test
+		void バイクが見つからない場合は更新時に404を返す() throws Exception {
+			when(bikeService.updateBike(any(), eq(testBikeId), eq(testUserId)))
+					.thenThrow(new ResourceNotFoundException("バイクが見つかりません"));
+
+			mockMvc.perform(patch("/api/bikes/user/{userId}/bike/{bikeId}", testUserId, testBikeId)
+							.contentType(MediaType.APPLICATION_JSON)
+							.content(objectMapper.writeValueAsString(commonBikeCreateRequest)))
+					.andExpect(status().isNotFound());
+
+			verify(bikeService).updateBike(any(), eq(testBikeId), eq(testUserId));
+		}
 	}
 
-	@Test
-	void バリデーションエラー時は400を返すこと() throws Exception {
-		BikeCreateRequest invalidRequest = BikeCreateRequest.builder()
+	@Nested
+	class SoftDeleteTests {
+		@Test
+		void 論理削除が成功し204を返すこと() throws Exception {
+			doNothing().when(bikeService).softDeleteBike(testUserId, testBikeId);
 
-				.modelName("CBR250RR")
-				.modelCode("MC51")
-				.modelYear(2023)
-				.currentMileage(1000)
-				.purchaseDate(LocalDate.of(2023, 1, 1))
-				.imageUrl("http://example.com/cbr.jpg")
-				.build();
+			mockMvc.perform(patch("/api/bikes/user/{userId}/bike/{bikeId}/softDelete", testUserId, testBikeId))
+					.andExpect(status().isNoContent());
 
-		mockMvc.perform(post("/api/bikes/user/{userId}", testUserId)
-						.contentType(MediaType.APPLICATION_JSON)
-						.content(objectMapper.writeValueAsString(invalidRequest)))
-				.andExpect(status().isBadRequest());
-
-		verify(bikeService, never()).registerBike(any(), any());
+			verify(bikeService).softDeleteBike(testUserId, testBikeId);
+		}
 	}
 
-	@Test
-	void バイク情報が正常に更新されること() throws Exception {
-		when(bikeService.updateBike(any(), eq(testBikeId), eq(testUserId))).thenReturn(commonBikeResponse);
-
-		mockMvc.perform(put("/api/bikes/user/{userId}/bike/{bikeId}", testUserId, testBikeId)
-						.contentType(MediaType.APPLICATION_JSON)
-						.content(objectMapper.writeValueAsString(commonBikeCreateRequest)))
-				.andExpect(status().isOk())
-				.andExpect(jsonPath("$.id").value(testBikeId))
-				.andExpect(jsonPath("$.modelName").value("CBR250RR"));
-
-		verify(bikeService).updateBike(any(), eq(testBikeId), eq(testUserId));
-	}
-
-	@Test
-	void バイクが見つからない場合は更新時に404を返す() throws Exception {
-		when(bikeService.updateBike(any(), eq(testBikeId), eq(testUserId)))
-				.thenThrow(new ResourceNotFoundException("バイクが見つかりません"));
-
-		mockMvc.perform(put("/api/bikes/user/{userId}/bike/{bikeId}",testUserId , testBikeId)
-						.contentType(MediaType.APPLICATION_JSON)
-						.content(objectMapper.writeValueAsString(commonBikeCreateRequest)))
-				.andExpect(status().isNotFound());
-
-		verify(bikeService).updateBike(any(), eq(testBikeId), eq(testUserId));
-	}
-
-	@Test
-	void 論理削除が成功し204を返すこと() throws Exception {
-		doNothing().when(bikeService).softDeleteBike(testUserId, testBikeId);
-
-		mockMvc.perform(patch("/api/bikes/user/{userId}/bike/{bikeId}", testUserId, testBikeId))
-				.andExpect(status().isNoContent());
-
-		verify(bikeService).softDeleteBike(testUserId, testBikeId);
-	}
-
-
+	/**
+	 * BikeServiceのモックBeanを定義するテスト用の設定クラス
+	 */
 	@TestConfiguration
 	static class BikeServiceTestConfig {
 		@Bean

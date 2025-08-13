@@ -25,6 +25,25 @@ public class BikeController {
 		this.bikeService = bikeService;
 	}
 
+	// CREATE
+	//------------------------------------------------------------------------------------------------------------------
+	/**
+	 * 新しいバイク情報を登録します。
+	 * POST /api/bikes/user/{userId}
+	 *
+	 * @param request 登録するバイク情報を含むリクエストDTO
+	 * @return 登録されたバイク情報とHTTPステータス201 Created
+	 */
+	@PostMapping
+	public ResponseEntity<BikeResponse> registerBike(@RequestBody @Valid BikeCreateRequest request,
+	                                                 @PathVariable @Positive Integer userId) {
+		BikeResponse registerBike = bikeService.registerBike(request, userId);
+
+		return new ResponseEntity<>(registerBike, HttpStatus.CREATED);
+	}
+
+	// READ
+	//------------------------------------------------------------------------------------------------------------------
 	/**
 	 * 指定されたユーザーIDに紐づく全てのバイク情報を取得します。
 	 * GET /api/bikes/user/{userId}
@@ -55,30 +74,17 @@ public class BikeController {
 		return ResponseEntity.ok(bikeResponse);
 	}
 
-	/**
-	 * 新しいバイク情報を登録します。
-	 * POST /api/bikes/user/{userId}
-	 *
-	 * @param request 登録するバイク情報を含むリクエストDTO
-	 * @return 登録されたバイク情報とHTTPステータス201 Created
-	 */
-	@PostMapping
-	public ResponseEntity<BikeResponse> registerBike(@RequestBody @Valid BikeCreateRequest request,
-	                                                 @PathVariable @Positive Integer userId) {
-		BikeResponse registerBike = bikeService.registerBike(request, userId);
-
-		return new ResponseEntity<>(registerBike, HttpStatus.CREATED);
-	}
-
+	// UPDATE
+	//------------------------------------------------------------------------------------------------------------------
 	/**
 	 * 既存のバイク情報を、受け取ったリクエスト内容に更新します。
-	 * PUT /api/user/{userId}/bike/{bikeId}
+	 * PATCH /api/user/{userId}/bike/{bikeId}
 	 *
 	 * @param bikeId 更新するバイクのID
 	 * @param request 更新されたバイク情報を含むリクエストDTO
 	 * @return 更新されたバイク情報（BikeResponse）とHTTPステータス200 OK
 	 */
-	@PutMapping("/bike/{bikeId}")
+	@PatchMapping("/bike/{bikeId}")
 	public ResponseEntity<BikeResponse> updateBike(@RequestBody @Valid BikeUpdateRequest request,
 	                                               @PathVariable @Positive Integer bikeId,
 	                                               @PathVariable @Positive Integer userId) {
@@ -87,15 +93,17 @@ public class BikeController {
 		return ResponseEntity.ok(updateBike);
 	}
 
+	// DELETE
+	//------------------------------------------------------------------------------------------------------------------
 	/**
 	 * ユーザーIDに紐づく特定のバイク情報を論理削除します。
-	 * PATCH /api/bikes/user/{userId}/bike/{bikeId}
+	 * PATCH /api/bikes/user/{userId}/bike/{bikeId}/softDelete
 	 *
 	 * @param userId 削除するバイクを保有しているユーザーID
 	 * @param bikeId 論理削除するバイクのID
 	 * @return HTTPステータス204 No Content
 	 */
-	@PatchMapping("/bike/{bikeId}")
+	@PatchMapping("/bike/{bikeId}/softDelete")
 	public ResponseEntity<Void> softDeleteBike(@PathVariable @Positive Integer userId,
 	                                           @PathVariable @Positive Integer bikeId) {
 		bikeService.softDeleteBike(userId, bikeId);

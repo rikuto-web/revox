@@ -86,7 +86,6 @@ class BikeServiceTest {
 
 	@Nested
 	class FindByIdAndUserIdTests {
-
 		@Test
 		void ユーザーIDとバイクIDに紐づくバイクを正しく取得できること() {
 			stubBikeFound();
@@ -114,7 +113,6 @@ class BikeServiceTest {
 
 	@Nested
 	class RegisterBikeTests {
-
 		@Test
 		void 新しいバイク情報が正常に登録され登録されたバイク情報が返されること() {
 			stubUserFound();
@@ -148,7 +146,6 @@ class BikeServiceTest {
 
 	@Nested
 	class UpdateBikeTests {
-
 		@Test
 		void 既存のバイク情報が正常に更新され更新されたバイク情報が返されること() {
 			stubBikeFound();
@@ -198,7 +195,6 @@ class BikeServiceTest {
 
 	@Nested
 	class SoftDeleteBikeTests {
-
 		@Test
 		void 登録されているバイクが正常に論理削除されること() {
 			stubBikeFound();
@@ -224,7 +220,6 @@ class BikeServiceTest {
 
 	@Nested
 	class FindBikeByUserIdTests {
-
 		@Test
 		void ユーザーIDに紐づく全てのバイク情報を正しく取得できること() {
 			List<Bike> bikeList = List.of(testBike);
