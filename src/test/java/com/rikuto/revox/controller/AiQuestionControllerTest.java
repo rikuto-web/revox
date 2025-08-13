@@ -6,6 +6,7 @@ import com.rikuto.revox.dto.aiquestion.AiQuestionResponse;
 import com.rikuto.revox.exception.ResourceNotFoundException;
 import com.rikuto.revox.service.AiQuestionService;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -73,110 +74,92 @@ class AiQuestionControllerTest {
 		reset(aiQuestionService);
 	}
 
-	@Test
-	void AI質問が正常に作成され201を返すこと() throws Exception {
-		when(aiQuestionService.createAiQuestion(any(AiQuestionCreateRequest.class),
-				eq(testUserId),
-				eq(testBikeId),
-				eq(testCategoryId))).thenReturn(commonAiQuestionResponse);
+	@Nested
+	class CreateAiQuestionTests {
+		@Test
+		void AI質問が正常に作成され201を返すこと() throws Exception {
+			when(aiQuestionService.createAiQuestion(
+					any(AiQuestionCreateRequest.class),
+					eq(testUserId),
+					eq(testBikeId),
+					eq(testCategoryId)
+			)).thenReturn(commonAiQuestionResponse);
 
-		mockMvc.perform(post("/api/ai-questions/user/{userId}/bike/{bikeId}/category/{categoryId}",
-						testUserId,
-						testBikeId,
-						testCategoryId)
-						.contentType(MediaType.APPLICATION_JSON)
-						.content(objectMapper.writeValueAsString(commonAiQuestionCreateRequest)))
-				.andExpect(status().isCreated())
-				.andExpect(jsonPath("$.id").value(testAiQuestionId))
-				.andExpect(jsonPath("$.question").value("エンジンオイルの交換時期はいつですか？"))
-				.andExpect(jsonPath("$.answer").value("エンジンオイルは3,000km～5,000kmまたは6ヶ月ごとに交換することをお勧めします。"));
+			mockMvc.perform(post("/api/ai-questions/user/{userId}/bike/{bikeId}/category/{categoryId}",
+							testUserId, testBikeId, testCategoryId)
+							.contentType(MediaType.APPLICATION_JSON)
+							.content(objectMapper.writeValueAsString(commonAiQuestionCreateRequest)))
+					.andExpect(status().isCreated())
+					.andExpect(jsonPath("$.id").value(testAiQuestionId))
+					.andExpect(jsonPath("$.question").value("エンジンオイルの交換時期はいつですか？"))
+					.andExpect(jsonPath("$.answer").value("エンジンオイルは3,000km～5,000kmまたは6ヶ月ごとに交換することをお勧めします。"));
 
-		verify(aiQuestionService).createAiQuestion(any(AiQuestionCreateRequest.class),eq(testUserId), eq(testBikeId), eq(testCategoryId));
+			verify(aiQuestionService).createAiQuestion(any(), eq(testUserId), eq(testBikeId), eq(testCategoryId));
+		}
+
+		@Test
+		void バリデーションエラー時は400BadRequestを返すこと() throws Exception {
+			AiQuestionCreateRequest invalidRequest = AiQuestionCreateRequest.builder()
+					.question("")
+					.build();
+
+			mockMvc.perform(post("/api/ai-questions/user/{userId}/bike/{bikeId}/category/{categoryId}",
+							testUserId, testBikeId, testCategoryId)
+							.contentType(MediaType.APPLICATION_JSON)
+							.content(objectMapper.writeValueAsString(invalidRequest)))
+					.andExpect(status().isBadRequest());
+
+			verify(aiQuestionService, never()).createAiQuestion(any(), any(), any(), any());
+		}
+
+		@Test
+		void AI質問作成時にユーザーが見つからない場合404を返すこと() throws Exception {
+			Integer dummyUserId = 999;
+
+			when(aiQuestionService.createAiQuestion(
+					any(AiQuestionCreateRequest.class),
+					eq(dummyUserId),
+					any(),
+					any()
+			)).thenThrow(new ResourceNotFoundException("ユーザーが見つかりません"));
+
+			mockMvc.perform(post("/api/ai-questions/user/{userId}/bike/{bikeId}/category/{categoryId}",
+							dummyUserId, testBikeId, testCategoryId)
+							.contentType(MediaType.APPLICATION_JSON)
+							.content(objectMapper.writeValueAsString(commonAiQuestionCreateRequest)))
+					.andExpect(status().isNotFound());
+
+			verify(aiQuestionService).createAiQuestion(any(), eq(dummyUserId), any(), any());
+		}
 	}
 
-	@Test
-	void バリデーションエラー時は400BadRequestを返すこと() throws Exception {
-		AiQuestionCreateRequest invalidRequest = AiQuestionCreateRequest.builder()
-				.question("")
-				.build();
+	@Nested
+	class GetAiQuestionHistoryTests {
+		@Test
+		void ユーザーIDに紐づくAI質問履歴を正常に取得できること() throws Exception {
+			when(aiQuestionService.getAiQuestionByUserId(testUserId)).thenReturn(List.of(commonAiQuestionResponse));
 
-		mockMvc.perform(post("/api/ai-questions/user/{userId}/bike/{bikeId}/category/{categoryId}",
-						testUserId,
-						testBikeId,
-						testCategoryId)
-						.contentType(MediaType.APPLICATION_JSON)
-						.content(objectMapper.writeValueAsString(invalidRequest)))
-				.andExpect(status().isBadRequest());
+			mockMvc.perform(get("/api/ai-questions/user/{userId}", testUserId)
+							.accept(MediaType.APPLICATION_JSON))
+					.andExpect(status().isOk())
+					.andExpect(content().contentType(MediaType.APPLICATION_JSON))
+					.andExpect(jsonPath("$[0].id").value(testAiQuestionId))
+					.andExpect(jsonPath("$[0].question").value("エンジンオイルの交換時期はいつですか？"));
 
-		verify(aiQuestionService, never()).createAiQuestion(any(), any(), any(), any());
+			verify(aiQuestionService).getAiQuestionByUserId(testUserId);
+		}
+
+		@Test
+		void 存在しないユーザーのAI質問履歴取得時に404を返すこと() throws Exception {
+			when(aiQuestionService.getAiQuestionByUserId(anyInt()))
+					.thenThrow(new ResourceNotFoundException("ユーザーが見つかりません"));
+
+			mockMvc.perform(get("/api/ai-questions/user/{userId}", testUserId))
+					.andExpect(status().isNotFound());
+
+			verify(aiQuestionService).getAiQuestionByUserId(testUserId);
+		}
 	}
-
-	@Test
-	void 質問内容が空文字の場合400を返すこと() throws Exception {
-		AiQuestionCreateRequest invalidRequest = AiQuestionCreateRequest.builder()
-				.question("")
-				.build();
-
-		mockMvc.perform(post("/api/ai-questions/user/{userId}/bike/{bikeId}/category/{categoryId}",
-						testUserId,
-						testBikeId,
-						testCategoryId)
-						.contentType(MediaType.APPLICATION_JSON)
-						.content(objectMapper.writeValueAsString(invalidRequest)))
-				.andExpect(status().isBadRequest());
-
-		verify(aiQuestionService, never()).createAiQuestion(any(), any(), any(), any());
-	}
-
-	@Test
-	void ユーザーIDに紐づくAI質問履歴を正常に取得できること() throws Exception {
-		when(aiQuestionService.getAiQuestionByUserId(testUserId)).thenReturn(List.of(commonAiQuestionResponse));
-
-		mockMvc.perform(get("/api/ai-questions/user/{userId}", testUserId)
-						.accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk())
-				.andExpect(content().contentType(MediaType.APPLICATION_JSON))
-				.andExpect(jsonPath("$[0].id").value(testAiQuestionId))
-				.andExpect(jsonPath("$[0].question").value("エンジンオイルの交換時期はいつですか？"));
-
-		verify(aiQuestionService).getAiQuestionByUserId(testUserId);
-	}
-
-	@Test
-	void 存在しないユーザーのAI質問履歴取得時に404を返すこと() throws Exception {
-		when(aiQuestionService.getAiQuestionByUserId(testUserId))
-				.thenThrow(new ResourceNotFoundException("ユーザーが見つかりません"));
-
-		mockMvc.perform(get("/api/ai-questions/user/{userId}", testUserId))
-				.andExpect(status().isNotFound());
-
-		verify(aiQuestionService).getAiQuestionByUserId(testUserId);
-	}
-
-	@Test
-	void AI質問作成時にユーザーが見つからない場合404を返すこと() throws Exception {
-		Integer dummyUserId = 999;
-
-		when(aiQuestionService.createAiQuestion(any(AiQuestionCreateRequest.class),
-				eq(dummyUserId),
-				any(),
-				any()))
-				.thenThrow(new ResourceNotFoundException("ユーザーが見つかりません"));
-
-		mockMvc.perform(post("/api/ai-questions/user/{userId}/bike/{bikeId}/category/{categoryId}",
-						dummyUserId,
-						testBikeId,
-						testCategoryId)
-						.contentType(MediaType.APPLICATION_JSON)
-						.content(objectMapper.writeValueAsString(commonAiQuestionCreateRequest)))
-				.andExpect(status().isNotFound());
-
-		verify(aiQuestionService).createAiQuestion(any(),
-				eq(dummyUserId),
-				any(),
-				any());
-	}
-
 
 	@TestConfiguration
 	static class AiQuestionServiceTestConfig {

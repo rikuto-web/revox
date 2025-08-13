@@ -8,7 +8,13 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
@@ -27,6 +33,7 @@ public class BikeController {
 
 	// CREATE
 	//------------------------------------------------------------------------------------------------------------------
+
 	/**
 	 * 新しいバイク情報を登録します。
 	 * POST /api/bikes/user/{userId}
@@ -44,6 +51,7 @@ public class BikeController {
 
 	// READ
 	//------------------------------------------------------------------------------------------------------------------
+
 	/**
 	 * 指定されたユーザーIDに紐づく全てのバイク情報を取得します。
 	 * GET /api/bikes/user/{userId}
@@ -52,7 +60,7 @@ public class BikeController {
 	 * @return ユーザーが保有する全てのバイク情報
 	 */
 	@GetMapping
-	public ResponseEntity<List<BikeResponse>> getBikeListByUserId (@PathVariable @Positive Integer userId){
+	public ResponseEntity<List<BikeResponse>> getBikeListByUserId(@PathVariable @Positive Integer userId) {
 		List<BikeResponse> bikeResponseList = bikeService.findBikeByUserId(userId);
 
 		return ResponseEntity.ok(bikeResponseList);
@@ -67,27 +75,29 @@ public class BikeController {
 	 * @return 検索されたバイク情報とHTTPステータス200 OK
 	 */
 	@GetMapping("/bike/{bikeId}")
-	public ResponseEntity<BikeResponse> getBikeByUserIdAndBikeId(@PathVariable @Positive Integer userId,
-	                                                             @PathVariable @Positive Integer bikeId) {
-		BikeResponse bikeResponse = bikeService.findByIdAndUserId(userId, bikeId);
+	public ResponseEntity<BikeResponse> getBikeByUserIdAndBikeId(@PathVariable("bikeId") @Positive Integer bikeId,
+	                                                             @PathVariable("userId") @Positive Integer userId) {
+		BikeResponse bikeResponse = bikeService.findByIdAndUserId(bikeId, userId);
 
 		return ResponseEntity.ok(bikeResponse);
 	}
 
 	// UPDATE
 	//------------------------------------------------------------------------------------------------------------------
+
 	/**
 	 * 既存のバイク情報を、受け取ったリクエスト内容に更新します。
-	 * PATCH /api/user/{userId}/bike/{bikeId}
+	 * PATCH /api//bikes/user/{userId}/bike/{bikeId}
 	 *
-	 * @param bikeId 更新するバイクのID
+	 * @param bikeId  更新するバイクのID
 	 * @param request 更新されたバイク情報を含むリクエストDTO
 	 * @return 更新されたバイク情報（BikeResponse）とHTTPステータス200 OK
 	 */
 	@PatchMapping("/bike/{bikeId}")
 	public ResponseEntity<BikeResponse> updateBike(@RequestBody @Valid BikeUpdateRequest request,
-	                                               @PathVariable @Positive Integer bikeId,
-	                                               @PathVariable @Positive Integer userId) {
+	                                               @PathVariable("bikeId") @Positive Integer bikeId,
+	                                               @PathVariable("userId") @Positive Integer userId
+	) {
 		BikeResponse updateBike = bikeService.updateBike(request, bikeId, userId);
 
 		return ResponseEntity.ok(updateBike);
@@ -95,6 +105,7 @@ public class BikeController {
 
 	// DELETE
 	//------------------------------------------------------------------------------------------------------------------
+
 	/**
 	 * ユーザーIDに紐づく特定のバイク情報を論理削除します。
 	 * PATCH /api/bikes/user/{userId}/bike/{bikeId}/softDelete
@@ -104,9 +115,10 @@ public class BikeController {
 	 * @return HTTPステータス204 No Content
 	 */
 	@PatchMapping("/bike/{bikeId}/softDelete")
-	public ResponseEntity<Void> softDeleteBike(@PathVariable @Positive Integer userId,
-	                                           @PathVariable @Positive Integer bikeId) {
-		bikeService.softDeleteBike(userId, bikeId);
+	public ResponseEntity<Void> softDeleteBike(@PathVariable("bikeId") @Positive Integer bikeId,
+	                                           @PathVariable("userId") @Positive Integer userId
+	) {
+		bikeService.softDeleteBike(bikeId, userId);
 
 		return ResponseEntity.noContent().build();
 	}

@@ -29,20 +29,8 @@ public class AiQuestionController {
 		this.aiQuestionService = aiQuestionService;
 	}
 
-	/**
-	 * 指定されたユーザーIDに紐づくAI質問履歴を取得します。
-	 * get /api/ai-questions/user/{userId}
-	 *
-	 * @param userId ユーザーID
-	 * @return AI質問履歴リストとHTTPステータス200 OK
-	 */
-	@GetMapping
-	public ResponseEntity<List<AiQuestionResponse>> getAiQuestionsByUserId(@PathVariable @Positive Integer userId){
-		List<AiQuestionResponse> responses = aiQuestionService.getAiQuestionByUserId(userId);
-
-		return ResponseEntity.ok(responses);
-	}
-
+	// CREATE
+	//------------------------------------------------------------------------------------------------------------------
 	/**
 	 * ユーザーからの質問を取得し、それに対するAIの回答を返します。
 	 * post /api/ai-questions/user/{userId}/bike/{bikeId}/category/{categoryId}
@@ -59,5 +47,21 @@ public class AiQuestionController {
 				= aiQuestionService.createAiQuestion(request, userId, bikeId, categoryId);
 
 		return new ResponseEntity<>(response, HttpStatus.CREATED);
+	}
+
+	// READ
+	//------------------------------------------------------------------------------------------------------------------
+	/**
+	 * 指定されたユーザーIDに紐づくAI質問履歴を取得します。
+	 * get /api/ai-questions/user/{userId}
+	 *
+	 * @param userId ユーザーID
+	 * @return AI質問履歴リストとHTTPステータス200 OK
+	 */
+	@GetMapping
+	public ResponseEntity<List<AiQuestionResponse>> getAiQuestionsByUserId(@PathVariable @Positive Integer userId){
+		List<AiQuestionResponse> responses = aiQuestionService.getAiQuestionByUserId(userId);
+
+		return ResponseEntity.ok(responses);
 	}
 }
