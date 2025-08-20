@@ -7,7 +7,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -40,15 +39,16 @@ public class ExternalAuthUserDetails implements UserDetails {
 				Collections.emptyList();
 	}
 
-
+	// 外部認証ではuniqueUserIdが識別子
 	@Override
 	public String getUsername() {
-		return uniqueUserId; // 外部認証ではuniqueUserIdが識別子
+		return uniqueUserId;
 	}
 
+	// 外部認証のためパスワードは不要
 	@Override
 	public String getPassword() {
-		return null; // 外部認証のためパスワードは不要
+		return null;
 	}
 
 	@Override

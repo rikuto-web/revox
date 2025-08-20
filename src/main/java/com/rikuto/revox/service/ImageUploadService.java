@@ -4,6 +4,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 /**
  * 使用クラウドに依存せず画像の操作を行うためのインターフェースです。
+ * 今後実装予定となります。
  */
 public interface ImageUploadService {
 

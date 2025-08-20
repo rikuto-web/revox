@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * ユーザー情報のCRUD操作を扱うコントローラーです。
+ * ユーザー情報に関するコントローラーです。
  */
 @RestController
 @RequestMapping("/api/users")
@@ -25,6 +25,8 @@ public class UserController {
 		this.userService = userService;
 	}
 
+	// UPDATE
+	//------------------------------------------------------------------------------------------------------------------
 	/**
 	 * 既存のユーザー情報を、受け取ったリクエスト内容に更新します。
 	 * PATCH　/api/users/{userId}

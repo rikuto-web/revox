@@ -5,7 +5,6 @@ import com.rikuto.revox.domain.bike.Bike;
 import com.rikuto.revox.domain.maintenancetask.MaintenanceTask;
 import com.rikuto.revox.dto.maintenancetask.MaintenanceTaskRequest;
 import com.rikuto.revox.dto.maintenancetask.MaintenanceTaskResponse;
-import com.rikuto.revox.dto.maintenancetask.MaintenanceTaskUpdateRequest;
 import com.rikuto.revox.exception.ResourceNotFoundException;
 import com.rikuto.revox.mapper.MaintenanceTaskMapper;
 import com.rikuto.revox.repository.BikeRepository;
@@ -112,7 +111,7 @@ class MaintenanceTaskServiceTest {
 		void 新しい整備タスクが正常に登録され登録された整備タスク情報が返されること() {
 			stubCategoryFound();
 			stubBikeFound();
-			when(maintenanceTaskMapper.toEntity(commonMaintenanceTaskRequest, testBike, testCategory)).thenReturn(testMaintenanceTask);
+			when(maintenanceTaskMapper.toDomain(commonMaintenanceTaskRequest, testBike, testCategory)).thenReturn(testMaintenanceTask);
 			when(maintenanceTaskRepository.save(testMaintenanceTask)).thenReturn(testMaintenanceTask);
 			when(maintenanceTaskMapper.toResponse(testMaintenanceTask)).thenReturn(commonMaintenanceTaskResponse);
 
@@ -122,7 +121,7 @@ class MaintenanceTaskServiceTest {
 			verify(categoryRepository).findById(testCategory.getId());
 			verify(bikeRepository).findById(testBike.getId());
 			verify(maintenanceTaskRepository).save(testMaintenanceTask);
-			verify(maintenanceTaskMapper).toEntity(commonMaintenanceTaskRequest, testBike, testCategory);
+			verify(maintenanceTaskMapper).toDomain(commonMaintenanceTaskRequest, testBike, testCategory);
 			verify(maintenanceTaskMapper).toResponse(testMaintenanceTask);
 		}
 

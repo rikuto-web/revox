@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 /**
- * 整備タスクに関するCRUD操作を扱うコントローラーです。
+ * 整備タスクに関するコントローラーです。
  */
 @RestController
 @RequestMapping("/api/maintenance-task")
@@ -33,37 +33,35 @@ public class MaintenanceTaskController {
 
 	// CREATE
 	//------------------------------------------------------------------------------------------------------------------
-
 	/**
 	 * 整備タスクの新規登録を行います。
 	 * POST /api/maintenance-task
 	 *
 	 * @param request 登録する整備タスク情報
-	 * @return 登録済みの整備タスク情報
+	 * @return 登録済みの整備タスク情報とHTTPステータス200 OK
 	 */
 	@PostMapping
 	public ResponseEntity<MaintenanceTaskResponse> registerMaintenanceTask(@RequestBody @Valid MaintenanceTaskRequest request) {
-		MaintenanceTaskResponse registerTask = maintenanceTaskService.registerMaintenanceTask(request);
+		MaintenanceTaskResponse registerMaintenanceTask = maintenanceTaskService.registerMaintenanceTask(request);
 
-		return new ResponseEntity<>(registerTask, HttpStatus.CREATED);
+		return new ResponseEntity<>(registerMaintenanceTask, HttpStatus.CREATED);
 	}
 
 	// READ
 	//------------------------------------------------------------------------------------------------------------------
-
 	/**
 	 * ユーザーIDに紐づく整備タスクを取得します。
 	 * ダッシュボードでの最新記録表示に利用します。
 	 * GET /api/maintenance-task/user/{userId}
 	 *
 	 * @param userId ユーザーID
-	 * @return ユーザーIDに紐づく全ての整備タスク
+	 * @return ユーザーIDに紐づく全ての整備タスクとHTTPステータス200 OK
 	 */
 	@GetMapping("/user/{userId}")
 	public ResponseEntity<List<MaintenanceTaskResponse>> getLatestMaintenanceTasksByUserId(@PathVariable @Positive Integer userId) {
-		List<MaintenanceTaskResponse> responseList = maintenanceTaskService.findLatestMaintenanceTasksByUserId(userId);
+		List<MaintenanceTaskResponse> responseListByUserId = maintenanceTaskService.findLatestMaintenanceTasksByUserId(userId);
 
-		return ResponseEntity.ok(responseList);
+		return ResponseEntity.ok(responseListByUserId);
 	}
 
 	/**
@@ -71,13 +69,13 @@ public class MaintenanceTaskController {
 	 * GET /api/maintenance-task/bike/{bikeId}
 	 *
 	 * @param bikeId バイクID
-	 * @return バイクIDに紐づいた整備タスクリスト
+	 * @return バイクIDに紐づいた整備タスクリストとHTTPステータス200 OK
 	 */
 	@GetMapping("/bike/{bikeId}")
 	public ResponseEntity<List<MaintenanceTaskResponse>> getMaintenanceTaskByBikeID(@PathVariable @Positive Integer bikeId) {
-		List<MaintenanceTaskResponse> responseList = maintenanceTaskService.findByBikeId(bikeId);
+		List<MaintenanceTaskResponse> responseListByBikeId = maintenanceTaskService.findByBikeId(bikeId);
 
-		return ResponseEntity.ok(responseList);
+		return ResponseEntity.ok(responseListByBikeId);
 	}
 
 	/**
@@ -86,7 +84,7 @@ public class MaintenanceTaskController {
 	 *
 	 * @param bikeId バイクID
 	 * @param categoryId カテゴリーID
-	 * @return バイクIDとカテゴリーIDで絞り込んだ整備タスクリスト
+	 * @return バイクIDとカテゴリーIDで絞り込んだ整備タスクリストとHTTPステータス200 OK
 	 */
 	@GetMapping("/bike/{bikeId}/category/{categoryId}")
 	public ResponseEntity<List<MaintenanceTaskResponse>> getMaintenanceTaskByBikeIdAndCategoryId(@PathVariable("bikeId") @Positive Integer bikeId,
@@ -98,14 +96,13 @@ public class MaintenanceTaskController {
 
 	// UPDATE
 	//------------------------------------------------------------------------------------------------------------------
-
 	/**
 	 * 整備タスクの更新を行います。
 	 * PATCH /api/maintenance-task/{maintenanceTaskId}
 	 *
 	 * @param maintenanceTaskId 整備タスクID
-	 * @param request           更新する内容の整備タスク
-	 * @return 更新後の整備タスク情報
+	 * @param request 更新された整備タスク情報を含むリクエストDTO
+	 * @return 更新後の整備タスク情報とHTTPステータス200 OK
 	 */
 	@PatchMapping("/{maintenanceTaskId}")
 	public ResponseEntity<MaintenanceTaskResponse> updateMaintenanceTask(@PathVariable @Positive Integer maintenanceTaskId,
@@ -117,13 +114,12 @@ public class MaintenanceTaskController {
 
 	// DELETE
 	//------------------------------------------------------------------------------------------------------------------
-
 	/**
 	 * 整備タスクの論理削除を行います。
 	 * PATCH /api/maintenance-task/{maintenanceTaskId}/softDelete
 	 *
 	 * @param maintenanceTaskId 整備タスクID
-	 * @return Httpステータス　204
+	 * @return Httpステータス　204 No Content
 	 */
 	@PatchMapping("/{maintenanceTaskId}/softDelete")
 	public ResponseEntity<Void> softDeleteMaintenanceTask(@PathVariable @Positive Integer maintenanceTaskId) {

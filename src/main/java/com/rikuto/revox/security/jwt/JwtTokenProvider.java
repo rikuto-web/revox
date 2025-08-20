@@ -3,6 +3,7 @@ package com.rikuto.revox.security.jwt;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -12,6 +13,7 @@ import java.util.Date;
 /**
  * JWTトークンの生成と検証を行うクラスです。
  */
+@Slf4j
 @Component
 public class JwtTokenProvider {
 
@@ -40,6 +42,7 @@ public class JwtTokenProvider {
 		Date now = new Date();
 		Date validity = new Date(now.getTime() + validityInMilliseconds);
 
+		log.info("JWTトークンの生成を開始します。");
 		return Jwts.builder()
 				.setSubject(uniqueUserId)
 				.setIssuedAt(now)
@@ -72,6 +75,7 @@ public class JwtTokenProvider {
 		try {
 			Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token);
 
+			log.info("JWTトークンの検証に成功しました。");
 			return true;
 		}catch(Exception e){
 			return false;

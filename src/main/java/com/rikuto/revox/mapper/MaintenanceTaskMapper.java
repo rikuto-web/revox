@@ -56,7 +56,7 @@ public class MaintenanceTaskMapper {
 	 * @param category  整備タスクを所有する Categoryドメイン。
 	 * @return 作成された MaintenanceTaskドメイン。
 	 */
-	public MaintenanceTask toEntity (MaintenanceTaskRequest request, Bike bike, Category category) {
+	public MaintenanceTask toDomain(MaintenanceTaskRequest request, Bike bike, Category category) {
 
 	return MaintenanceTask.builder()
 			.category(category)

@@ -118,7 +118,7 @@ class BikeServiceTest {
 			stubUserFound();
 
 			when(bikeRepository.save(testBike)).thenReturn(testBike);
-			when(bikeMapper.toEntity(testUser, commonBikeCreateRequest)).thenReturn(testBike);
+			when(bikeMapper.toDomain(testUser, commonBikeCreateRequest)).thenReturn(testBike);
 			BikeResponse expectedResponse = BikeResponse.builder().id(testBike.getId()).build();
 			when(bikeMapper.toResponse(testBike)).thenReturn(expectedResponse);
 
@@ -127,7 +127,7 @@ class BikeServiceTest {
 			assertThat(result).isEqualTo(expectedResponse);
 			verify(userService).findById(testUser.getId());
 			verify(bikeRepository).save(testBike);
-			verify(bikeMapper).toEntity(testUser, commonBikeCreateRequest);
+			verify(bikeMapper).toDomain(testUser, commonBikeCreateRequest);
 			verify(bikeMapper).toResponse(testBike);
 		}
 
@@ -140,7 +140,7 @@ class BikeServiceTest {
 					.hasMessage("ユーザーID " + testUser.getId() + " が見つかりません。");
 
 			verify(bikeRepository, never()).save(any());
-			verify(bikeMapper, never()).toEntity(any(), any());
+			verify(bikeMapper, never()).toDomain(any(), any());
 		}
 	}
 

@@ -13,7 +13,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import java.time.LocalDate;
 
 /**
- * ユーザーから受け取るバイク情報です。
+ * ユーザーから受け取るバイク情報リクエストです。
  * 各フィールドにはバリデーションがあります。
  */
 @Getter

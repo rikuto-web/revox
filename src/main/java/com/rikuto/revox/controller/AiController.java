@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 /**
- * AI(Gemini API)に関するcontrollerです。
+ * AI(Gemini API)に関するコントローラーです。
  */
 @RestController
 @RequestMapping("/api/ai/user/{userId}")
@@ -31,7 +31,7 @@ public class AiController {
 	// CREATE
 	//------------------------------------------------------------------------------------------------------------------
 	/**
-	 * ユーザーからの質問を取得し、202ステータスを返します。
+	 * ユーザーからの質問を取得し、200ステータスを返します。
 	 * post /api/ai/user/{userId}/bike/{bikeId}/category/{categoryId}
 	 *
 	 * @param request 質問リクエスト

@@ -5,6 +5,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -19,6 +20,7 @@ import java.io.IOException;
  * JWT認証フィルターです。
  * JWTトークンからuniqueUserIdを抽出し、認証情報を設定します。
  */
+@Slf4j
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 	private final JwtTokenProvider jwtTokenProvider;
@@ -49,6 +51,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	                                @NotNull HttpServletResponse response,
 	                                @NotNull FilterChain filterChain) throws ServletException, IOException {
 		try {
+			log.info("JWTの検証を開始します。");
 			String jwt = getJwtFromRequest(request);
 			if (StringUtils.hasText(jwt) && jwtTokenProvider.validateToken(jwt)) {
 
@@ -61,9 +64,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 				authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
 				SecurityContextHolder.getContext().setAuthentication(authentication);
+				log.info("ユーザーが正常に認証されました。");
+			}else {
+				log.debug("JWTトークンが見つかりませんでした。");
 			}
 		} catch (Exception ex) {
-			logger.error("セキュリティコンテキストにユーザー認証を設定できませんでした", ex);
+			log.error("セキュリティコンテキストにユーザー認証を設定できませんでした。");
 		}
 		filterChain.doFilter(request, response);
 	}

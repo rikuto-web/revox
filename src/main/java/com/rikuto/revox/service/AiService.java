@@ -1,12 +1,12 @@
 package com.rikuto.revox.service;
 
-import com.rikuto.revox.dto.ai.AiQuestionCreateRequest;
-import com.rikuto.revox.dto.ai.AiCreatePrompt;
-import com.rikuto.revox.dto.ai.AiQuestionResponse;
 import com.rikuto.revox.domain.Ai;
-import com.rikuto.revox.domain.bike.Bike;
 import com.rikuto.revox.domain.Category;
+import com.rikuto.revox.domain.bike.Bike;
 import com.rikuto.revox.domain.user.User;
+import com.rikuto.revox.dto.ai.AiCreatePrompt;
+import com.rikuto.revox.dto.ai.AiQuestionCreateRequest;
+import com.rikuto.revox.dto.ai.AiQuestionResponse;
 import com.rikuto.revox.exception.ResourceNotFoundException;
 import com.rikuto.revox.mapper.AiMapper;
 import com.rikuto.revox.repository.AiRepository;
@@ -55,24 +55,30 @@ public class AiService {
 	 * AIへの質問に対する回答を同期で生成します。
 	 * ユーザーと紐づく単一のバイク情報とカテゴリー情報を渡して回答を生成します。
 	 *
-	 * @param request AIへの質問
-	 * @param userId ユーザーID
-	 * @param bikeId バイクID
+	 * @param request    AIへの質問
+	 * @param userId     ユーザーID
+	 * @param bikeId     バイクID
 	 * @param categoryId カテゴリーID
 	 */
 	@Transactional
 	public AiQuestionResponse createAiQuestion(AiQuestionCreateRequest request,
 	                                           Integer userId,
 	                                           Integer bikeId,
-	                                           Integer categoryId){
-
+	                                           Integer categoryId) {
+		log.info("各種IDで検索を開始します。");
 		User user = userRepository.findByIdAndIsDeletedFalse(userId)
 				.orElseThrow(() -> new ResourceNotFoundException("ユーザーID " + userId + " が見つかりません。"));
+		log.info("ユーザーIDでの検索が正常に実行されました。");
+
 		Bike bike = bikeRepository.findByIdAndUserIdAndIsDeletedFalse(bikeId, userId)
-				.orElseThrow(() -> new ResourceNotFoundException("ユーザー ID " + userId+ " に紐づくバイクID " + bikeId+ "が見つかりません。"));
+				.orElseThrow(() -> new ResourceNotFoundException("ユーザー ID " + userId + " に紐づくバイクID " + bikeId + "が見つかりません。"));
+		log.info("バイクIDでの検索が正常に実行されました。");
+
 		Category category = categoryRepository.findById(categoryId)
 				.orElseThrow(() -> new ResourceNotFoundException("カテゴリーID " + categoryId + " が見つかりません。"));
+		log.info("カテゴリーIDでの検索が正常に実行されました。");
 
+		log.info("プロンプトを生成しAIの回答生成を開始します。");
 		AiCreatePrompt createQuestion = AiCreatePrompt.builder()
 				.question(request.getQuestion())
 
@@ -83,7 +89,7 @@ public class AiService {
 				.build();
 
 		String answer = geminiService.generateContent(createQuestion);
-		if (answer == null || answer.isBlank()) {
+		if(answer == null || answer.isBlank()) {
 			log.warn("質問に対して空の回答が返されました。 Prompt={}", createQuestion);
 		}
 
@@ -97,6 +103,7 @@ public class AiService {
 				.build();
 
 		Ai savedAnswer = aiRepository.save(answerToDomain);
+		log.info("AIからの回答を正常に登録できました。");
 
 		return aiMapper.toResponse(savedAnswer);
 	}
@@ -112,7 +119,6 @@ public class AiService {
 	 */
 	@Transactional(readOnly = true)
 	public List<AiQuestionResponse> getAiQuestionByUserId(Integer userId) {
-
 		List<Ai> questionList = aiRepository.findByUserId(userId);
 
 		return questionList.stream()

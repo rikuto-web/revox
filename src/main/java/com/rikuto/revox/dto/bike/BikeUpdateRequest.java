@@ -9,6 +9,10 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 
+/**
+ * バイク情報を更新する際に受け取るリクエストです。
+ * 各フィールドにはバリデーションがあります。
+ */
 @Getter
 @Builder
 public class BikeUpdateRequest {

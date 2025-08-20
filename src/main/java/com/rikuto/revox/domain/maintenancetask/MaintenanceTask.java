@@ -2,7 +2,6 @@ package com.rikuto.revox.domain.maintenancetask;
 
 import com.rikuto.revox.domain.Category;
 import com.rikuto.revox.domain.bike.Bike;
-import com.rikuto.revox.dto.maintenancetask.MaintenanceTaskRequest;
 import com.rikuto.revox.dto.maintenancetask.MaintenanceTaskUpdateRequest;
 import jakarta.persistence.*;
 import lombok.*;

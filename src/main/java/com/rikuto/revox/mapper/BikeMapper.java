@@ -59,7 +59,7 @@ public class BikeMapper {
 	 * @param user    バイクを所有する Userドメイン。
 	 * @return 作成された Bikeドメイン。
 	 */
-	public Bike toEntity(User user, BikeCreateRequest request) {
+	public Bike toDomain(User user, BikeCreateRequest request) {
 
 		return Bike.builder()
 				.user(user)

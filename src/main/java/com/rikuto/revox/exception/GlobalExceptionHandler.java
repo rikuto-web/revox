@@ -31,6 +31,7 @@ public class GlobalExceptionHandler {
 	 */
 	@ExceptionHandler(ResourceNotFoundException.class)
 	public ResponseEntity<String> handleResourceNotFoundException(ResourceNotFoundException ex) {
+		log.warn("リソースが見つかりませんでした。");
 		return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
 	}
 
@@ -42,6 +43,7 @@ public class GlobalExceptionHandler {
 	 */
 	@ExceptionHandler(AuthenticationException.class)
 	public ResponseEntity<String> handleAuthenticationException(AuthenticationException ex) {
+		log.warn("認証に失敗しました。");
 		return new ResponseEntity<>(ex.getMessage(), HttpStatus.UNAUTHORIZED);
 	}
 
@@ -60,6 +62,7 @@ public class GlobalExceptionHandler {
 				.map(DefaultMessageSourceResolvable::getDefaultMessage)
 				.collect(Collectors.toList());
 
+		log.info("リクエストボディのバリデーションエラーが発生しました");
 		return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
 	}
 
@@ -76,9 +79,9 @@ public class GlobalExceptionHandler {
 				.map(MessageSourceResolvable::getDefaultMessage)
 				.collect(Collectors.toList());
 
+		log.info("パス変数/リクエストパラメータのバリデーションエラーが発生しました。");
 		return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
 	}
-
 
 	/**
 	 * 上記で捕捉されなかった予期せぬすべての例外を処理します。

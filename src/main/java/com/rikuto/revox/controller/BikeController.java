@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 /**
- * バイク情報のCRUD操作を扱うコントローラーです。
+ * バイク情報に関するコントローラーです。
  */
 @RestController
 @RequestMapping("/api/bikes/user/{userId}")
@@ -33,7 +33,6 @@ public class BikeController {
 
 	// CREATE
 	//------------------------------------------------------------------------------------------------------------------
-
 	/**
 	 * 新しいバイク情報を登録します。
 	 * POST /api/bikes/user/{userId}
@@ -51,13 +50,12 @@ public class BikeController {
 
 	// READ
 	//------------------------------------------------------------------------------------------------------------------
-
 	/**
 	 * 指定されたユーザーIDに紐づく全てのバイク情報を取得します。
 	 * GET /api/bikes/user/{userId}
 	 *
-	 * @param userId バイクを検索するユーザーのID
-	 * @return ユーザーが保有する全てのバイク情報
+	 * @param userId ユーザーID
+	 * @return ユーザーが保有する全てのバイク情報とHTTPステータス200 OK
 	 */
 	@GetMapping
 	public ResponseEntity<List<BikeResponse>> getBikeListByUserId(@PathVariable @Positive Integer userId) {
@@ -70,8 +68,8 @@ public class BikeController {
 	 * 指定されたユーザーIDに紐づく特定のバイク情報を取得します。
 	 * GET /api/bikes/user/{userId}/bike/{bikeId}
 	 *
-	 * @param userId バイクを検索するユーザーのID
-	 * @param bikeId ユーザーが保有する特定のバイクID
+	 * @param userId ユーザーID
+	 * @param bikeId 特定のバイクID
 	 * @return 検索されたバイク情報とHTTPステータス200 OK
 	 */
 	@GetMapping("/bike/{bikeId}")
@@ -84,20 +82,18 @@ public class BikeController {
 
 	// UPDATE
 	//------------------------------------------------------------------------------------------------------------------
-
 	/**
 	 * 既存のバイク情報を、受け取ったリクエスト内容に更新します。
 	 * PATCH /api//bikes/user/{userId}/bike/{bikeId}
 	 *
-	 * @param bikeId  更新するバイクのID
+	 * @param bikeId  更新するバイクID
 	 * @param request 更新されたバイク情報を含むリクエストDTO
-	 * @return 更新されたバイク情報（BikeResponse）とHTTPステータス200 OK
+	 * @return 更新されたバイク情報とHTTPステータス200 OK
 	 */
 	@PatchMapping("/bike/{bikeId}")
 	public ResponseEntity<BikeResponse> updateBike(@RequestBody @Valid BikeUpdateRequest request,
 	                                               @PathVariable("bikeId") @Positive Integer bikeId,
-	                                               @PathVariable("userId") @Positive Integer userId
-	) {
+	                                               @PathVariable("userId") @Positive Integer userId) {
 		BikeResponse updateBike = bikeService.updateBike(request, bikeId, userId);
 
 		return ResponseEntity.ok(updateBike);
@@ -105,19 +101,17 @@ public class BikeController {
 
 	// DELETE
 	//------------------------------------------------------------------------------------------------------------------
-
 	/**
 	 * ユーザーIDに紐づく特定のバイク情報を論理削除します。
 	 * PATCH /api/bikes/user/{userId}/bike/{bikeId}/softDelete
 	 *
-	 * @param userId 削除するバイクを保有しているユーザーID
-	 * @param bikeId 論理削除するバイクのID
+	 * @param userId ユーザーID
+	 * @param bikeId 論理削除するバイクID
 	 * @return HTTPステータス204 No Content
 	 */
 	@PatchMapping("/bike/{bikeId}/softDelete")
 	public ResponseEntity<Void> softDeleteBike(@PathVariable("bikeId") @Positive Integer bikeId,
-	                                           @PathVariable("userId") @Positive Integer userId
-	) {
+	                                           @PathVariable("userId") @Positive Integer userId) {
 		bikeService.softDeleteBike(bikeId, userId);
 
 		return ResponseEntity.noContent().build();
