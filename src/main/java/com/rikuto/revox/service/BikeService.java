@@ -38,6 +38,7 @@ public class BikeService {
 
 	// CREATE
 	//------------------------------------------------------------------------------------------------------------------
+
 	/**
 	 * 新しいバイク情報を登録します。
 	 *
@@ -58,6 +59,7 @@ public class BikeService {
 
 	// READ
 	//------------------------------------------------------------------------------------------------------------------
+
 	/**
 	 * ユーザーIDに紐づいた全てのバイク情報を検索します。
 	 *
@@ -89,6 +91,7 @@ public class BikeService {
 
 	// UPDATE
 	//------------------------------------------------------------------------------------------------------------------
+
 	/**
 	 * 既存のバイク情報を更新します。
 	 *
@@ -98,7 +101,7 @@ public class BikeService {
 	 * @throws ResourceNotFoundException 指定されたバイクが見つからない場合
 	 */
 	@Transactional
-	public BikeResponse updateBike(BikeUpdateRequest request, Integer bikeId,  Integer userId) {
+	public BikeResponse updateBike(BikeUpdateRequest request, Integer bikeId, Integer userId) {
 		log.info("バイク情報の更新を開始します。");
 		Bike existingBike = bikeRepository.findByIdAndUserIdAndIsDeletedFalse(bikeId, userId)
 				.orElseThrow(() -> new ResourceNotFoundException("ユーザーID " + userId + " に紐づくバイクID " + bikeId + " が見つかりません。"));
@@ -123,6 +126,7 @@ public class BikeService {
 
 	// DELETE
 	//------------------------------------------------------------------------------------------------------------------
+
 	/**
 	 * 登録されているバイクを論理削除します。
 	 *

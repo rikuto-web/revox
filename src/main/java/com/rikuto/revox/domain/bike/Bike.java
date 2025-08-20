@@ -136,6 +136,7 @@ public class Bike {
 	/**
 	 * 受け取ったリクエスト内容を更新するメソッドです。
 	 * 日時はDBで自動設定されるためシステム側では日時の更新は行いません。
+	 *
 	 * @param data 更新するバイク情報
 	 */
 	public void updateFrom(BikeUpdateData data) {
@@ -164,7 +165,7 @@ public class Bike {
 
 	/**
 	 * 論理削除のためのメソッドです。
-	 *日時はDBで自動設定されるためシステム側では日時の更新は行いません。
+	 * 日時はDBで自動設定されるためシステム側では日時の更新は行いません。
 	 */
 	public void softDelete() {
 		this.isDeleted = true;

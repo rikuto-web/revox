@@ -1,11 +1,11 @@
 package com.rikuto.revox.service;
 
 import com.rikuto.revox.domain.Ai;
-import com.rikuto.revox.domain.bike.Bike;
 import com.rikuto.revox.domain.Category;
+import com.rikuto.revox.domain.bike.Bike;
 import com.rikuto.revox.domain.user.User;
-import com.rikuto.revox.dto.ai.AiQuestionCreateRequest;
 import com.rikuto.revox.dto.ai.AiCreatePrompt;
+import com.rikuto.revox.dto.ai.AiQuestionCreateRequest;
 import com.rikuto.revox.dto.ai.AiQuestionResponse;
 import com.rikuto.revox.exception.ResourceNotFoundException;
 import com.rikuto.revox.mapper.AiMapper;
@@ -66,28 +66,13 @@ class AiServiceTest {
 	@BeforeEach
 	void setUp() {
 		testUser = User.builder().id(1).nickname("testUser").build();
-		testBike = Bike.builder().id(1).user(testUser).manufacturer("TestBike").modelName("Test").build();
-		testCategory = Category.builder().id(1).name("エンジン").displayOrder(1).build();
-		testAi = Ai.builder()
-				.user(testUser)
-				.bike(testBike)
-				.category(testCategory)
-				.question("エンジンオイルの交換時期はいつですか？")
-				.answer("エンジンオイルは3,000km～5,000kmまたは6ヶ月ごとに交換することをお勧めします。")
-				.build();
+		testBike = Bike.builder().id(2).user(testUser).manufacturer("TestBike").modelName("Test").build();
+		testCategory = Category.builder().id(3).name("エンジン").displayOrder(1).build();
+		testAi = Ai.builder().user(testUser).bike(testBike).category(testCategory).question("エンジンオイルの交換時期はいつですか？").answer("エンジンオイルは3,000km～5,000kmまたは6ヶ月ごとに交換することをお勧めします。").build();
 
-		commonAiQuestionCreateRequest = AiQuestionCreateRequest.builder()
-				.question("エンジンオイルの交換時期はいつですか？")
-				.build();
+		commonAiQuestionCreateRequest = AiQuestionCreateRequest.builder().question("エンジンオイルの交換時期はいつですか？").build();
 
-		commonAiQuestionResponse = AiQuestionResponse.builder()
-				.id(testAi.getId())
-				.userId(testUser.getId())
-				.bikeId(testBike.getId())
-				.categoryId(testCategory.getId())
-				.question("エンジンオイルの交換時期はいつですか？")
-				.answer("エンジンオイルは3,000km～5,000kmまたは6ヶ月ごとに交換することをお勧めします。")
-				.build();
+		commonAiQuestionResponse = AiQuestionResponse.builder().id(testAi.getId()).userId(testUser.getId()).bikeId(testBike.getId()).categoryId(testCategory.getId()).question("エンジンオイルの交換時期はいつですか？").answer("エンジンオイルは3,000km～5,000kmまたは6ヶ月ごとに交換することをお勧めします。").build();
 	}
 
 	private void stubUserFound() {
@@ -99,13 +84,11 @@ class AiServiceTest {
 	}
 
 	private void stubBikeFound() {
-		when(bikeRepository.findByIdAndUserIdAndIsDeletedFalse(testBike.getId(), testUser.getId()))
-				.thenReturn(Optional.of(testBike));
+		when(bikeRepository.findByIdAndUserIdAndIsDeletedFalse(testBike.getId(), testUser.getId())).thenReturn(Optional.of(testBike));
 	}
 
 	private void stubBikeNotFound() {
-		when(bikeRepository.findByIdAndUserIdAndIsDeletedFalse(testBike.getId(), testUser.getId()))
-				.thenReturn(Optional.empty());
+		when(bikeRepository.findByIdAndUserIdAndIsDeletedFalse(testBike.getId(), testUser.getId())).thenReturn(Optional.empty());
 	}
 
 	private void stubCategoryFound() {
@@ -125,16 +108,13 @@ class AiServiceTest {
 			stubBikeFound();
 			stubCategoryFound();
 
-			when(geminiService.generateContent(any(AiCreatePrompt.class))).thenReturn("Mocked AI Answer");
+			when(geminiService.generateContent(any(AiCreatePrompt.class))).thenReturn("MockedAIAnswer");
 
 			when(aiMapper.toResponse(testAi)).thenReturn(commonAiQuestionResponse);
 
 			when(aiRepository.save(any(Ai.class))).thenReturn(testAi);
 
-			AiQuestionResponse result = aiService.createAiQuestion(commonAiQuestionCreateRequest,
-					testUser.getId(),
-					testBike.getId(),
-					testCategory.getId());
+			AiQuestionResponse result = aiService.createAiQuestion(commonAiQuestionCreateRequest, testUser.getId(), testBike.getId(), testCategory.getId());
 
 			assertThat(result).isEqualTo(commonAiQuestionResponse);
 
@@ -143,19 +123,14 @@ class AiServiceTest {
 			verify(categoryRepository).findById(testCategory.getId());
 			verify(aiRepository).save(any(Ai.class));
 			verify(aiMapper).toResponse(testAi);
-			verify(geminiService,times(1)).generateContent(any(AiCreatePrompt.class));
+			verify(geminiService, times(1)).generateContent(any(AiCreatePrompt.class));
 		}
 
 		@Test
 		void ユーザーが見つからない場合にResourceNotFoundExceptionをスローすること() {
 			stubUserNotFound();
 
-			assertThatThrownBy(() -> aiService.createAiQuestion(commonAiQuestionCreateRequest,
-							testUser.getId(),
-							testBike.getId(),
-							testCategory.getId()))
-					.isInstanceOf(ResourceNotFoundException.class)
-					.hasMessageContaining("ユーザーID " + testUser.getId() + " が見つかりません。");
+			assertThatThrownBy(() -> aiService.createAiQuestion(commonAiQuestionCreateRequest, testUser.getId(), testBike.getId(), testCategory.getId())).isInstanceOf(ResourceNotFoundException.class).hasMessageContaining("ユーザーID " + testUser.getId() + " が見つかりません。");
 
 			verify(bikeRepository, never()).findByIdAndUserIdAndIsDeletedFalse(any(), any());
 			verify(categoryRepository, never()).findById(any());
@@ -167,12 +142,7 @@ class AiServiceTest {
 			stubUserFound();
 			stubBikeNotFound();
 
-			assertThatThrownBy(() -> aiService.createAiQuestion(commonAiQuestionCreateRequest,
-							testUser.getId(),
-							testBike.getId(),
-							testCategory.getId()))
-					.isInstanceOf(ResourceNotFoundException.class)
-					.hasMessageContaining("ユーザー ID " + testUser.getId() + " に紐づくバイクID " + testBike.getId() + "が見つかりません。");
+			assertThatThrownBy(() -> aiService.createAiQuestion(commonAiQuestionCreateRequest, testUser.getId(), testBike.getId(), testCategory.getId())).isInstanceOf(ResourceNotFoundException.class).hasMessageContaining("ユーザー ID " + testUser.getId() + " に紐づくバイクID " + testBike.getId() + "が見つかりません。");
 
 			verify(categoryRepository, never()).findById(any());
 			verify(aiRepository, never()).save(any());
@@ -184,12 +154,7 @@ class AiServiceTest {
 			stubBikeFound();
 			stubCategoryNotFound();
 
-			assertThatThrownBy(() -> aiService.createAiQuestion(commonAiQuestionCreateRequest,
-					testUser.getId(),
-					testBike.getId(),
-					testCategory.getId()))
-					.isInstanceOf(ResourceNotFoundException.class)
-					.hasMessageContaining("カテゴリーID " + testCategory.getId() + " が見つかりません。");
+			assertThatThrownBy(() -> aiService.createAiQuestion(commonAiQuestionCreateRequest, testUser.getId(), testBike.getId(), testCategory.getId())).isInstanceOf(ResourceNotFoundException.class).hasMessageContaining("カテゴリーID " + testCategory.getId() + " が見つかりません。");
 
 			verify(aiRepository, never()).save(any());
 		}

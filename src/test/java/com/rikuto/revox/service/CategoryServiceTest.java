@@ -29,43 +29,43 @@ class CategoryServiceTest {
 	@InjectMocks
 	private CategoryService categoryService;
 
-	private Category category1;
-	private Category category2;
+	private Category category;
+	private Category secondCategory;
 
-	private CategoryResponse categoryResponse1;
-	private CategoryResponse categoryResponse2;
+	private CategoryResponse categoryResponse;
+	private CategoryResponse secondCategoryResponse;
 
 	@BeforeEach
 	void setUp() {
-		category1 = Category.builder()
+		category = Category.builder()
 				.id(1)
-				.name("エンジン")
+				.name("TestCategory")
 				.displayOrder(1)
 				.build();
 
-		category2 = Category.builder()
+		secondCategory = Category.builder()
 				.id(2)
-				.name("ブレーキ")
+				.name("テストカテゴリー")
 				.displayOrder(2)
 				.build();
 
-		categoryResponse1 = CategoryResponse.builder()
+		categoryResponse = CategoryResponse.builder()
 				.id(1)
-				.name("エンジン")
+				.name("TestCategory")
 				.displayOrder(1)
 				.build();
 
-		categoryResponse2 = CategoryResponse.builder()
+		secondCategoryResponse = CategoryResponse.builder()
 				.id(2)
-				.name("ブレーキ")
+				.name("テストカテゴリー")
 				.displayOrder(2)
 				.build();
 	}
 
 	@Test
 	void すべてのカテゴリーを複数件取得できること() {
-		List<Category> categories = List.of(category1, category2);
-		List<CategoryResponse> responses = List.of(categoryResponse1, categoryResponse2);
+		List<Category> categories = List.of(category, secondCategory);
+		List<CategoryResponse> responses = List.of(categoryResponse, secondCategoryResponse);
 
 		when(categoryRepository.findAll()).thenReturn(categories);
 		when(categoryMapper.toResponseList(categories)).thenReturn(responses);
@@ -73,7 +73,7 @@ class CategoryServiceTest {
 		List<CategoryResponse> result = categoryService.findAllCategories();
 
 		assertThat(result).hasSize(2);
-		assertThat(result).containsExactly(categoryResponse1, categoryResponse2);
+		assertThat(result).containsExactly(categoryResponse, secondCategoryResponse);
 
 		verify(categoryRepository).findAll();
 		verify(categoryMapper).toResponseList(categories);

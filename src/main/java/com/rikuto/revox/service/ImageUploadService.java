@@ -11,7 +11,7 @@ public interface ImageUploadService {
 	/**
 	 * 画像ファイルのアップロードを行います。
 	 *
-	 * @param file 画像ファイル
+	 * @param file   画像ファイル
 	 * @param folder 保存場所
 	 * @return アップロードが成功した画像の公開URL
 	 */

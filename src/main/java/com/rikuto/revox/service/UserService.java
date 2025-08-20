@@ -1,8 +1,8 @@
 package com.rikuto.revox.service;
 
 import com.rikuto.revox.domain.user.User;
-import com.rikuto.revox.dto.user.UserResponse;
 import com.rikuto.revox.domain.user.UserUpdateDate;
+import com.rikuto.revox.dto.user.UserResponse;
 import com.rikuto.revox.dto.user.UserUpdateRequest;
 import com.rikuto.revox.exception.ResourceNotFoundException;
 import com.rikuto.revox.mapper.UserResponseMapper;
@@ -32,13 +32,14 @@ public class UserService {
 
 	// CREATE
 	//------------------------------------------------------------------------------------------------------------------
+
 	/**
 	 * 外部認証でのユーザー検索または新規登録を行います。
 	 * 登録履歴のあるユーザーが再登録する場合、論理削除をfalseに変更して取得します。
 	 *
 	 * @param uniqueUserId 外部認証での各一意のID（Googleのsubクレームなど）
-	 * @param name 外部認証先のユーザーネーム
-	 * @param email 外部認証に使用されているメールアドレス
+	 * @param name         外部認証先のユーザーネーム
+	 * @param email        外部認証に使用されているメールアドレス
 	 * @return ユーザー情報
 	 */
 	@Transactional
@@ -46,9 +47,9 @@ public class UserService {
 		log.info("ユーザーの検索または登録を開始します。");
 		Optional<User> allUser = userRepository.findByUniqueUserId(uniqueUserId);
 
-		if (allUser.isPresent()) {
+		if(allUser.isPresent()) {
 			User existingUser = allUser.get();
-			if (existingUser.isDeleted()) {
+			if(existingUser.isDeleted()) {
 				existingUser.restoreUser();
 				userRepository.save(existingUser);
 			}
@@ -67,6 +68,7 @@ public class UserService {
 
 	// READ
 	//------------------------------------------------------------------------------------------------------------------
+
 	/**
 	 * ユーザーIDでユーザー情報を検索し、フロント側でユーザー情報を取得します。
 	 *
@@ -76,24 +78,25 @@ public class UserService {
 	@Transactional(readOnly = true)
 	public User findById(Integer userId) {
 		return userRepository.findByIdAndIsDeletedFalse(userId)
-				.orElseThrow(() -> new ResourceNotFoundException("ユーザーが見つかりません"));
+				.orElseThrow(() -> new ResourceNotFoundException("ユーザーが見つかりません" + userId));
 	}
 
 	// UPDATE
 	//------------------------------------------------------------------------------------------------------------------
+
 	/**
 	 * ユーザー情報の更新を行います。
 	 * 外部認証のためニックネームのみ更新可能です。
 	 *
 	 * @param updateRequest 更新リクエスト
-	 * @param userId 一意のユーザーID
+	 * @param userId        一意のユーザーID
 	 * @return 更新後のユーザーレスポンス
 	 */
 	@Transactional
 	public UserResponse updateUser(UserUpdateRequest updateRequest, Integer userId) {
 		log.info("ユーザー情報の更新を開始します。");
 		User existingUser = userRepository.findByIdAndIsDeletedFalse(userId)
-				.orElseThrow(() -> new ResourceNotFoundException("ユーザーが見つかりません"));
+				.orElseThrow(() -> new ResourceNotFoundException("ユーザーが見つかりません" + userId));
 
 		UserUpdateDate updateUser = UserUpdateDate.builder()
 				.nickname(updateRequest.getNickname())
@@ -108,6 +111,7 @@ public class UserService {
 
 	// DELETE
 	//------------------------------------------------------------------------------------------------------------------
+
 	/**
 	 * ユーザー情報を論理削除します。
 	 *
@@ -116,7 +120,7 @@ public class UserService {
 	@Transactional
 	public void softDeleteUser(Integer userId) {
 		User existingUser = userRepository.findByIdAndIsDeletedFalse(userId)
-				.orElseThrow(() -> new ResourceNotFoundException("ユーザーが見つかりません"));
+				.orElseThrow(() -> new ResourceNotFoundException("ユーザーが見つかりません" + userId));
 
 		existingUser.softDelete();
 

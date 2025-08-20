@@ -40,11 +40,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	 * 3. 認証オブジェクトをSecurityContextに設定し、後続の処理でユーザーが認証済みと認識されるようにします。
 	 * トークンが無効な場合や存在しない場合は、認証は行われず、次のフィルターへ処理が渡されます。
 	 *
-	 * @param request HTTPリクエスト
-	 * @param response HTTPレスポンス
+	 * @param request     HTTPリクエスト
+	 * @param response    HTTPレスポンス
 	 * @param filterChain フィルターチェーン
 	 * @throws ServletException Servlet例外
-	 * @throws IOException 入出力例外
+	 * @throws IOException      入出力例外
 	 */
 	@Override
 	protected void doFilterInternal(@NotNull HttpServletRequest request,
@@ -53,7 +53,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		try {
 			log.info("JWTの検証を開始します。");
 			String jwt = getJwtFromRequest(request);
-			if (StringUtils.hasText(jwt) && jwtTokenProvider.validateToken(jwt)) {
+			if(StringUtils.hasText(jwt) && jwtTokenProvider.validateToken(jwt)) {
 
 				String uniqueUserId = jwtTokenProvider.getUniqueUserIdFromToken(jwt);
 				UserDetails userDetails = userDetailsService.loadUserByUniqueUserId(uniqueUserId);
@@ -65,10 +65,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 				SecurityContextHolder.getContext().setAuthentication(authentication);
 				log.info("ユーザーが正常に認証されました。");
-			}else {
+			} else {
 				log.debug("JWTトークンが見つかりませんでした。");
 			}
-		} catch (Exception ex) {
+		} catch(Exception ex) {
 			log.error("セキュリティコンテキストにユーザー認証を設定できませんでした。");
 		}
 		filterChain.doFilter(request, response);
@@ -82,7 +82,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	 */
 	private String getJwtFromRequest(HttpServletRequest request) {
 		String bearerToken = request.getHeader("Authorization");
-		if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
+		if(StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
 
 			return bearerToken.substring(7);
 		}

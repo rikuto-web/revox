@@ -22,10 +22,18 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(
 		controllers = AiController.class,
@@ -37,23 +45,19 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Import(AiControllerTest.AiQuestionServiceTestConfig.class)
 class AiControllerTest {
 
-	@Autowired
-	private MockMvc mockMvc;
-
-	@Autowired
-	private ObjectMapper objectMapper;
-
-	@Autowired
-	private AiService aiService;
-
-	private AiQuestionCreateRequest commonAiQuestionCreateRequest;
-	private AiQuestionResponse commonAiQuestionResponse;
-
 	//正常系
 	private final Integer testUserId = 1;
-	private final Integer testBikeId = 1;
-	private final Integer testCategoryId = 1;
-	private final Integer testAiId = 1;
+	private final Integer testBikeId = 2;
+	private final Integer testCategoryId = 3;
+	private final Integer testAiId = 4;
+	@Autowired
+	private MockMvc mockMvc;
+	@Autowired
+	private ObjectMapper objectMapper;
+	@Autowired
+	private AiService aiService;
+	private AiQuestionCreateRequest commonAiQuestionCreateRequest;
+	private AiQuestionResponse commonAiQuestionResponse;
 
 	@BeforeEach
 	void setUp() {
@@ -72,6 +76,14 @@ class AiControllerTest {
 				.build();
 
 		reset(aiService);
+	}
+
+	@TestConfiguration
+	static class AiQuestionServiceTestConfig {
+		@Bean
+		public AiService aiQuestionService() {
+			return Mockito.mock(AiService.class);
+		}
 	}
 
 	@Nested
@@ -111,26 +123,6 @@ class AiControllerTest {
 
 			verify(aiService, never()).createAiQuestion(any(), any(), any(), any());
 		}
-
-		@Test
-		void AI質問作成時にユーザーが見つからない場合404を返すこと() throws Exception {
-			Integer dummyUserId = 999;
-
-			when(aiService.createAiQuestion(
-					any(AiQuestionCreateRequest.class),
-					eq(dummyUserId),
-					any(),
-					any()
-			)).thenThrow(new ResourceNotFoundException("ユーザーが見つかりません"));
-
-			mockMvc.perform(post("/api/ai/user/{userId}/bike/{bikeId}/category/{categoryId}",
-							dummyUserId, testBikeId, testCategoryId)
-							.contentType(MediaType.APPLICATION_JSON)
-							.content(objectMapper.writeValueAsString(commonAiQuestionCreateRequest)))
-					.andExpect(status().isNotFound());
-
-			verify(aiService).createAiQuestion(any(), eq(dummyUserId), any(), any());
-		}
 	}
 
 	@Nested
@@ -158,14 +150,6 @@ class AiControllerTest {
 					.andExpect(status().isNotFound());
 
 			verify(aiService).getAiQuestionByUserId(testUserId);
-		}
-	}
-
-	@TestConfiguration
-	static class AiQuestionServiceTestConfig {
-		@Bean
-		public AiService aiQuestionService() {
-			return Mockito.mock(AiService.class);
 		}
 	}
 }

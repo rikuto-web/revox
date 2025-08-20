@@ -33,6 +33,7 @@ public class MaintenanceTaskController {
 
 	// CREATE
 	//------------------------------------------------------------------------------------------------------------------
+
 	/**
 	 * 整備タスクの新規登録を行います。
 	 * POST /api/maintenance-task
@@ -49,6 +50,7 @@ public class MaintenanceTaskController {
 
 	// READ
 	//------------------------------------------------------------------------------------------------------------------
+
 	/**
 	 * ユーザーIDに紐づく整備タスクを取得します。
 	 * ダッシュボードでの最新記録表示に利用します。
@@ -82,7 +84,7 @@ public class MaintenanceTaskController {
 	 * バイクIDとカテゴリーIDに紐づいた整備タスクを取得します。
 	 * GET /api/maintenance-task/bike/{bikeId}/category/{categoryId}
 	 *
-	 * @param bikeId バイクID
+	 * @param bikeId     バイクID
 	 * @param categoryId カテゴリーID
 	 * @return バイクIDとカテゴリーIDで絞り込んだ整備タスクリストとHTTPステータス200 OK
 	 */
@@ -96,12 +98,13 @@ public class MaintenanceTaskController {
 
 	// UPDATE
 	//------------------------------------------------------------------------------------------------------------------
+
 	/**
 	 * 整備タスクの更新を行います。
 	 * PATCH /api/maintenance-task/{maintenanceTaskId}
 	 *
 	 * @param maintenanceTaskId 整備タスクID
-	 * @param request 更新された整備タスク情報を含むリクエストDTO
+	 * @param request           更新された整備タスク情報を含むリクエストDTO
 	 * @return 更新後の整備タスク情報とHTTPステータス200 OK
 	 */
 	@PatchMapping("/{maintenanceTaskId}")
@@ -114,6 +117,7 @@ public class MaintenanceTaskController {
 
 	// DELETE
 	//------------------------------------------------------------------------------------------------------------------
+
 	/**
 	 * 整備タスクの論理削除を行います。
 	 * PATCH /api/maintenance-task/{maintenanceTaskId}/softDelete

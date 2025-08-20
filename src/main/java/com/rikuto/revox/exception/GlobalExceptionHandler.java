@@ -2,12 +2,12 @@ package com.rikuto.revox.exception;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.MessageSourceResolvable;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.web.method.annotation.HandlerMethodValidationException;
 
 import java.util.List;
@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 
 /**
  * 全てのコントローラーで発生する例外をグローバルに処理するハンドラーです。
-
+ * <p>
  * アプリケーション全体で発生する特定の例外（例：リソースが見つからない、認証エラー、バリデーションエラー）
  * を捕捉し、適切なHTTPステータスコードとエラーメッセージを含むレスポンスを返します。
  */
@@ -27,6 +27,7 @@ public class GlobalExceptionHandler {
 	 * リソースが見つからない場合に発生するResourceNotFoundExceptionを処理します。
 	 * クライアントにはHTTP 404 Not Foundステータスコードを返します。
 	 * * @param ex 発生したResourceNotFoundException
+	 *
 	 * @return エラーメッセージを含むResponseEntity
 	 */
 	@ExceptionHandler(ResourceNotFoundException.class)
@@ -39,6 +40,7 @@ public class GlobalExceptionHandler {
 	 * 認証に失敗した場合に発生するAuthenticationExceptionを処理します。
 	 * クライアントにはHTTP 401 Unauthorizedステータスコードを返します。
 	 * * @param ex 発生したAuthenticationException
+	 *
 	 * @return エラーメッセージを含むResponseEntity
 	 */
 	@ExceptionHandler(AuthenticationException.class)
@@ -52,6 +54,7 @@ public class GlobalExceptionHandler {
 	 * 無効なリクエストボディが送信された場合に発生し、すべてのバリデーションエラーメッセージをリスト形式で返します。
 	 * クライアントにはHTTP 400 Bad Requestステータスコードを返します。
 	 * * @param ex 発生したMethodArgumentNotValidException
+	 *
 	 * @return エラーメッセージのリストを含むResponseEntity
 	 */
 	@ExceptionHandler(MethodArgumentNotValidException.class)
@@ -70,6 +73,7 @@ public class GlobalExceptionHandler {
 	 * パス変数やリクエストパラメータのバリデーションエラーであるHandlerMethodValidationExceptionを処理します。
 	 * 無効なパス変数などが送信された場合に発生し、すべてのバリデーションエラーメッセージをリスト形式で返します。
 	 * クライアントにはHTTP 400 Bad Requestステータスコードを返します。
+	 *
 	 * @param ex 発生したHandlerMethodValidationException
 	 * @return エラーメッセージのリストを含むResponseEntity
 	 */
@@ -88,6 +92,7 @@ public class GlobalExceptionHandler {
 	 * アプリケーションの内部エラーをクライアントに直接詳細に開示しないため、汎用的なエラーメッセージを返します。
 	 * クライアントにはHTTP 500 Internal Server Errorステータスコードを返します。
 	 * * @param ex 発生した例外
+	 *
 	 * @return 汎用的なエラーメッセージを含むResponseEntity
 	 */
 	@ExceptionHandler(Exception.class)

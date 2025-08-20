@@ -1,8 +1,7 @@
 package com.rikuto.revox.service;
 
-import com.rikuto.revox.domain.user.User;
 import com.rikuto.revox.domain.bike.Bike;
-import com.rikuto.revox.domain.bike.BikeUpdateData;
+import com.rikuto.revox.domain.user.User;
 import com.rikuto.revox.dto.bike.BikeCreateRequest;
 import com.rikuto.revox.dto.bike.BikeResponse;
 import com.rikuto.revox.dto.bike.BikeUpdateRequest;
@@ -47,17 +46,27 @@ class BikeServiceTest {
 	private User testUser;
 	private Bike testBike;
 	private BikeCreateRequest commonBikeCreateRequest;
+	private BikeResponse commonBikeResponse;
 
 	@BeforeEach
 	void setUp() {
 		testUser = User.builder().id(1).nickname("testUser").build();
-		testBike = Bike.builder().id(101).user(testUser).manufacturer("Honda").modelName("CBR250RR").build();
+		testBike = Bike.builder().id(2).user(testUser).manufacturer("TestBike").modelName("TestName").build();
 
 		commonBikeCreateRequest = BikeCreateRequest.builder()
+				.manufacturer("TestBike")
+				.modelName("TestName")
+				.modelCode("test")
+				.modelYear(2023)
+				.currentMileage(1000)
+				.purchaseDate(LocalDate.of(2023, 1, 1))
+				.imageUrl("http://example.com/bike.jpg")
+				.build();
 
-				.manufacturer("Honda")
-				.modelName("CBR250RR")
-				.modelCode("MC51")
+		commonBikeResponse = BikeResponse.builder()
+				.manufacturer("TestBike")
+				.modelName("TestName")
+				.modelCode("test")
 				.modelYear(2023)
 				.currentMileage(1000)
 				.purchaseDate(LocalDate.of(2023, 1, 1))
@@ -75,12 +84,12 @@ class BikeServiceTest {
 	}
 
 	private void stubBikeFound() {
-		when(bikeRepository.findByIdAndUserIdAndIsDeletedFalse(testUser.getId(), testBike.getId()))
+		when(bikeRepository.findByIdAndUserIdAndIsDeletedFalse(testBike.getId(), testUser.getId()))
 				.thenReturn(Optional.of(testBike));
 	}
 
 	private void stubBikeNotFound() {
-		when(bikeRepository.findByIdAndUserIdAndIsDeletedFalse(testUser.getId(), testBike.getId()))
+		when(bikeRepository.findByIdAndUserIdAndIsDeletedFalse(testBike.getId(), testUser.getId()))
 				.thenReturn(Optional.empty());
 	}
 
@@ -89,13 +98,13 @@ class BikeServiceTest {
 		@Test
 		void ユーザーIDとバイクIDに紐づくバイクを正しく取得できること() {
 			stubBikeFound();
-			BikeResponse expectedResponse = BikeResponse.builder().id(testBike.getId()).modelName(testBike.getModelName()).build();
-			when(bikeMapper.toResponse(testBike)).thenReturn(expectedResponse);
+			when(bikeMapper.toResponse(testBike)).thenReturn(commonBikeResponse);
 
-			BikeResponse result = bikeService.findByIdAndUserId(testUser.getId(), testBike.getId());
+			BikeResponse result = bikeService.findByIdAndUserId(testBike.getId(), testUser.getId());
 
-			assertThat(result).isEqualTo(expectedResponse);
-			verify(bikeRepository).findByIdAndUserIdAndIsDeletedFalse(testUser.getId(), testBike.getId());
+			assertThat(result).isEqualTo(commonBikeResponse);
+
+			verify(bikeRepository).findByIdAndUserIdAndIsDeletedFalse(testBike.getId(), testUser.getId());
 			verify(bikeMapper).toResponse(testBike);
 		}
 
@@ -103,7 +112,7 @@ class BikeServiceTest {
 		void バイクが見つからない場合にResourceNotFoundExceptionをスローすること() {
 			stubBikeNotFound();
 
-			assertThatThrownBy(() -> bikeService.findByIdAndUserId(testUser.getId(), testBike.getId()))
+			assertThatThrownBy(() -> bikeService.findByIdAndUserId(testBike.getId(), testUser.getId()))
 					.isInstanceOf(ResourceNotFoundException.class)
 					.hasMessageContaining("ユーザーID " + testUser.getId() + " に紐づくバイクID " + testBike.getId() + " が見つかりません。");
 
@@ -117,14 +126,14 @@ class BikeServiceTest {
 		void 新しいバイク情報が正常に登録され登録されたバイク情報が返されること() {
 			stubUserFound();
 
-			when(bikeRepository.save(testBike)).thenReturn(testBike);
 			when(bikeMapper.toDomain(testUser, commonBikeCreateRequest)).thenReturn(testBike);
-			BikeResponse expectedResponse = BikeResponse.builder().id(testBike.getId()).build();
-			when(bikeMapper.toResponse(testBike)).thenReturn(expectedResponse);
+			when(bikeRepository.save(testBike)).thenReturn(testBike);
+			when(bikeMapper.toResponse(testBike)).thenReturn(commonBikeResponse);
 
 			BikeResponse result = bikeService.registerBike(commonBikeCreateRequest, testUser.getId());
 
-			assertThat(result).isEqualTo(expectedResponse);
+			assertThat(result).isEqualTo(commonBikeResponse);
+
 			verify(userService).findById(testUser.getId());
 			verify(bikeRepository).save(testBike);
 			verify(bikeMapper).toDomain(testUser, commonBikeCreateRequest);
@@ -147,33 +156,25 @@ class BikeServiceTest {
 	@Nested
 	class UpdateBikeTests {
 		@Test
-		void 既存のバイク情報が正常に更新され更新されたバイク情報が返されること() {
+		void 既存のバイク情報が正常に更新されバイク情報を返されること() {
 			stubBikeFound();
-			BikeUpdateRequest updateRequest = BikeUpdateRequest.builder()
-					.manufacturer("Honda")
-					.modelName("Ninja 400")
+			Bike updateBike = Bike.builder()
+					.manufacturer("UpdateBike")
+					.modelName("UPDATE")
 					.build();
 
-			Bike updatedBike = testBike;
-			updatedBike.updateFrom(
-					BikeUpdateData.builder()
-							.manufacturer("Honda")
-							.modelName("Ninja 400")
-							.build()
-			);
-
-			BikeResponse expectedResponse = BikeResponse.builder()
-					.id(testBike.getId())
-					.modelName("Ninja 400")
-					.manufacturer("Honda")
+			BikeUpdateRequest request = BikeUpdateRequest.builder()
+					.manufacturer("UpdateBike")
+					.modelName("UPDATE")
 					.build();
 
-			when(bikeRepository.save(any(Bike.class))).thenReturn(updatedBike);
-			when(bikeMapper.toResponse(any(Bike.class))).thenReturn(expectedResponse);
+			when(bikeRepository.save(any(Bike.class))).thenReturn(updateBike);
+			when(bikeMapper.toResponse(any(Bike.class))).thenReturn(commonBikeResponse);
 
-			BikeResponse result = bikeService.updateBike(updateRequest, testBike.getId(), testUser.getId());
+			BikeResponse result = bikeService.updateBike(request, testBike.getId(), testUser.getId());
 
-			assertThat(result).isEqualTo(expectedResponse);
+			assertThat(result).isEqualTo(commonBikeResponse);
+
 			verify(bikeRepository).save(any(Bike.class));
 			verify(bikeMapper).toResponse(any(Bike.class));
 		}
@@ -182,7 +183,7 @@ class BikeServiceTest {
 		void バイクが見つからない場合にResourceNotFoundExceptionをスローすること() {
 			stubBikeNotFound();
 			BikeUpdateRequest updateRequest = BikeUpdateRequest.builder()
-					.manufacturer("Honda")
+					.manufacturer("deleted")
 					.build();
 
 			assertThatThrownBy(() -> bikeService.updateBike(updateRequest, testBike.getId(), testUser.getId()))
@@ -200,7 +201,7 @@ class BikeServiceTest {
 			stubBikeFound();
 			when(bikeRepository.save(testBike)).thenReturn(testBike);
 
-			bikeService.softDeleteBike(testUser.getId(), testBike.getId());
+			bikeService.softDeleteBike(testBike.getId(), testUser.getId());
 
 			assertThat(testBike.isDeleted()).isTrue();
 			verify(bikeRepository).save(testBike);
@@ -210,7 +211,7 @@ class BikeServiceTest {
 		void バイクが見つからない場合にResourceNotFoundExceptionをスローすること() {
 			stubBikeNotFound();
 
-			assertThatThrownBy(() -> bikeService.softDeleteBike(testUser.getId(), testBike.getId()))
+			assertThatThrownBy(() -> bikeService.softDeleteBike(testBike.getId(), testUser.getId()))
 					.isInstanceOf(ResourceNotFoundException.class)
 					.hasMessageContaining("ユーザー ID " + testUser.getId() + " に紐づくバイクID " + testBike.getId() + "が見つかりません。");
 
