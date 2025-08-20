@@ -46,6 +46,7 @@ dependencies {
     runtimeOnly 'com.mysql:mysql-connector-j'
 
     // --- 開発・補助ツール (Development & Tools) ---
+    implementation 'org.jetbrains:annotations:24.0.1'
     compileOnly 'org.projectlombok:lombok'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
@@ -60,7 +61,7 @@ dependencies {
     testImplementation 'com.h2database:h2'
 
     // --- 外部サービス連携 (External Services) ---
-    implementation 'com.google.genai:google-genai:1.10.0'
+    implementation 'com.google.genai:google-genai:1.12.0'
     implementation 'com.google.api-client:google-api-client:2.2.0'
 }
 

@@ -1,4 +1,4 @@
-package com.rikuto.revox.dto.aiquestion;
+package com.rikuto.revox.dto.ai;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;

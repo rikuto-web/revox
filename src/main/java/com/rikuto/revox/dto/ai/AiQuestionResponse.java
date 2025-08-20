@@ -1,4 +1,4 @@
-package com.rikuto.revox.dto.aiquestion;
+package com.rikuto.revox.dto.ai;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,7 +15,6 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 public class AiQuestionResponse {
-
 	private Integer id;
 	private Integer userId;
 	private Integer bikeId;
@@ -25,5 +24,4 @@ public class AiQuestionResponse {
 	private String answer;
 
 	private LocalDateTime createdAt;
-	private LocalDateTime updatedAt;
 }

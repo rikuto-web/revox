@@ -89,8 +89,8 @@ public class MaintenanceTaskController {
 	 * @return バイクIDとカテゴリーIDで絞り込んだ整備タスクリスト
 	 */
 	@GetMapping("/bike/{bikeId}/category/{categoryId}")
-	public ResponseEntity<List<MaintenanceTaskResponse>> getMaintenanceTaskByBikeIdAndCategoryId(@PathVariable @Positive Integer bikeId,
-	                                                                                             @PathVariable @Positive Integer categoryId) {
+	public ResponseEntity<List<MaintenanceTaskResponse>> getMaintenanceTaskByBikeIdAndCategoryId(@PathVariable("bikeId") @Positive Integer bikeId,
+	                                                                                             @PathVariable("categoryId") @Positive Integer categoryId) {
 		List<MaintenanceTaskResponse> responseList = maintenanceTaskService.findByBikeIdAndCategoryId(bikeId, categoryId);
 
 		return ResponseEntity.ok(responseList);
