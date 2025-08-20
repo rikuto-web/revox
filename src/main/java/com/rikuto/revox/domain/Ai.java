@@ -29,7 +29,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder
-public class AiQuestion {
+public class Ai {
 
 	/**
 	 * AI質問の一意なIDです。
@@ -47,16 +47,14 @@ public class AiQuestion {
 	private User user;
 
 	/**
-	 * 質問対象のバイク情報です。
-	 * AIがバイク情報を考慮した回答を生成するために使用されます。
+	 * ユーザーの保有する特定のバイク情報です。
 	 */
 	@ManyToOne(optional = false, fetch = FetchType.LAZY)
 	@JoinColumn(name = "bike_id", nullable = false)
 	private Bike bike;
 
 	/**
-	 * 質問のカテゴリー情報です。
-	 * AIが適切なコンテキストで回答するために使用されます。
+	 * 質問に関連するカテゴリー情報です。
 	 */
 	@ManyToOne(optional = false, fetch = FetchType.LAZY)
 	@JoinColumn(name = "category_id", nullable = false)
@@ -70,18 +68,9 @@ public class AiQuestion {
 
 	/**
 	 * AIが生成した回答内容です。
-	 * ユーザーがコピーして使用できます。
 	 */
 	@Column(name = "answer", columnDefinition = "TEXT", nullable = false)
 	private String answer;
-
-	/**
-	 * 論理削除フラグ。
-	 * trueの場合、レコードは削除済みとして扱われます。
-	 */
-	@Column(name = "is_deleted", nullable = false)
-	@Builder.Default
-	private boolean isDeleted = false;
 
 	/**
 	 * レコードが作成された日時

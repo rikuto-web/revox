@@ -1,15 +1,15 @@
 package com.rikuto.revox.service;
 
-import com.rikuto.revox.domain.AiQuestion;
+import com.rikuto.revox.domain.Ai;
 import com.rikuto.revox.domain.bike.Bike;
 import com.rikuto.revox.domain.Category;
 import com.rikuto.revox.domain.user.User;
-import com.rikuto.revox.dto.aiquestion.AiQuestionCreateRequest;
-import com.rikuto.revox.dto.aiquestion.AiQuestionPrompt;
-import com.rikuto.revox.dto.aiquestion.AiQuestionResponse;
+import com.rikuto.revox.dto.ai.AiQuestionCreateRequest;
+import com.rikuto.revox.dto.ai.AiCreatePrompt;
+import com.rikuto.revox.dto.ai.AiQuestionResponse;
 import com.rikuto.revox.exception.ResourceNotFoundException;
-import com.rikuto.revox.mapper.AiQuestionMapper;
-import com.rikuto.revox.repository.AiQuestionRepository;
+import com.rikuto.revox.mapper.AiMapper;
+import com.rikuto.revox.repository.AiRepository;
 import com.rikuto.revox.repository.BikeRepository;
 import com.rikuto.revox.repository.CategoryRepository;
 import com.rikuto.revox.repository.UserRepository;
@@ -20,7 +20,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.boot.test.mock.mockito.MockBean;
 
 import java.util.List;
 import java.util.Optional;
@@ -34,7 +33,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class AiQuestionServiceTest {
+class AiServiceTest {
 
 	@Mock
 	private UserRepository userRepository;
@@ -46,31 +45,30 @@ class AiQuestionServiceTest {
 	private CategoryRepository categoryRepository;
 
 	@Mock
-	private AiQuestionRepository aiQuestionRepository;
+	private AiRepository aiRepository;
 
 	@Mock
-	private AiQuestionMapper aiQuestionMapper;
+	private AiMapper aiMapper;
 
 	@Mock
 	private GeminiService geminiService;
 
 	@InjectMocks
-	private AiQuestionService aiQuestionService;
+	private AiService aiService;
 
 	private User testUser;
 	private Bike testBike;
 	private Category testCategory;
-	private AiQuestion testAiQuestion;
+	private Ai testAi;
 	private AiQuestionCreateRequest commonAiQuestionCreateRequest;
 	private AiQuestionResponse commonAiQuestionResponse;
 
 	@BeforeEach
 	void setUp() {
 		testUser = User.builder().id(1).nickname("testUser").build();
-		testBike = Bike.builder().id(101).user(testUser).manufacturer("Honda").modelName("CBR250RR").build();
+		testBike = Bike.builder().id(1).user(testUser).manufacturer("TestBike").modelName("Test").build();
 		testCategory = Category.builder().id(1).name("エンジン").displayOrder(1).build();
-		testAiQuestion = AiQuestion.builder()
-				.id(999)
+		testAi = Ai.builder()
 				.user(testUser)
 				.bike(testBike)
 				.category(testCategory)
@@ -83,7 +81,7 @@ class AiQuestionServiceTest {
 				.build();
 
 		commonAiQuestionResponse = AiQuestionResponse.builder()
-				.id(testAiQuestion.getId())
+				.id(testAi.getId())
 				.userId(testUser.getId())
 				.bikeId(testBike.getId())
 				.categoryId(testCategory.getId())
@@ -101,12 +99,12 @@ class AiQuestionServiceTest {
 	}
 
 	private void stubBikeFound() {
-		when(bikeRepository.findByIdAndUserIdAndIsDeletedFalse(testUser.getId(), testBike.getId()))
+		when(bikeRepository.findByIdAndUserIdAndIsDeletedFalse(testBike.getId(), testUser.getId()))
 				.thenReturn(Optional.of(testBike));
 	}
 
 	private void stubBikeNotFound() {
-		when(bikeRepository.findByIdAndUserIdAndIsDeletedFalse(testUser.getId(), testBike.getId()))
+		when(bikeRepository.findByIdAndUserIdAndIsDeletedFalse(testBike.getId(), testUser.getId()))
 				.thenReturn(Optional.empty());
 	}
 
@@ -119,7 +117,7 @@ class AiQuestionServiceTest {
 	}
 
 	@Nested
-	class CreateAiQuestionTests {
+	class CreateAiTests {
 
 		@Test
 		void AI質問が正常に作成され作成されたAI質問情報が返されること() {
@@ -127,14 +125,13 @@ class AiQuestionServiceTest {
 			stubBikeFound();
 			stubCategoryFound();
 
-			when(geminiService.generateContent(any(AiQuestionPrompt.class))).thenReturn("Mocked AI Answer");
+			when(geminiService.generateContent(any(AiCreatePrompt.class))).thenReturn("Mocked AI Answer");
 
-			when(aiQuestionMapper.toEntity(any(), any(), any(), any(), any())).thenReturn(testAiQuestion);
-			when(aiQuestionMapper.toResponse(testAiQuestion)).thenReturn(commonAiQuestionResponse);
+			when(aiMapper.toResponse(testAi)).thenReturn(commonAiQuestionResponse);
 
-			when(aiQuestionRepository.save(testAiQuestion)).thenReturn(testAiQuestion);
+			when(aiRepository.save(any(Ai.class))).thenReturn(testAi);
 
-			AiQuestionResponse result = aiQuestionService.createAiQuestion(commonAiQuestionCreateRequest,
+			AiQuestionResponse result = aiService.createAiQuestion(commonAiQuestionCreateRequest,
 					testUser.getId(),
 					testBike.getId(),
 					testCategory.getId());
@@ -142,19 +139,18 @@ class AiQuestionServiceTest {
 			assertThat(result).isEqualTo(commonAiQuestionResponse);
 
 			verify(userRepository).findByIdAndIsDeletedFalse(testUser.getId());
-			verify(bikeRepository).findByIdAndUserIdAndIsDeletedFalse(testUser.getId(), testBike.getId());
+			verify(bikeRepository).findByIdAndUserIdAndIsDeletedFalse(testBike.getId(), testUser.getId());
 			verify(categoryRepository).findById(testCategory.getId());
-			verify(aiQuestionRepository).save(testAiQuestion);
-			verify(aiQuestionMapper).toEntity(any(), any(), any(), any(), any());
-			verify(aiQuestionMapper).toResponse(testAiQuestion);
-			verify(geminiService,times(1)).generateContent(any(AiQuestionPrompt.class));
+			verify(aiRepository).save(any(Ai.class));
+			verify(aiMapper).toResponse(testAi);
+			verify(geminiService,times(1)).generateContent(any(AiCreatePrompt.class));
 		}
 
 		@Test
 		void ユーザーが見つからない場合にResourceNotFoundExceptionをスローすること() {
 			stubUserNotFound();
 
-			assertThatThrownBy(() -> aiQuestionService.createAiQuestion(commonAiQuestionCreateRequest,
+			assertThatThrownBy(() -> aiService.createAiQuestion(commonAiQuestionCreateRequest,
 							testUser.getId(),
 							testBike.getId(),
 							testCategory.getId()))
@@ -163,7 +159,7 @@ class AiQuestionServiceTest {
 
 			verify(bikeRepository, never()).findByIdAndUserIdAndIsDeletedFalse(any(), any());
 			verify(categoryRepository, never()).findById(any());
-			verify(aiQuestionRepository, never()).save(any());
+			verify(aiRepository, never()).save(any());
 		}
 
 		@Test
@@ -171,7 +167,7 @@ class AiQuestionServiceTest {
 			stubUserFound();
 			stubBikeNotFound();
 
-			assertThatThrownBy(() -> aiQuestionService.createAiQuestion(commonAiQuestionCreateRequest,
+			assertThatThrownBy(() -> aiService.createAiQuestion(commonAiQuestionCreateRequest,
 							testUser.getId(),
 							testBike.getId(),
 							testCategory.getId()))
@@ -179,7 +175,7 @@ class AiQuestionServiceTest {
 					.hasMessageContaining("ユーザー ID " + testUser.getId() + " に紐づくバイクID " + testBike.getId() + "が見つかりません。");
 
 			verify(categoryRepository, never()).findById(any());
-			verify(aiQuestionRepository, never()).save(any());
+			verify(aiRepository, never()).save(any());
 		}
 
 		@Test
@@ -188,45 +184,45 @@ class AiQuestionServiceTest {
 			stubBikeFound();
 			stubCategoryNotFound();
 
-			assertThatThrownBy(() -> aiQuestionService.createAiQuestion(commonAiQuestionCreateRequest,
+			assertThatThrownBy(() -> aiService.createAiQuestion(commonAiQuestionCreateRequest,
 					testUser.getId(),
 					testBike.getId(),
 					testCategory.getId()))
 					.isInstanceOf(ResourceNotFoundException.class)
 					.hasMessageContaining("カテゴリーID " + testCategory.getId() + " が見つかりません。");
 
-			verify(aiQuestionRepository, never()).save(any());
+			verify(aiRepository, never()).save(any());
 		}
 	}
 
 	@Nested
-	class GetAiQuestionByUserIdTests {
+	class GetAiByUserIdTests {
 
 		@Test
 		void ユーザーIDに紐づくAI質問履歴を正しく取得できること() {
-			List<AiQuestion> aiQuestions = List.of(testAiQuestion);
+			List<Ai> questionList = List.of(testAi);
 
-			when(aiQuestionRepository.findByUserIdAndIsDeletedFalse(testUser.getId())).thenReturn(aiQuestions);
-			when(aiQuestionMapper.toResponse(testAiQuestion)).thenReturn(commonAiQuestionResponse);
+			when(aiRepository.findByUserId(testUser.getId())).thenReturn(questionList);
+			when(aiMapper.toResponse(testAi)).thenReturn(commonAiQuestionResponse);
 
-			List<AiQuestionResponse> result = aiQuestionService.getAiQuestionByUserId(testUser.getId());
+			List<AiQuestionResponse> result = aiService.getAiQuestionByUserId(testUser.getId());
 
 			assertThat(result).hasSize(1);
 			assertThat(result.getFirst()).isEqualTo(commonAiQuestionResponse);
 
-			verify(aiQuestionRepository).findByUserIdAndIsDeletedFalse(testUser.getId());
-			verify(aiQuestionMapper).toResponse(testAiQuestion);
+			verify(aiRepository).findByUserId(testUser.getId());
+			verify(aiMapper).toResponse(testAi);
 		}
 
 		@Test
 		void ユーザーにAI質問履歴がない場合は空のリストを返すこと() {
-			when(aiQuestionRepository.findByUserIdAndIsDeletedFalse(testUser.getId())).thenReturn(List.of());
+			when(aiRepository.findByUserId(testUser.getId())).thenReturn(List.of());
 
-			List<AiQuestionResponse> result = aiQuestionService.getAiQuestionByUserId(testUser.getId());
+			List<AiQuestionResponse> result = aiService.getAiQuestionByUserId(testUser.getId());
 
 			assertThat(result).isEmpty();
 
-			verify(aiQuestionRepository).findByUserIdAndIsDeletedFalse(testUser.getId());
+			verify(aiRepository).findByUserId(testUser.getId());
 		}
 	}
 }
