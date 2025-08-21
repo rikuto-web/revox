@@ -63,6 +63,7 @@ dependencies {
     // --- 外部サービス連携 (External Services) ---
     implementation 'com.google.genai:google-genai:1.12.0'
     implementation 'com.google.api-client:google-api-client:2.2.0'
+    implementation 'com.bucket4j:bucket4j_jdk17-core:8.14.0'
 }
 
 tasks.withType(JavaCompile).configureEach {
