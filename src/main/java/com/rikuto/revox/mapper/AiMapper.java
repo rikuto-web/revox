@@ -1,7 +1,7 @@
 package com.rikuto.revox.mapper;
 
-import com.rikuto.revox.dto.ai.AiQuestionResponse;
 import com.rikuto.revox.domain.Ai;
+import com.rikuto.revox.dto.ai.AiQuestionResponse;
 import org.springframework.stereotype.Component;
 
 /**

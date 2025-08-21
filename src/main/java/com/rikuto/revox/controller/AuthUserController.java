@@ -29,7 +29,7 @@ public class AuthUserController {
 	 * post /api/auth/google
 	 *
 	 * @param request Google IDトークンを含むリクエスト
-	 * @return JWTトークンとユーザー情報
+	 * @return JWTトークンとユーザー情報とHTTPステータス200 OK
 	 */
 	@PostMapping("/google")
 	public ResponseEntity<LoginResponse> loginWithGoogle(@RequestBody @Valid LoginRequest request) {

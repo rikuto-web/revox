@@ -1,9 +1,9 @@
 package com.rikuto.revox.repository;
 
 import com.rikuto.revox.domain.Ai;
-import com.rikuto.revox.domain.user.User;
-import com.rikuto.revox.domain.bike.Bike;
 import com.rikuto.revox.domain.Category;
+import com.rikuto.revox.domain.bike.Bike;
+import com.rikuto.revox.domain.user.User;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -93,14 +93,14 @@ class AiRepositoryTest {
 	}
 
 	@Test
-	void 存在しないユーザーIDに対して空のリストを返すこと(){
+	void 存在しないユーザーIDに対して空のリストを返すこと() {
 		List<Ai> result = aiRepository.findByUserId(9999);
 
 		assertThat(result).isEmpty();
 	}
 
 	@Test
-	void AI質問履歴がないユーザーには空のリストを返すこと(){
+	void AI質問履歴がないユーザーには空のリストを返すこと() {
 		User user = createUser("EmptyAnswer");
 
 		List<Ai> result = aiRepository.findByUserId(user.getId());
@@ -109,7 +109,7 @@ class AiRepositoryTest {
 	}
 
 	@Test
-	void 複数のバイクとカテゴリーに関するAI質問履歴を正しく取得できること(){
+	void 複数のバイクとカテゴリーに関するAI質問履歴を正しく取得できること() {
 		User owner = createUser("Owner");
 
 		Bike firseBike = createBike(owner, "firseBike", "TestBike");

@@ -7,6 +7,9 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
+/**
+ * カテゴリー情報に対するレスポンス内容のDTOです。
+ */
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
@@ -14,6 +17,7 @@ import java.time.LocalDateTime;
 public class CategoryResponse {
 
 	private int id;
+
 	private String name;
 	private Integer displayOrder;
 

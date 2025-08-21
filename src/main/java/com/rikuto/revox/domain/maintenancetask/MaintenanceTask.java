@@ -2,10 +2,21 @@ package com.rikuto.revox.domain.maintenancetask;
 
 import com.rikuto.revox.domain.Category;
 import com.rikuto.revox.domain.bike.Bike;
-import com.rikuto.revox.dto.maintenancetask.MaintenanceTaskRequest;
 import com.rikuto.revox.dto.maintenancetask.MaintenanceTaskUpdateRequest;
-import jakarta.persistence.*;
-import lombok.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
@@ -84,20 +95,21 @@ public class MaintenanceTask {
 	/**
 	 * 受け取ったリクエスト内容を更新するメソッドです。
 	 * 日時はDBで自動設定されるためシステム側では日時の更新は行いません。
+	 *
 	 * @param request 更新する整備タスク
 	 */
 	public void updateFrom(MaintenanceTaskUpdateRequest request) {
-		if (request.getName() != null) {
+		if(request.getName() != null) {
 			this.name = request.getName();
 		}
-		if (request.getDescription() != null) {
+		if(request.getDescription() != null) {
 			this.description = request.getDescription();
 		}
 	}
 
 	/**
 	 * 論理削除のためのメソッドです。
-	 *日時はDBで自動設定されるためシステム側では日時の更新は行いません。
+	 * 日時はDBで自動設定されるためシステム側では日時の更新は行いません。
 	 */
 	public void softDelete() {
 		this.isDeleted = true;

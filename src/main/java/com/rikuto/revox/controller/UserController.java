@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * ユーザー情報のCRUD操作を扱うコントローラーです。
+ * ユーザー情報に関するコントローラーです。
  */
 @RestController
 @RequestMapping("/api/users")
@@ -25,17 +25,20 @@ public class UserController {
 		this.userService = userService;
 	}
 
+	// UPDATE
+	//------------------------------------------------------------------------------------------------------------------
+
 	/**
 	 * 既存のユーザー情報を、受け取ったリクエスト内容に更新します。
 	 * PATCH　/api/users/{userId}
 	 *
 	 * @param request 更新されたユーザー情報を含むリクエストDTO
-	 * @param userId ユーザーID
+	 * @param userId  ユーザーID
 	 * @return 更新されたユーザー情報とHTTPステータス200 OK
 	 */
 	@PatchMapping("/{userId}")
-	public ResponseEntity<UserResponse> updateUserNickname (@RequestBody @Valid UserUpdateRequest request,
-	                                                        @PathVariable @Positive Integer userId){
+	public ResponseEntity<UserResponse> updateUserNickname(@RequestBody @Valid UserUpdateRequest request,
+	                                                       @PathVariable @Positive Integer userId) {
 		UserResponse response = userService.updateUser(request, userId);
 
 		return ResponseEntity.ok(response);
@@ -49,7 +52,7 @@ public class UserController {
 	 * @return HTTPステータス204 No Content
 	 */
 	@PatchMapping("/{userId}/softDelete")
-	public ResponseEntity<Void> softDeleteUser (@PathVariable @Positive Integer userId){
+	public ResponseEntity<Void> softDeleteUser(@PathVariable @Positive Integer userId) {
 		userService.softDeleteUser(userId);
 
 		return ResponseEntity.noContent().build();

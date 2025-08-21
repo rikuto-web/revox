@@ -1,9 +1,9 @@
 package com.rikuto.revox.mapper;
 
-import com.rikuto.revox.dto.bike.BikeCreateRequest;
-import com.rikuto.revox.dto.bike.BikeResponse;
 import com.rikuto.revox.domain.bike.Bike;
 import com.rikuto.revox.domain.user.User;
+import com.rikuto.revox.dto.bike.BikeCreateRequest;
+import com.rikuto.revox.dto.bike.BikeResponse;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -59,7 +59,7 @@ public class BikeMapper {
 	 * @param user    バイクを所有する Userドメイン。
 	 * @return 作成された Bikeドメイン。
 	 */
-	public Bike toEntity(User user, BikeCreateRequest request) {
+	public Bike toDomain(User user, BikeCreateRequest request) {
 
 		return Bike.builder()
 				.user(user)

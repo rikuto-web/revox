@@ -7,7 +7,6 @@ import com.rikuto.revox.dto.maintenancetask.MaintenanceTaskUpdateRequest;
 import com.rikuto.revox.exception.ResourceNotFoundException;
 import com.rikuto.revox.service.MaintenanceTaskService;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -23,10 +22,20 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(
 		controllers = MaintenanceTaskController.class,
@@ -35,26 +44,19 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Import(MaintenanceTaskControllerTest.MaintenanceTaskServiceTestConfig.class)
 class MaintenanceTaskControllerTest {
 
-	@Autowired
-	private MockMvc mockMvc;
-
-	@Autowired
-	private ObjectMapper objectMapper;
-
-	@Autowired
-	private MaintenanceTaskService maintenanceTaskService;
-
-	private MaintenanceTaskRequest commonMaintenanceTaskRequest;
-
-	private MaintenanceTaskUpdateRequest commonMaintenanceTaskUpdateRequest;
-
-	private MaintenanceTaskResponse commonMaintenanceTaskResponse;
-
-	private List<MaintenanceTaskResponse> commonMaintenanceTaskResponseList;
-
 	private final Integer testBikeId = 101;
 	private final Integer testCategoryId = 1;
 	private final Integer testMaintenanceTaskId = 301;
+	@Autowired
+	private MockMvc mockMvc;
+	@Autowired
+	private ObjectMapper objectMapper;
+	@Autowired
+	private MaintenanceTaskService maintenanceTaskService;
+	private MaintenanceTaskRequest commonMaintenanceTaskRequest;
+	private MaintenanceTaskUpdateRequest commonMaintenanceTaskUpdateRequest;
+	private MaintenanceTaskResponse commonMaintenanceTaskResponse;
+	private List<MaintenanceTaskResponse> commonMaintenanceTaskResponseList;
 
 	@BeforeEach
 	void setUp() {
@@ -81,6 +83,14 @@ class MaintenanceTaskControllerTest {
 
 		commonMaintenanceTaskResponseList = List.of(commonMaintenanceTaskResponse);
 		reset(maintenanceTaskService);
+	}
+
+	@TestConfiguration
+	static class MaintenanceTaskServiceTestConfig {
+		@Bean
+		public MaintenanceTaskService maintenanceTaskService() {
+			return Mockito.mock(MaintenanceTaskService.class);
+		}
 	}
 
 	@Nested
@@ -229,14 +239,6 @@ class MaintenanceTaskControllerTest {
 					.andExpect(status().isNotFound());
 
 			verify(maintenanceTaskService).softDeleteMaintenanceTask(testMaintenanceTaskId);
-		}
-	}
-
-	@TestConfiguration
-	static class MaintenanceTaskServiceTestConfig {
-		@Bean
-		public MaintenanceTaskService maintenanceTaskService() {
-			return Mockito.mock(MaintenanceTaskService.class);
 		}
 	}
 }

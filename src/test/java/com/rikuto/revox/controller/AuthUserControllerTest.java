@@ -21,6 +21,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.time.LocalDateTime;
 
 import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -36,19 +37,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Import(AuthUserControllerTest.AuthUserControllerTestConfig.class)
 class AuthUserControllerTest {
 
+	private final String dummyAccessToken = "dummyAccessToken";
 	@Autowired
 	private MockMvc mockMvc;
-
 	@Autowired
 	private ObjectMapper objectMapper;
-
 	@Autowired
 	private AuthService authService;
-
 	private LoginRequest LoginRequest;
 	private LoginResponse loginResponse;
-
-	private final String dummyAccessToken = "dummyAccessToken";
 
 	@BeforeEach
 	void setup() {
@@ -59,10 +56,9 @@ class AuthUserControllerTest {
 				.accessToken(dummyAccessToken)
 				.tokenType("Bearer")
 				.user(UserResponse.builder()
-						.id(999999)
+						.id(1)
 						.nickname("testUser")
 						.uniqueUserId("unique_user_id")
-						.displayEmail("test@example.com")
 						.createdAt(LocalDateTime.now())
 						.build())
 				.build();
@@ -70,20 +66,20 @@ class AuthUserControllerTest {
 		reset(authService);
 	}
 
-
 	@Test
-	public void Googleの外部認証で正常にログインできること()throws Exception{
+	public void Googleの外部認証で正常にログインできること() throws Exception {
 		when(authService.loginWithGoogle(LoginRequest.getIdToken())).thenReturn(loginResponse);
 
 		mockMvc.perform(post("/api/auth/google")
-					.contentType(MediaType.APPLICATION_JSON)
-					.content(objectMapper.writeValueAsString(LoginRequest)))
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(objectMapper.writeValueAsString(LoginRequest)))
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$.accessToken").value(dummyAccessToken))
 				.andExpect(jsonPath("$.tokenType").value("Bearer"))
-				.andExpect(jsonPath("$.user.id").value(999999))
-				.andExpect(jsonPath("$.user.nickname").value("testUser"))
-				.andExpect(jsonPath("$.user.displayEmail").value("test@example.com"));
+				.andExpect(jsonPath("$.user.id").value(1))
+				.andExpect(jsonPath("$.user.nickname").value("testUser"));
+
+		verify(authService).loginWithGoogle(LoginRequest.getIdToken());
 	}
 
 	@Test
@@ -95,7 +91,7 @@ class AuthUserControllerTest {
 						.content(objectMapper.writeValueAsString(invalidRequest)))
 				.andExpect(status().isBadRequest());
 
-		Mockito.verify(authService, Mockito.never()).loginWithGoogle(Mockito.anyString());
+		verify(authService, Mockito.never()).loginWithGoogle(Mockito.anyString());
 	}
 
 	@TestConfiguration

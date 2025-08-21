@@ -27,28 +27,21 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class AuthServiceTest {
 
+	private final String dummyIdToken = "dummy_google_id_token";
 	@Mock
 	private UserService userService;
-
 	@Mock
 	private UserResponseMapper userResponseMapper;
-
 	@Mock
 	private JwtTokenProvider jwtTokenProvider;
-
 	@Mock
 	private GoogleIdTokenVerifier googleIdTokenVerifier;
-
 	@Mock
 	private LoginResponseMapper loginResponseMapper;
-
 	@InjectMocks
 	private AuthService authService;
-
 	private User testUser;
 	private UserResponse userResponse;
-
-	private final String dummyIdToken = "dummy_google_id_token";
 
 	@BeforeEach
 	void setUp() {
@@ -67,7 +60,7 @@ class AuthServiceTest {
 	}
 
 	@Test
-	void 無効なIDトークンでログインした場合AuthenticationExceptionをスロー() throws GeneralSecurityException, IOException{
+	void 無効なIDトークンでログインした場合AuthenticationExceptionをスロー() throws GeneralSecurityException, IOException {
 		when(googleIdTokenVerifier.verify(anyString()))
 				.thenThrow(new GeneralSecurityException("無効なGoogle IDトークンです。"));
 

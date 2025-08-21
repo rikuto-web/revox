@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 public class LoginResponseMapper {
 
 	private final UserResponseMapper userResponseMapper;
+
 	public LoginResponseMapper(UserResponseMapper userResponseMapper) {
 		this.userResponseMapper = userResponseMapper;
 	}
@@ -20,7 +21,7 @@ public class LoginResponseMapper {
 	/**
 	 * ユーザー情報とアクセストークンをLoginResponseに変換します。
 	 *
-	 * @param user 認証されたユーザー情報
+	 * @param user        認証されたユーザー情報
 	 * @param accessToken JWTトークン
 	 * @return 認証成功時のログインレスポンスDTO
 	 */

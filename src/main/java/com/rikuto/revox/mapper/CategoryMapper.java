@@ -1,13 +1,14 @@
 package com.rikuto.revox.mapper;
 
 import com.rikuto.revox.domain.Category;
-import com.rikuto.revox.domain.bike.Bike;
-import com.rikuto.revox.dto.bike.BikeResponse;
 import com.rikuto.revox.dto.category.CategoryResponse;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+/**
+ * Categoryドメインと関連するDTO間のマッピングを行うクラスです。
+ */
 @Component
 public class CategoryMapper {
 

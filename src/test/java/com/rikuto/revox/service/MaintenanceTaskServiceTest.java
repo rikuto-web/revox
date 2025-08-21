@@ -29,6 +29,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -52,36 +53,28 @@ class MaintenanceTaskServiceTest {
 	private MaintenanceTaskService maintenanceTaskService;
 
 	private Category testCategory;
-
 	private Bike testBike;
-
 	private MaintenanceTask testMaintenanceTask;
-
 	private MaintenanceTaskRequest commonMaintenanceTaskRequest;
-
 	private MaintenanceTaskResponse commonMaintenanceTaskResponse;
 
 	@BeforeEach
 	void setUp() {
-		testCategory = Category.builder().id(1).name("エンジン").displayOrder(1).build();
-
-		testBike = Bike.builder().id(101).modelName("CBR250RR").build();
-
+		testCategory = Category.builder().id(1).name("testCategory").displayOrder(1).build();
+		testBike = Bike.builder().id(2).modelName("TestBike").build();
 		testMaintenanceTask = MaintenanceTask.builder()
-				.id(301)
+				.id(10)
 				.bike(testBike)
 				.category(testCategory)
 				.name("オイル交換手順")
 				.description("1. エンジンを温める\n2. ドレンボルトを外す\n3. 新しいオイルを注入する")
 				.build();
-
 		commonMaintenanceTaskRequest = MaintenanceTaskRequest.builder()
 				.categoryId(testCategory.getId())
 				.bikeId(testBike.getId())
 				.name("オイル交換手順")
 				.description("1. エンジンを温める\n2. ドレンボルトを外す\n3. 新しいオイルを注入する")
 				.build();
-
 		commonMaintenanceTaskResponse = MaintenanceTaskResponse.builder()
 				.id(testMaintenanceTask.getId())
 				.categoryId(testCategory.getId())
@@ -107,12 +100,12 @@ class MaintenanceTaskServiceTest {
 	}
 
 	@Nested
-	class RegisterMaintenanceTaskTests {
+	class CreateTests {
 		@Test
 		void 新しい整備タスクが正常に登録され登録された整備タスク情報が返されること() {
 			stubCategoryFound();
 			stubBikeFound();
-			when(maintenanceTaskMapper.toEntity(commonMaintenanceTaskRequest, testBike, testCategory)).thenReturn(testMaintenanceTask);
+			when(maintenanceTaskMapper.toDomain(commonMaintenanceTaskRequest, testBike, testCategory)).thenReturn(testMaintenanceTask);
 			when(maintenanceTaskRepository.save(testMaintenanceTask)).thenReturn(testMaintenanceTask);
 			when(maintenanceTaskMapper.toResponse(testMaintenanceTask)).thenReturn(commonMaintenanceTaskResponse);
 
@@ -122,20 +115,8 @@ class MaintenanceTaskServiceTest {
 			verify(categoryRepository).findById(testCategory.getId());
 			verify(bikeRepository).findById(testBike.getId());
 			verify(maintenanceTaskRepository).save(testMaintenanceTask);
-			verify(maintenanceTaskMapper).toEntity(commonMaintenanceTaskRequest, testBike, testCategory);
+			verify(maintenanceTaskMapper).toDomain(commonMaintenanceTaskRequest, testBike, testCategory);
 			verify(maintenanceTaskMapper).toResponse(testMaintenanceTask);
-		}
-
-		@Test
-		void カテゴリーが見つからない場合にResourceNotFoundExceptionをスローすること() {
-			when(categoryRepository.findById(testCategory.getId())).thenReturn(Optional.empty());
-
-			assertThatThrownBy(() -> maintenanceTaskService.registerMaintenanceTask(commonMaintenanceTaskRequest))
-					.isInstanceOf(ResourceNotFoundException.class)
-					.hasMessageContaining("カテゴリーID " + testCategory.getId() + " が見つかりません。");
-
-			verify(bikeRepository, never()).findById(any());
-			verify(maintenanceTaskRepository, never()).save(any());
 		}
 
 		@Test
@@ -150,98 +131,171 @@ class MaintenanceTaskServiceTest {
 			verify(categoryRepository).findById(testCategory.getId());
 			verify(maintenanceTaskRepository, never()).save(any());
 		}
-	}
-
-	@Nested
-	class FindLatestMaintenanceTasksByUserIdTests {
-		@Test
-		void ユーザーIDに紐づく最新の整備タスクを指定件数取得できること() {
-			Pageable pageable = PageRequest.of(0, 5, Sort.by("createdAt").descending());
-			List<MaintenanceTask> tasks = List.of(testMaintenanceTask);
-			when(maintenanceTaskRepository.findByBike_UserIdAndIsDeletedFalse(any(), any(Pageable.class))).thenReturn(tasks);
-			when(maintenanceTaskMapper.toResponseList(tasks)).thenReturn(List.of(commonMaintenanceTaskResponse));
-
-			List<MaintenanceTaskResponse> result = maintenanceTaskService.findLatestMaintenanceTasksByUserId(1);
-
-			assertThat(result).hasSize(1);
-			assertThat(result.getFirst()).isEqualTo(commonMaintenanceTaskResponse);
-			verify(maintenanceTaskRepository).findByBike_UserIdAndIsDeletedFalse(any(), any(Pageable.class));
-			verify(maintenanceTaskMapper).toResponseList(tasks);
-		}
 
 		@Test
-		void ユーザーに紐づくタスクが存在しない場合に空のリストを返すこと() {
-			when(maintenanceTaskRepository.findByBike_UserIdAndIsDeletedFalse(any(), any(Pageable.class))).thenReturn(Collections.emptyList());
-			when(maintenanceTaskMapper.toResponseList(any())).thenReturn(Collections.emptyList());
+		void カテゴリーが見つからない場合にResourceNotFoundExceptionをスローすること() {
+			when(categoryRepository.findById(testCategory.getId())).thenReturn(Optional.empty());
 
-			List<MaintenanceTaskResponse> result = maintenanceTaskService.findLatestMaintenanceTasksByUserId(999);
+			assertThatThrownBy(() -> maintenanceTaskService.registerMaintenanceTask(commonMaintenanceTaskRequest))
+					.isInstanceOf(ResourceNotFoundException.class)
+					.hasMessageContaining("カテゴリーID " + testCategory.getId() + " が見つかりません。");
 
-			assertThat(result).isEmpty();
-			verify(maintenanceTaskRepository).findByBike_UserIdAndIsDeletedFalse(any(), any(Pageable.class));
-			verify(maintenanceTaskMapper).toResponseList(any());
+			verify(bikeRepository, never()).findById(any());
+			verify(maintenanceTaskRepository, never()).save(any());
 		}
 	}
 
 	@Nested
-	class FindByBikeIdTests {
-		@Test
-		void バイクIDに紐づく整備タスクをすべて取得できること() {
-			List<MaintenanceTask> tasks = List.of(testMaintenanceTask);
-			when(maintenanceTaskRepository.findByBikeIdAndIsDeletedFalse(testBike.getId())).thenReturn(tasks);
-			when(maintenanceTaskMapper.toResponseList(tasks)).thenReturn(List.of(commonMaintenanceTaskResponse));
+	class ReadTests {
 
-			List<MaintenanceTaskResponse> result = maintenanceTaskService.findByBikeId(testBike.getId());
+		@Nested
+		class FindByUserIdTests {
+			@Test
+			void ユーザーIDに紐づく最新の整備タスクを指定件数取得できること() {
+				Integer testUserId = 1;
+				Pageable pageable = PageRequest.of(0, 5, Sort.by("createdAt").descending());
+				List<MaintenanceTask> tasks = List.of(testMaintenanceTask);
+				when(maintenanceTaskRepository.findByBike_UserIdAndIsDeletedFalse(eq(testUserId), eq(pageable))).thenReturn(tasks);
+				when(maintenanceTaskMapper.toResponseList(tasks)).thenReturn(List.of(commonMaintenanceTaskResponse));
 
-			assertThat(result).hasSize(1);
-			assertThat(result.getFirst()).isEqualTo(commonMaintenanceTaskResponse);
-			verify(maintenanceTaskRepository).findByBikeIdAndIsDeletedFalse(testBike.getId());
-			verify(maintenanceTaskMapper).toResponseList(tasks);
+				List<MaintenanceTaskResponse> result = maintenanceTaskService.findLatestMaintenanceTasksByUserId(testUserId);
+
+				assertThat(result).hasSize(1);
+				assertThat(result.getFirst()).isEqualTo(commonMaintenanceTaskResponse);
+				verify(maintenanceTaskRepository).findByBike_UserIdAndIsDeletedFalse(eq(testUserId), eq(pageable));
+				verify(maintenanceTaskMapper).toResponseList(tasks);
+			}
+
+			@Test
+			void ユーザーに紐づくタスクが存在しない場合に空のリストを返すこと() {
+				Integer testUserId = 999;
+				when(maintenanceTaskRepository.findByBike_UserIdAndIsDeletedFalse(eq(testUserId), any(Pageable.class))).thenReturn(Collections.emptyList());
+				when(maintenanceTaskMapper.toResponseList(any())).thenReturn(Collections.emptyList());
+
+				List<MaintenanceTaskResponse> result = maintenanceTaskService.findLatestMaintenanceTasksByUserId(testUserId);
+
+				assertThat(result).isEmpty();
+				verify(maintenanceTaskRepository).findByBike_UserIdAndIsDeletedFalse(eq(testUserId), any(Pageable.class));
+				verify(maintenanceTaskMapper).toResponseList(any());
+			}
 		}
 
-		@Test
-		void バイクに紐づくタスクがない場合に空のリストを返すこと() {
-			when(maintenanceTaskRepository.findByBikeIdAndIsDeletedFalse(testBike.getId())).thenReturn(Collections.emptyList());
-			when(maintenanceTaskMapper.toResponseList(any())).thenReturn(Collections.emptyList());
+		@Nested
+		class FindByBikeIdTests {
+			@Test
+			void バイクIDに紐づく整備タスクをすべて取得できること() {
+				List<MaintenanceTask> maintenanceTaskList = List.of(testMaintenanceTask);
+				when(maintenanceTaskRepository.findByBikeIdAndIsDeletedFalse(testBike.getId())).thenReturn(maintenanceTaskList);
+				when(maintenanceTaskMapper.toResponseList(maintenanceTaskList)).thenReturn(List.of(commonMaintenanceTaskResponse));
 
-			List<MaintenanceTaskResponse> result = maintenanceTaskService.findByBikeId(testBike.getId());
+				List<MaintenanceTaskResponse> result = maintenanceTaskService.findByBikeId(testBike.getId());
 
-			assertThat(result).isEmpty();
-			verify(maintenanceTaskRepository).findByBikeIdAndIsDeletedFalse(testBike.getId());
-			verify(maintenanceTaskMapper).toResponseList(any());
+				assertThat(result).hasSize(1);
+				assertThat(result.getFirst()).isEqualTo(commonMaintenanceTaskResponse);
+				verify(maintenanceTaskRepository).findByBikeIdAndIsDeletedFalse(testBike.getId());
+				verify(maintenanceTaskMapper).toResponseList(maintenanceTaskList);
+			}
+
+			@Test
+			void バイクに紐づくタスクがない場合に空のリストを返すこと() {
+				when(maintenanceTaskRepository.findByBikeIdAndIsDeletedFalse(testBike.getId())).thenReturn(Collections.emptyList());
+				when(maintenanceTaskMapper.toResponseList(any())).thenReturn(Collections.emptyList());
+
+				List<MaintenanceTaskResponse> result = maintenanceTaskService.findByBikeId(testBike.getId());
+
+				assertThat(result).isEmpty();
+				verify(maintenanceTaskRepository).findByBikeIdAndIsDeletedFalse(testBike.getId());
+				verify(maintenanceTaskMapper).toResponseList(any());
+			}
+		}
+
+		@Nested
+		class FindByBikeIdAndCategoryIdTests {
+			@Test
+			void バイクIDとカテゴリーIDに紐づくタスクをすべて取得できること() {
+				List<MaintenanceTask> maintenanceTaskList = List.of(testMaintenanceTask);
+				when(maintenanceTaskRepository.findByBikeIdAndCategoryIdAndIsDeletedFalse(testBike.getId(), testCategory.getId())).thenReturn(maintenanceTaskList);
+				when(maintenanceTaskMapper.toResponseList(maintenanceTaskList)).thenReturn(List.of(commonMaintenanceTaskResponse));
+
+				List<MaintenanceTaskResponse> result = maintenanceTaskService.findByBikeIdAndCategoryId(testBike.getId(), testCategory.getId());
+
+				assertThat(result).hasSize(1);
+				assertThat(result.getFirst()).isEqualTo(commonMaintenanceTaskResponse);
+				verify(maintenanceTaskRepository).findByBikeIdAndCategoryIdAndIsDeletedFalse(testBike.getId(), testCategory.getId());
+				verify(maintenanceTaskMapper).toResponseList(maintenanceTaskList);
+			}
+
+			@Test
+			void 条件に紐づくタスクがない場合に空のリストを返すこと() {
+				when(maintenanceTaskRepository.findByBikeIdAndCategoryIdAndIsDeletedFalse(any(), any())).thenReturn(Collections.emptyList());
+				when(maintenanceTaskMapper.toResponseList(any())).thenReturn(Collections.emptyList());
+
+				List<MaintenanceTaskResponse> result = maintenanceTaskService.findByBikeIdAndCategoryId(testBike.getId(), testCategory.getId());
+
+				assertThat(result).isEmpty();
+				verify(maintenanceTaskRepository).findByBikeIdAndCategoryIdAndIsDeletedFalse(any(), any());
+				verify(maintenanceTaskMapper).toResponseList(any());
+			}
 		}
 	}
 
 	@Nested
-	class FindByBikeIdAndCategoryIdTests {
-		@Test
-		void バイクIDとカテゴリーIDに紐づくタスクをすべて取得できること() {
-			List<MaintenanceTask> tasks = List.of(testMaintenanceTask);
-			when(maintenanceTaskRepository.findByBikeIdAndCategoryIdAndIsDeletedFalse(testBike.getId(), testCategory.getId())).thenReturn(tasks);
-			when(maintenanceTaskMapper.toResponseList(tasks)).thenReturn(List.of(commonMaintenanceTaskResponse));
+	class UpdateTests {
+		private MaintenanceTaskUpdateRequest updateRequest;
 
-			List<MaintenanceTaskResponse> result = maintenanceTaskService.findByBikeIdAndCategoryId(testBike.getId(), testCategory.getId());
-
-			assertThat(result).hasSize(1);
-			assertThat(result.getFirst()).isEqualTo(commonMaintenanceTaskResponse);
-			verify(maintenanceTaskRepository).findByBikeIdAndCategoryIdAndIsDeletedFalse(testBike.getId(), testCategory.getId());
-			verify(maintenanceTaskMapper).toResponseList(tasks);
+		@BeforeEach
+		void setup() {
+			updateRequest = MaintenanceTaskUpdateRequest.builder()
+					.name("更新後タスク名")
+					.description("更新後説明文")
+					.build();
 		}
 
 		@Test
-		void 条件に紐づくタスクがない場合に空のリストを返すこと() {
-			when(maintenanceTaskRepository.findByBikeIdAndCategoryIdAndIsDeletedFalse(any(), any())).thenReturn(Collections.emptyList());
-			when(maintenanceTaskMapper.toResponseList(any())).thenReturn(Collections.emptyList());
+		void 既存の整備タスク情報が正常に更新され更新後の情報が返されること() {
+			stubMaintenanceTaskFound();
 
-			List<MaintenanceTaskResponse> result = maintenanceTaskService.findByBikeIdAndCategoryId(testBike.getId(), testCategory.getId());
+			MaintenanceTask updatedTask = MaintenanceTask.builder()
+					.id(testMaintenanceTask.getId())
+					.bike(testBike)
+					.category(testCategory)
+					.name(updateRequest.getName())
+					.description(updateRequest.getDescription())
+					.build();
 
-			assertThat(result).isEmpty();
-			verify(maintenanceTaskRepository).findByBikeIdAndCategoryIdAndIsDeletedFalse(any(), any());
-			verify(maintenanceTaskMapper).toResponseList(any());
+			MaintenanceTaskResponse updatedResponse = MaintenanceTaskResponse.builder()
+					.id(testMaintenanceTask.getId())
+					.categoryId(testCategory.getId())
+					.name(updateRequest.getName())
+					.description(updateRequest.getDescription())
+					.build();
+
+			when(maintenanceTaskRepository.save(any(MaintenanceTask.class))).thenReturn(updatedTask);
+			when(maintenanceTaskMapper.toResponse(any(MaintenanceTask.class))).thenReturn(updatedResponse);
+
+			MaintenanceTaskResponse result = maintenanceTaskService.updateMaintenanceTask(testMaintenanceTask.getId(), updateRequest);
+
+			assertThat(result).isEqualTo(updatedResponse);
+			verify(maintenanceTaskRepository).findById(testMaintenanceTask.getId());
+			verify(maintenanceTaskRepository).save(any(MaintenanceTask.class));
+			verify(maintenanceTaskMapper).toResponse(any(MaintenanceTask.class));
+		}
+
+		@Test
+		void 更新対象の整備タスクが見つからない場合にResourceNotFoundExceptionをスローすること() {
+			stubMaintenanceTaskNotFound();
+
+			assertThatThrownBy(() -> maintenanceTaskService.updateMaintenanceTask(testMaintenanceTask.getId(), updateRequest))
+					.isInstanceOf(ResourceNotFoundException.class)
+					.hasMessageContaining("整備タスクID " + testMaintenanceTask.getId() + " が見つかりません。");
+
+			verify(maintenanceTaskRepository).findById(testMaintenanceTask.getId());
+			verify(maintenanceTaskRepository, never()).save(any());
 		}
 	}
 
 	@Nested
-	class SoftDeleteMaintenanceTaskTests {
+	class DeleteTests {
 		@Test
 		void 登録されている整備タスクが正常に論理削除されること() {
 			stubMaintenanceTaskFound();

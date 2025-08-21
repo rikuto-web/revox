@@ -6,7 +6,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.Optional;
 
 /**
  * 整備タスクに関するリポジトリです。
@@ -18,7 +17,7 @@ public interface MaintenanceTaskRepository extends JpaRepository<MaintenanceTask
 	/**
 	 * 指定されたユーザーIDに紐づく、論理削除されていない最新の整備タスクを指定件数分検索します。
 	 *
-	 * @param userId ユーザーID
+	 * @param userId   ユーザーID
 	 * @param pageable ページング情報
 	 * @return 整備タスクList
 	 */
@@ -35,7 +34,7 @@ public interface MaintenanceTaskRepository extends JpaRepository<MaintenanceTask
 	/**
 	 * 指定されたバイクIDとカテゴリーIDに紐づく、論理削除されていないすべての整備タスクを検索します。
 	 *
-	 * @param bikeId バイクID
+	 * @param bikeId     バイクID
 	 * @param categoryId カテゴリーID
 	 * @return 整備タスクList
 	 */

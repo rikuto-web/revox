@@ -30,10 +30,10 @@ class UserRepositoryTest {
 			User testUser = createUser("testUser", "unique_id_12345");
 			createUser("anotherUser", "unique_id_98765");
 
-			Optional<User> foundUser = userRepository.findByIdAndIsDeletedFalse(testUser.getId());
+			Optional<User> result = userRepository.findByIdAndIsDeletedFalse(testUser.getId());
 
-			assertThat(foundUser).isPresent();
-			assertThat(foundUser.get().getNickname()).isEqualTo("testUser");
+			assertThat(result).isPresent();
+			assertThat(result.get().getNickname()).isEqualTo("testUser");
 		}
 
 		@Test
@@ -42,16 +42,16 @@ class UserRepositoryTest {
 			deletedUser.softDelete();
 			userRepository.save(deletedUser);
 
-			Optional<User> foundUser = userRepository.findByIdAndIsDeletedFalse(deletedUser.getId());
+			Optional<User> result = userRepository.findByIdAndIsDeletedFalse(deletedUser.getId());
 
-			assertThat(foundUser).isNotPresent();
+			assertThat(result).isNotPresent();
 		}
 
 		@Test
 		void 存在しないユーザーIDで検索が失敗し空のOptionalが返ってくること() {
-			Optional<User> foundUser = userRepository.findByIdAndIsDeletedFalse(99999);
+			Optional<User> result = userRepository.findByIdAndIsDeletedFalse(99999);
 
-			assertThat(foundUser).isNotPresent();
+			assertThat(result).isNotPresent();
 		}
 	}
 
@@ -59,19 +59,19 @@ class UserRepositoryTest {
 	class FindByUniqueUserIdTests {
 		@Test
 		void 有効な外部認証IDで検索が適切に行えること() {
-			User authIdUser = createUser("SearchUser", "unique_id_12345");
+			createUser("SearchUser", "unique_id_12345");
 
-			Optional<User> foundAuthUser = userRepository.findByUniqueUserIdAndIsDeletedFalse("unique_id_12345");
+			Optional<User> result = userRepository.findByUniqueUserIdAndIsDeletedFalse("unique_id_12345");
 
-			assertThat(foundAuthUser).isPresent();
-			assertThat(foundAuthUser.get().getNickname()).isEqualTo("SearchUser");
+			assertThat(result).isPresent();
+			assertThat(result.get().getNickname()).isEqualTo("SearchUser");
 		}
 
 		@Test
 		void 存在しない外部認証IDで検索が失敗し空のOptionalが返ってくること() {
-			Optional<User> foundUser = userRepository.findByUniqueUserIdAndIsDeletedFalse("nonexistent_id");
+			Optional<User> result = userRepository.findByUniqueUserIdAndIsDeletedFalse("nonexistent_id");
 
-			assertThat(foundUser).isNotPresent();
+			assertThat(result).isNotPresent();
 		}
 	}
 
@@ -83,10 +83,10 @@ class UserRepositoryTest {
 			deletedUser.softDelete();
 			userRepository.save(deletedUser);
 
-			Optional<User> foundDeletedUser = userRepository.findByUniqueUserId("unique_id_deleted");
+			Optional<User> result = userRepository.findByUniqueUserId("unique_id_deleted");
 
-			assertThat(foundDeletedUser).isPresent();
-			assertThat(foundDeletedUser.get().isDeleted()).isTrue();
+			assertThat(result).isPresent();
+			assertThat(result.get().isDeleted()).isTrue();
 		}
 	}
 }

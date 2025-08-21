@@ -2,10 +2,10 @@ package com.rikuto.revox.service;
 
 import com.rikuto.revox.domain.Category;
 import com.rikuto.revox.dto.category.CategoryResponse;
-import com.rikuto.revox.exception.ResourceNotFoundException;
 import com.rikuto.revox.mapper.CategoryMapper;
 import com.rikuto.revox.repository.CategoryRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -25,9 +25,10 @@ public class CategoryService {
 	 *
 	 * @return すべてのカテゴリーリスト
 	 */
+	@Transactional(readOnly = true)
 	public List<CategoryResponse> findAllCategories() {
-		List<Category> categories = categoryRepository.findAll();
+		List<Category> categorieList = categoryRepository.findAll();
 
-		return categoryMapper.toResponseList(categories);
+		return categoryMapper.toResponseList(categorieList);
 	}
 }

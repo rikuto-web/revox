@@ -9,6 +9,7 @@ import com.rikuto.revox.dto.bike.BikeUpdateRequest;
 import com.rikuto.revox.exception.ResourceNotFoundException;
 import com.rikuto.revox.mapper.BikeMapper;
 import com.rikuto.revox.repository.BikeRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,6 +18,7 @@ import java.util.List;
 /**
  * バイクに関するビジネスロジックを処理するサービスクラスです。
  */
+@Slf4j
 @Service
 public class BikeService {
 
@@ -36,6 +38,7 @@ public class BikeService {
 
 	// CREATE
 	//------------------------------------------------------------------------------------------------------------------
+
 	/**
 	 * 新しいバイク情報を登録します。
 	 *
@@ -45,23 +48,25 @@ public class BikeService {
 	 */
 	@Transactional
 	public BikeResponse registerBike(BikeCreateRequest request, Integer userId) {
+		log.info("新しいバイクの登録を開始します。");
 		User user = userService.findById(userId);
-
-		Bike bike = bikeMapper.toEntity(user, request);
-
+		Bike bike = bikeMapper.toDomain(user, request);
 		Bike savedBike = bikeRepository.save(bike);
 
+		log.info("新しいバイクが正常に登録されました。");
 		return bikeMapper.toResponse(savedBike);
 	}
 
 	// READ
 	//------------------------------------------------------------------------------------------------------------------
+
 	/**
 	 * ユーザーIDに紐づいた全てのバイク情報を検索します。
 	 *
 	 * @param userId ユーザーID
 	 * @return レスポンスへ変換後のバイクリスト
 	 */
+	@Transactional(readOnly = true)
 	public List<BikeResponse> findBikeByUserId(Integer userId) {
 		List<Bike> bikeList = bikeRepository.findByUserIdAndIsDeletedFalse(userId);
 
@@ -86,6 +91,7 @@ public class BikeService {
 
 	// UPDATE
 	//------------------------------------------------------------------------------------------------------------------
+
 	/**
 	 * 既存のバイク情報を更新します。
 	 *
@@ -95,7 +101,8 @@ public class BikeService {
 	 * @throws ResourceNotFoundException 指定されたバイクが見つからない場合
 	 */
 	@Transactional
-	public BikeResponse updateBike(BikeUpdateRequest request, Integer bikeId,  Integer userId) {
+	public BikeResponse updateBike(BikeUpdateRequest request, Integer bikeId, Integer userId) {
+		log.info("バイク情報の更新を開始します。");
 		Bike existingBike = bikeRepository.findByIdAndUserIdAndIsDeletedFalse(bikeId, userId)
 				.orElseThrow(() -> new ResourceNotFoundException("ユーザーID " + userId + " に紐づくバイクID " + bikeId + " が見つかりません。"));
 
@@ -113,11 +120,13 @@ public class BikeService {
 
 		Bike savedBike = bikeRepository.save(existingBike);
 
+		log.warn("バイク情報が正常に更新されました。");
 		return bikeMapper.toResponse(savedBike);
 	}
 
 	// DELETE
 	//------------------------------------------------------------------------------------------------------------------
+
 	/**
 	 * 登録されているバイクを論理削除します。
 	 *

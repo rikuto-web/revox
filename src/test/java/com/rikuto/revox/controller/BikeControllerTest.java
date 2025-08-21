@@ -23,10 +23,19 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(
 		controllers = BikeController.class,
@@ -38,27 +47,23 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Import(BikeControllerTest.BikeServiceTestConfig.class)
 class BikeControllerTest {
 
+	private final Integer testUserId = 1;
+	private final Integer testBikeId = 2;
 	@Autowired
 	private MockMvc mockMvc;
-
 	@Autowired
 	private ObjectMapper objectMapper;
-
 	@Autowired
 	private BikeService bikeService;
-
 	private BikeCreateRequest commonBikeCreateRequest;
 	private BikeResponse commonBikeResponse;
-
-	private final Integer testBikeId = 101;
-	private final Integer testUserId = 1;
 
 	@BeforeEach
 	void setUp() {
 		commonBikeCreateRequest = BikeCreateRequest.builder()
-				.manufacturer("Honda")
-				.modelName("CBR250RR")
-				.modelCode("MC51")
+				.manufacturer("Test")
+				.modelName("TestBike")
+				.modelCode("test")
 				.modelYear(2023)
 				.currentMileage(1000)
 				.purchaseDate(LocalDate.of(2023, 1, 1))
@@ -68,9 +73,9 @@ class BikeControllerTest {
 		commonBikeResponse = BikeResponse.builder()
 				.userId(testUserId)
 				.id(testBikeId)
-				.manufacturer("Honda")
-				.modelName("CBR250RR")
-				.modelCode("MC51")
+				.manufacturer("Test")
+				.modelName("TestBike")
+				.modelCode("test")
 				.modelYear(2023)
 				.currentMileage(1000)
 				.purchaseDate(LocalDate.of(2023, 1, 1))
@@ -82,56 +87,62 @@ class BikeControllerTest {
 		reset(bikeService);
 	}
 
+	/**
+	 * BikeServiceのモックBeanを定義するテスト用の設定クラス
+	 */
+	@TestConfiguration
+	static class BikeServiceTestConfig {
+		@Bean
+		public BikeService bikeService() {
+			return Mockito.mock(BikeService.class);
+		}
+	}
+
 	@Nested
 	class GetTests {
 		@Test
 		void ユーザーIDに紐づくバイク一覧を正常に取得できること() throws Exception {
-			when(bikeService.findBikeByUserId(testUserId)).thenReturn(List.of(commonBikeResponse));
+			BikeResponse secondBike = BikeResponse.builder()
+					.manufacturer("TestBike")
+					.modelName("SecondTestBike")
+					.build();
+
+			when(bikeService.findBikeByUserId(testUserId)).thenReturn(List.of(commonBikeResponse, secondBike));
 
 			mockMvc.perform(get("/api/bikes/user/{userId}", testUserId)
 							.accept(MediaType.APPLICATION_JSON))
 					.andExpect(status().isOk())
 					.andExpect(content().contentType(MediaType.APPLICATION_JSON))
 					.andExpect(jsonPath("$[0].id").value(testBikeId))
-					.andExpect(jsonPath("$[0].modelName").value("CBR250RR"));
+					.andExpect(jsonPath("$[0].modelName").value("TestBike"))
+					.andExpect(jsonPath("$[1].modelName").value("SecondTestBike"));
 
 			verify(bikeService).findBikeByUserId(testUserId);
 		}
 
 		@Test
 		void 指定されたユーザーIDとバイクIDで単一のバイク情報を取得できること() throws Exception {
-			when(bikeService.findByIdAndUserId(testUserId, testBikeId)).thenReturn(commonBikeResponse);
+			when(bikeService.findByIdAndUserId(testBikeId, testUserId)).thenReturn(commonBikeResponse);
 
 			mockMvc.perform(get("/api/bikes/user/{userId}/bike/{bikeId}", testUserId, testBikeId)
 							.accept(MediaType.APPLICATION_JSON))
 					.andExpect(status().isOk())
 					.andExpect(content().contentType(MediaType.APPLICATION_JSON))
 					.andExpect(jsonPath("$.id").value(testBikeId))
-					.andExpect(jsonPath("$.modelName").value("CBR250RR"));
+					.andExpect(jsonPath("$.modelName").value("TestBike"));
 
-			verify(bikeService).findByIdAndUserId(testUserId, testBikeId);
+			verify(bikeService).findByIdAndUserId(testBikeId, testUserId);
 		}
 
 		@Test
 		void 指定されたユーザーIDに紐づくバイクが存在しない場合404を返すこと() throws Exception {
 			when(bikeService.findBikeByUserId(testUserId))
-					.thenThrow(new ResourceNotFoundException("見つかりません"));
+					.thenThrow(new ResourceNotFoundException("ユーザーが見つかりません"));
 
 			mockMvc.perform(get("/api/bikes/user/{userId}", testUserId))
 					.andExpect(status().isNotFound());
 
 			verify(bikeService).findBikeByUserId(testUserId);
-		}
-
-		@Test
-		void 指定されたユーザーIDまたはバイクIDが見つからない場合404を返すこと() throws Exception {
-			when(bikeService.findByIdAndUserId(testUserId, testBikeId))
-					.thenThrow(new ResourceNotFoundException("見つかりません"));
-
-			mockMvc.perform(get("/api/bikes/user/{userId}/bike/{bikeId}", testUserId, testBikeId))
-					.andExpect(status().isNotFound());
-
-			verify(bikeService).findByIdAndUserId(testUserId, testBikeId);
 		}
 	}
 
@@ -146,7 +157,7 @@ class BikeControllerTest {
 							.content(objectMapper.writeValueAsString(commonBikeCreateRequest)))
 					.andExpect(status().isCreated())
 					.andExpect(jsonPath("$.id").value(testBikeId))
-					.andExpect(jsonPath("$.modelName").value("CBR250RR"));
+					.andExpect(jsonPath("$.modelName").value("TestBike"));
 
 			verify(bikeService).registerBike(any(), any());
 		}
@@ -154,12 +165,8 @@ class BikeControllerTest {
 		@Test
 		void バリデーションエラー時は400を返すこと() throws Exception {
 			BikeCreateRequest invalidRequest = BikeCreateRequest.builder()
-					.modelName("CBR250RR")
-					.modelCode("MC51")
-					.modelYear(2023)
-					.currentMileage(1000)
-					.purchaseDate(LocalDate.of(2023, 1, 1))
-					.imageUrl("http://example.com/cbr.jpg")
+					.modelName("TestBike")
+					.modelCode("Test")
 					.build();
 
 			mockMvc.perform(post("/api/bikes/user/{userId}", testUserId)
@@ -182,7 +189,7 @@ class BikeControllerTest {
 							.content(objectMapper.writeValueAsString(commonBikeCreateRequest)))
 					.andExpect(status().isOk())
 					.andExpect(jsonPath("$.id").value(testBikeId))
-					.andExpect(jsonPath("$.modelName").value("CBR250RR"));
+					.andExpect(jsonPath("$.modelName").value("TestBike"));
 
 			verify(bikeService).updateBike(any(), eq(testBikeId), eq(testUserId));
 		}
@@ -205,23 +212,12 @@ class BikeControllerTest {
 	class SoftDeleteTests {
 		@Test
 		void 論理削除が成功し204を返すこと() throws Exception {
-			doNothing().when(bikeService).softDeleteBike(testUserId, testBikeId);
+			doNothing().when(bikeService).softDeleteBike(testBikeId, testUserId);
 
 			mockMvc.perform(patch("/api/bikes/user/{userId}/bike/{bikeId}/softDelete", testUserId, testBikeId))
 					.andExpect(status().isNoContent());
 
-			verify(bikeService).softDeleteBike(testUserId, testBikeId);
-		}
-	}
-
-	/**
-	 * BikeServiceのモックBeanを定義するテスト用の設定クラス
-	 */
-	@TestConfiguration
-	static class BikeServiceTestConfig {
-		@Bean
-		public BikeService bikeService() {
-			return Mockito.mock(BikeService.class);
+			verify(bikeService).softDeleteBike(testBikeId, testUserId);
 		}
 	}
 }

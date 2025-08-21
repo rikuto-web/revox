@@ -114,7 +114,7 @@ public class GeminiService {
 					contentParameter);
 
 			String answer = createAnswer.text();
-			if (answer != null && ! answer.isEmpty()) {
+			if(answer != null && ! answer.isEmpty()) {
 				log.info("回答を正常に取得しました。");
 				return answer;
 			} else {

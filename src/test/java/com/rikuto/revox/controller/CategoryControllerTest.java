@@ -3,7 +3,6 @@ package com.rikuto.revox.controller;
 import com.rikuto.revox.dto.category.CategoryResponse;
 import com.rikuto.revox.service.CategoryService;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +14,6 @@ import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.util.Collections;
 import java.util.List;
 
 import static org.mockito.Mockito.reset;
@@ -34,29 +32,30 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Import(CategoryControllerTest.CategoryServiceTestConfig.class)
 class CategoryControllerTest {
 
+	private final Integer testCategoryId = 1;
 	@Autowired
 	private MockMvc mockMvc;
-
 	@Autowired
 	private CategoryService categoryService;
-
 	private CategoryResponse commonCategoryResponse;
-
-	private final Integer testCategoryId = 1;
 
 	@BeforeEach
 	void setUp() {
 		commonCategoryResponse = CategoryResponse.builder()
 				.id(testCategoryId)
-				.name("テストカテゴリ")
+				.name("TestCategory")
 				.build();
 
 		reset(categoryService);
 	}
 
 	@Test
-	void 全カテゴリー情報を正常に取得し200OKを返すこと() throws Exception {
-		List<CategoryResponse> expectedList = List.of(commonCategoryResponse);
+	void 全カテゴリー情報を正常に取得し200を返すこと() throws Exception {
+		CategoryResponse secondCategory = CategoryResponse.builder()
+				.name("SecondCategory")
+				.build();
+
+		List<CategoryResponse> expectedList = List.of(commonCategoryResponse, secondCategory);
 		when(categoryService.findAllCategories()).thenReturn(expectedList);
 
 		mockMvc.perform(get("/api/categories")
@@ -64,14 +63,14 @@ class CategoryControllerTest {
 				.andExpect(status().isOk())
 				.andExpect(content().contentType(MediaType.APPLICATION_JSON))
 				.andExpect(jsonPath("$[0].id").value(testCategoryId))
-				.andExpect(jsonPath("$[0].name").value("テストカテゴリ"));
+				.andExpect(jsonPath("$[0].name").value("TestCategory"))
+				.andExpect(jsonPath("$[1].name").value("SecondCategory"));
 
 		verify(categoryService, times(1)).findAllCategories();
 	}
 
 	@Test
-	@DisplayName("サービスで予期せぬ例外が発生した場合、500を返すこと")
-	void getAllCategories_unexpectedException() throws Exception {
+	void サービスで予期せぬ例外が発生した場合500を返すこと() throws Exception {
 		when(categoryService.findAllCategories()).thenThrow(new RuntimeException("データベース接続エラー"));
 
 		mockMvc.perform(get("/api/categories")

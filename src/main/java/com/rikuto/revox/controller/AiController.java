@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 /**
- * AI(Gemini API)に関するcontrollerです。
+ * AI(Gemini API)に関するコントローラーです。
  */
 @RestController
 @RequestMapping("/api/ai/user/{userId}")
@@ -30,8 +30,9 @@ public class AiController {
 
 	// CREATE
 	//------------------------------------------------------------------------------------------------------------------
+
 	/**
-	 * ユーザーからの質問を取得し、202ステータスを返します。
+	 * ユーザーからの質問を取得し、200ステータスを返します。
 	 * post /api/ai/user/{userId}/bike/{bikeId}/category/{categoryId}
 	 *
 	 * @param request 質問リクエスト
@@ -39,9 +40,9 @@ public class AiController {
 	 */
 	@PostMapping("/bike/{bikeId}/category/{categoryId}")
 	public ResponseEntity<AiQuestionResponse> createAiQuestion(@RequestBody @Valid AiQuestionCreateRequest request,
-	                                             @PathVariable @Positive Integer userId,
-	                                             @PathVariable @Positive Integer bikeId,
-	                                             @PathVariable @Positive Integer categoryId) {
+	                                                           @PathVariable @Positive Integer userId,
+	                                                           @PathVariable @Positive Integer bikeId,
+	                                                           @PathVariable @Positive Integer categoryId) {
 		AiQuestionResponse response = aiService.createAiQuestion(request, userId, bikeId, categoryId);
 
 		return ResponseEntity.ok(response);
@@ -49,6 +50,7 @@ public class AiController {
 
 	// READ
 	//------------------------------------------------------------------------------------------------------------------
+
 	/**
 	 * 指定されたユーザーIDに紐づくAI質問履歴を取得します。
 	 * get /api/ai/user/{userId}

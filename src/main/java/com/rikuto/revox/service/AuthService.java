@@ -8,6 +8,7 @@ import com.rikuto.revox.dto.auth.LoginResponse;
 import com.rikuto.revox.exception.AuthenticationException;
 import com.rikuto.revox.mapper.LoginResponseMapper;
 import com.rikuto.revox.security.jwt.JwtTokenProvider;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -17,6 +18,7 @@ import java.security.GeneralSecurityException;
  * 外部認証に関するビジネスロジックを処理するサービスクラスです。
  * 認証およびJWTトークンの生成を行います。
  */
+@Slf4j
 @Service
 public class AuthService {
 
@@ -45,17 +47,22 @@ public class AuthService {
 	 * @return ログインレスポンス
 	 */
 	public LoginResponse loginWithGoogle(String googleIdToken) {
+		log.info("Google IDトークンを使用してログイン処理を開始します。");
 		GoogleTokenPayload payload = verifyGoogleIdToken(googleIdToken);
 		if(payload.getEmail() == null) {
+			log.warn("Googleアカウントのメールアドレスがnullでした。");
 			throw new AuthenticationException("Googleアカウントのメールアドレスが取得できません。");
 		}
+		log.info("ユーザーの検索または新規登録を開始します。");
 		User user = userService.findOrCreateUser(
 				payload.getSub(),
 				payload.getName(),
 				payload.getEmail()
 		);
+		log.warn("正常に処理されました。");
 
 		String accessToken = jwtTokenProvider.generateToken(user.getUniqueUserId());
+		log.info("JWTアクセストークンが正常に生成されました。");
 
 		return loginResponseMapper.toLoginResponse(user, accessToken);
 	}
@@ -68,6 +75,7 @@ public class AuthService {
 	 * @throws AuthenticationException トークンが無効な場合にスロー
 	 */
 	private GoogleTokenPayload verifyGoogleIdToken(String googleIdToken) {
+		log.info("Google IDトークンの検証を開始します。");
 		try {
 			GoogleIdToken idToken = googleIdTokenVerifier.verify(googleIdToken);
 			if(idToken != null) {
@@ -75,18 +83,22 @@ public class AuthService {
 
 				String name = (String) payload.get("name");
 				if(name == null || name.isEmpty()) {
+					log.warn("Googleアカウントから名前が取得できませんでした。デフォルトを設定します。");
 					name = "名無しさん";
 				}
 
+				log.info("Google IDトークンの検証に成功しました。");
 				return GoogleTokenPayload.builder()
 						.sub(payload.getSubject())
 						.email(payload.getEmail())
 						.name(name)
 						.build();
 			} else {
+				log.warn("IDトークンがnullでした。無効なGoogle IDトークンです。");
 				throw new AuthenticationException("無効なGoogle IDトークンです。");
 			}
 		} catch(GeneralSecurityException | IOException e) {
+			log.error("Google IDトークンの検証中に例外が発生しました。");
 			throw new AuthenticationException("Google IDトークンの検証に失敗しました。", e);
 		}
 	}

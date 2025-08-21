@@ -40,21 +40,17 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Import(UserControllerTest.UserServiceTestConfig.class)
 class UserControllerTest {
 
-	@Autowired
-	private MockMvc mockMvc;
-
-	@Autowired
-	private ObjectMapper objectMapper;
-
-	@Autowired
-	private UserService userService;
-
-	private UserUpdateRequest commonUserUpdateRequest;
-	private UserResponse commonUserResponse;
-
 	private final Integer testUserId = 1;
 	private final Integer notFoundUserId = 999;
 	private final String updatedNickname = "更新後ニックネーム";
+	@Autowired
+	private MockMvc mockMvc;
+	@Autowired
+	private ObjectMapper objectMapper;
+	@Autowired
+	private UserService userService;
+	private UserUpdateRequest commonUserUpdateRequest;
+	private UserResponse commonUserResponse;
 
 	@BeforeEach
 	void setUp() {
@@ -70,10 +66,22 @@ class UserControllerTest {
 		reset(userService);
 	}
 
+	/**
+	 * UserServiceのモックBeanを定義するテスト用の設定クラス。
+	 * このクラスを`@Import`することで、テストコンテキストにモックが提供されます。
+	 */
+	@TestConfiguration
+	static class UserServiceTestConfig {
+		@Bean
+		public UserService userService() {
+			return Mockito.mock(UserService.class);
+		}
+	}
+
 	@Nested
 	class UpdateUserTests {
 		@Test
-		void 正常にユーザーニックネームを更新し200を返すこと() throws Exception {
+		void 正常にニックネームを更新し200を返すこと() throws Exception {
 			when(userService.updateUser(any(UserUpdateRequest.class), eq(testUserId))).thenReturn(commonUserResponse);
 
 			mockMvc.perform(patch("/api/users/{userId}", testUserId)
@@ -121,18 +129,6 @@ class UserControllerTest {
 					.andExpect(status().isNotFound());
 
 			verify(userService).softDeleteUser(notFoundUserId);
-		}
-	}
-
-	/**
-	 * UserServiceのモックBeanを定義するテスト用の設定クラス。
-	 * このクラスを`@Import`することで、テストコンテキストにモックが提供されます。
-	 */
-	@TestConfiguration
-	static class UserServiceTestConfig {
-		@Bean
-		public UserService userService() {
-			return Mockito.mock(UserService.class);
 		}
 	}
 }

@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 /**
- * カテゴリー情報の取得を扱うコントローラーです。
+ * カテゴリー情報に関するコントローラーです。
  */
 @RestController
 @RequestMapping("/api/categories")
