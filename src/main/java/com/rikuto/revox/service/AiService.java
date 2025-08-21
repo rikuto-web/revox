@@ -13,11 +13,16 @@ import com.rikuto.revox.repository.AiRepository;
 import com.rikuto.revox.repository.BikeRepository;
 import com.rikuto.revox.repository.CategoryRepository;
 import com.rikuto.revox.repository.UserRepository;
+import io.github.bucket4j.Bucket;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.query.spi.Limit;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * AIに関するビジネスロジックを処理するサービスクラスです。
@@ -34,6 +39,8 @@ public class AiService {
 	private final AiMapper aiMapper;
 
 	private final GeminiService geminiService;
+
+	private final Map<Integer, Bucket> buckets = new ConcurrentHashMap<>();
 
 	public AiService(AiRepository aiRepository,
 	                 UserRepository userRepository,
@@ -66,6 +73,11 @@ public class AiService {
 	                                           Integer userId,
 	                                           Integer bikeId,
 	                                           Integer categoryId) {
+		Bucket bucket = getBucketForUser(userId);
+		if(! bucket.tryConsume(1)) {
+			throw new RuntimeException("レート制限を超過しました。");
+		}
+
 		log.info("各種IDで検索を開始します。");
 		User user = userRepository.findByIdAndIsDeletedFalse(userId)
 				.orElseThrow(() -> new ResourceNotFoundException("ユーザーID " + userId + " が見つかりません。"));
@@ -126,5 +138,31 @@ public class AiService {
 		return questionList.stream()
 				.map(aiMapper::toResponse)
 				.toList();
+	}
+
+	//------------------------------------------------------------------------------------------------------------------
+
+
+	/**
+	 * ユーザーIDに紐づくバケットの検索をします。
+	 * 存在しない場合は新規作成します。
+	 * @param userId ユーザーID
+	 * @return バケットオブジェクト
+	 */
+	private Bucket getBucketForUser(Integer userId) {
+		return buckets.computeIfAbsent(userId, k -> createNewBucket());
+	}
+
+	/**
+	 * レート制限バケットを新規作成します。
+	 * １分間に5回の受付を許可します。
+	 * 1日に30回の受付を許可します。
+	 * @return 作成したバケット
+	 */
+	private Bucket createNewBucket() {
+		return Bucket.builder()
+				.addLimit(limit -> limit.capacity(5).refillGreedy(5, Duration.ofMinutes(1)))
+				.addLimit(limit -> limit.capacity(30).refillGreedy(5, Duration.ofDays(1)))
+				.build();
 	}
 }
