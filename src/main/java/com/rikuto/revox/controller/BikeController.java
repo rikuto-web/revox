@@ -8,6 +8,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -42,6 +43,7 @@ public class BikeController {
 	 * @return 登録されたバイク情報とHTTPステータス201 Created
 	 */
 	@PostMapping
+	@PreAuthorize("hasRole('USER')")
 	public ResponseEntity<BikeResponse> registerBike(@RequestBody @Valid BikeCreateRequest request,
 	                                                 @PathVariable @Positive Integer userId) {
 		BikeResponse registerBike = bikeService.registerBike(request, userId);
@@ -60,6 +62,7 @@ public class BikeController {
 	 * @return ユーザーが保有する全てのバイク情報とHTTPステータス200 OK
 	 */
 	@GetMapping
+	@PreAuthorize("hasAnyRole('GUEST', 'USER')")
 	public ResponseEntity<List<BikeResponse>> getBikeListByUserId(@PathVariable @Positive Integer userId) {
 		List<BikeResponse> bikeResponseList = bikeService.findBikeByUserId(userId);
 
@@ -75,6 +78,7 @@ public class BikeController {
 	 * @return 検索されたバイク情報とHTTPステータス200 OK
 	 */
 	@GetMapping("/bike/{bikeId}")
+	@PreAuthorize("hasAnyRole('GUEST', 'USER')")
 	public ResponseEntity<BikeResponse> getBikeByUserIdAndBikeId(@PathVariable("bikeId") @Positive Integer bikeId,
 	                                                             @PathVariable("userId") @Positive Integer userId) {
 		BikeResponse bikeResponse = bikeService.findByIdAndUserId(bikeId, userId);
@@ -94,6 +98,7 @@ public class BikeController {
 	 * @return 更新されたバイク情報とHTTPステータス200 OK
 	 */
 	@PatchMapping("/bike/{bikeId}")
+	@PreAuthorize("hasRole('USER')")
 	public ResponseEntity<BikeResponse> updateBike(@RequestBody @Valid BikeUpdateRequest request,
 	                                               @PathVariable("bikeId") @Positive Integer bikeId,
 	                                               @PathVariable("userId") @Positive Integer userId) {
@@ -114,6 +119,7 @@ public class BikeController {
 	 * @return HTTPステータス204 No Content
 	 */
 	@PatchMapping("/bike/{bikeId}/softDelete")
+	@PreAuthorize("hasRole('USER')")
 	public ResponseEntity<Void> softDeleteBike(@PathVariable("bikeId") @Positive Integer bikeId,
 	                                           @PathVariable("userId") @Positive Integer userId) {
 		bikeService.softDeleteBike(bikeId, userId);
