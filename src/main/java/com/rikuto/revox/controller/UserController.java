@@ -6,6 +6,7 @@ import com.rikuto.revox.service.UserService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -37,6 +38,7 @@ public class UserController {
 	 * @return 更新されたユーザー情報とHTTPステータス200 OK
 	 */
 	@PatchMapping("/{userId}")
+	@PreAuthorize("hasRole('USER')")
 	public ResponseEntity<UserResponse> updateUserNickname(@RequestBody @Valid UserUpdateRequest request,
 	                                                       @PathVariable @Positive Integer userId) {
 		UserResponse response = userService.updateUser(request, userId);
@@ -52,6 +54,7 @@ public class UserController {
 	 * @return HTTPステータス204 No Content
 	 */
 	@PatchMapping("/{userId}/softDelete")
+	@PreAuthorize("hasRole('USER')")
 	public ResponseEntity<Void> softDeleteUser(@PathVariable @Positive Integer userId) {
 		userService.softDeleteUser(userId);
 

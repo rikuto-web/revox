@@ -8,6 +8,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -42,6 +43,7 @@ public class MaintenanceTaskController {
 	 * @return 登録済みの整備タスク情報とHTTPステータス200 OK
 	 */
 	@PostMapping
+	@PreAuthorize("hasRole('USER')")
 	public ResponseEntity<MaintenanceTaskResponse> registerMaintenanceTask(@RequestBody @Valid MaintenanceTaskRequest request) {
 		MaintenanceTaskResponse registerMaintenanceTask = maintenanceTaskService.registerMaintenanceTask(request);
 
@@ -60,6 +62,7 @@ public class MaintenanceTaskController {
 	 * @return ユーザーIDに紐づく全ての整備タスクとHTTPステータス200 OK
 	 */
 	@GetMapping("/user/{userId}")
+	@PreAuthorize("hasAnyRole('GUEST', 'USER')")
 	public ResponseEntity<List<MaintenanceTaskResponse>> getLatestMaintenanceTasksByUserId(@PathVariable @Positive Integer userId) {
 		List<MaintenanceTaskResponse> responseListByUserId = maintenanceTaskService.findLatestMaintenanceTasksByUserId(userId);
 
@@ -74,6 +77,7 @@ public class MaintenanceTaskController {
 	 * @return バイクIDに紐づいた整備タスクリストとHTTPステータス200 OK
 	 */
 	@GetMapping("/bike/{bikeId}")
+	@PreAuthorize("hasAnyRole('GUEST', 'USER')")
 	public ResponseEntity<List<MaintenanceTaskResponse>> getMaintenanceTaskByBikeID(@PathVariable @Positive Integer bikeId) {
 		List<MaintenanceTaskResponse> responseListByBikeId = maintenanceTaskService.findByBikeId(bikeId);
 
@@ -89,6 +93,7 @@ public class MaintenanceTaskController {
 	 * @return バイクIDとカテゴリーIDで絞り込んだ整備タスクリストとHTTPステータス200 OK
 	 */
 	@GetMapping("/bike/{bikeId}/category/{categoryId}")
+	@PreAuthorize("hasAnyRole('GUEST', 'USER')")
 	public ResponseEntity<List<MaintenanceTaskResponse>> getMaintenanceTaskByBikeIdAndCategoryId(@PathVariable("bikeId") @Positive Integer bikeId,
 	                                                                                             @PathVariable("categoryId") @Positive Integer categoryId) {
 		List<MaintenanceTaskResponse> responseList = maintenanceTaskService.findByBikeIdAndCategoryId(bikeId, categoryId);
@@ -108,6 +113,7 @@ public class MaintenanceTaskController {
 	 * @return 更新後の整備タスク情報とHTTPステータス200 OK
 	 */
 	@PatchMapping("/{maintenanceTaskId}")
+	@PreAuthorize("hasRole('USER')")
 	public ResponseEntity<MaintenanceTaskResponse> updateMaintenanceTask(@PathVariable @Positive Integer maintenanceTaskId,
 	                                                                     @RequestBody @Valid MaintenanceTaskUpdateRequest request) {
 		MaintenanceTaskResponse updateTask = maintenanceTaskService.updateMaintenanceTask(maintenanceTaskId, request);
@@ -126,6 +132,7 @@ public class MaintenanceTaskController {
 	 * @return Httpステータス　204 No Content
 	 */
 	@PatchMapping("/{maintenanceTaskId}/softDelete")
+	@PreAuthorize("hasRole('USER')")
 	public ResponseEntity<Void> softDeleteMaintenanceTask(@PathVariable @Positive Integer maintenanceTaskId) {
 		maintenanceTaskService.softDeleteMaintenanceTask(maintenanceTaskId);
 

@@ -32,7 +32,7 @@ spring:
 
 mvc:
   cors:
-    allowed-origins: "http://localhost:3000"
+    allowed-origins: "http://localhost:3000, https://rikuto-web.github.io"
     allowed-methods: "GET,POST,PUT,DELETE,OPTIONS"
     allowed-headers: "*"
 
