@@ -69,7 +69,7 @@ class AuthServiceTest {
 				.hasMessage("Google IDトークンの検証に失敗しました。");
 
 		verify(userService, never()).findOrCreateUser(any(), any(), any());
-		verify(jwtTokenProvider, never()).generateToken(any());
+		verify(jwtTokenProvider, never()).generateToken(any(),any());
 		verify(userResponseMapper, never()).toResponse(any());
 	}
 }

@@ -8,22 +8,18 @@ import com.rikuto.revox.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
@@ -37,18 +33,21 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 				UserDetailsServiceAutoConfiguration.class
 		}
 )
-@Import(UserControllerTest.UserServiceTestConfig.class)
 class UserControllerTest {
 
 	private final Integer testUserId = 1;
 	private final Integer notFoundUserId = 999;
 	private final String updatedNickname = "更新後ニックネーム";
+
 	@Autowired
 	private MockMvc mockMvc;
+
 	@Autowired
 	private ObjectMapper objectMapper;
-	@Autowired
+
+	@MockitoBean
 	private UserService userService;
+
 	private UserUpdateRequest commonUserUpdateRequest;
 	private UserResponse commonUserResponse;
 
@@ -63,19 +62,6 @@ class UserControllerTest {
 				.nickname(updatedNickname)
 				.build();
 
-		reset(userService);
-	}
-
-	/**
-	 * UserServiceのモックBeanを定義するテスト用の設定クラス。
-	 * このクラスを`@Import`することで、テストコンテキストにモックが提供されます。
-	 */
-	@TestConfiguration
-	static class UserServiceTestConfig {
-		@Bean
-		public UserService userService() {
-			return Mockito.mock(UserService.class);
-		}
 	}
 
 	@Nested
