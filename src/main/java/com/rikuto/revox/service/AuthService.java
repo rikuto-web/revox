@@ -61,7 +61,7 @@ public class AuthService {
 		);
 		log.warn("正常に処理されました。");
 
-		String accessToken = jwtTokenProvider.generateToken(user.getUniqueUserId());
+		String accessToken = jwtTokenProvider.generateToken(user.getUniqueUserId(), user.getRoles());
 		log.info("JWTアクセストークンが正常に生成されました。");
 
 		return loginResponseMapper.toLoginResponse(user, accessToken);

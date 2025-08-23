@@ -1,0 +1,47 @@
+services:
+  # MySQL データベース
+  db:
+    image: mysql:8.0
+    restart: always
+    env_file:
+      - ./secret/prod.env
+    command: >
+      --default-authentication-plugin=mysql_native_password
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_unicode_ci
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-uroot", "-p${MYSQL_ROOT_PASSWORD}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - revox_prod_revox_db_data:/var/lib/mysql
+    networks:
+      - revox-network
+
+  # Spring Boot バックエンド
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    env_file:
+      - ./secret/prod.env
+    volumes:
+      - ./secret/prod-vertex-sa.json:/secret/prod-vertex-sa.json:ro
+    environment:
+      GOOGLE_APPLICATION_CREDENTIALS: /secret/prod-vertex-sa.json
+    depends_on:
+      db:
+        condition: service_healthy
+    command: java -jar /app/app.jar
+    networks:
+      - revox-network
+
+volumes:
+  revox_prod_revox_db_data:
+    driver: local
+
+networks:
+  revox-network:
+    driver: bridge

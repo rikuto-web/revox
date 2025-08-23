@@ -9,14 +9,11 @@ import com.rikuto.revox.service.MaintenanceTaskService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDateTime;
@@ -27,7 +24,6 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -41,18 +37,21 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 		controllers = MaintenanceTaskController.class,
 		excludeAutoConfiguration = SecurityAutoConfiguration.class
 )
-@Import(MaintenanceTaskControllerTest.MaintenanceTaskServiceTestConfig.class)
 class MaintenanceTaskControllerTest {
 
 	private final Integer testBikeId = 101;
 	private final Integer testCategoryId = 1;
 	private final Integer testMaintenanceTaskId = 301;
+
 	@Autowired
 	private MockMvc mockMvc;
+
 	@Autowired
 	private ObjectMapper objectMapper;
-	@Autowired
+
+	@MockitoBean
 	private MaintenanceTaskService maintenanceTaskService;
+
 	private MaintenanceTaskRequest commonMaintenanceTaskRequest;
 	private MaintenanceTaskUpdateRequest commonMaintenanceTaskUpdateRequest;
 	private MaintenanceTaskResponse commonMaintenanceTaskResponse;
@@ -82,15 +81,6 @@ class MaintenanceTaskControllerTest {
 				.build();
 
 		commonMaintenanceTaskResponseList = List.of(commonMaintenanceTaskResponse);
-		reset(maintenanceTaskService);
-	}
-
-	@TestConfiguration
-	static class MaintenanceTaskServiceTestConfig {
-		@Bean
-		public MaintenanceTaskService maintenanceTaskService() {
-			return Mockito.mock(MaintenanceTaskService.class);
-		}
 	}
 
 	@Nested

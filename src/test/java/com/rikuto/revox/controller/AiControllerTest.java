@@ -8,15 +8,12 @@ import com.rikuto.revox.service.AiService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDateTime;
@@ -26,7 +23,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -42,7 +38,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 				UserDetailsServiceAutoConfiguration.class
 		}
 )
-@Import(AiControllerTest.AiQuestionServiceTestConfig.class)
 class AiControllerTest {
 
 	//正常系
@@ -50,12 +45,16 @@ class AiControllerTest {
 	private final Integer testBikeId = 2;
 	private final Integer testCategoryId = 3;
 	private final Integer testAiId = 4;
+
 	@Autowired
 	private MockMvc mockMvc;
+
 	@Autowired
 	private ObjectMapper objectMapper;
-	@Autowired
+
+	@MockitoBean
 	private AiService aiService;
+
 	private AiQuestionCreateRequest commonAiQuestionCreateRequest;
 	private AiQuestionResponse commonAiQuestionResponse;
 
@@ -74,16 +73,6 @@ class AiControllerTest {
 				.answer("エンジンオイルは3,000km～5,000kmまたは6ヶ月ごとに交換することをお勧めします。")
 				.createdAt(LocalDateTime.now())
 				.build();
-
-		reset(aiService);
-	}
-
-	@TestConfiguration
-	static class AiQuestionServiceTestConfig {
-		@Bean
-		public AiService aiQuestionService() {
-			return Mockito.mock(AiService.class);
-		}
 	}
 
 	@Nested

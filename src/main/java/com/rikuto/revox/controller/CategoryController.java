@@ -3,6 +3,7 @@ package com.rikuto.revox.controller;
 import com.rikuto.revox.dto.category.CategoryResponse;
 import com.rikuto.revox.service.CategoryService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -29,6 +30,7 @@ public class CategoryController {
 	 * @return 全てのカテゴリー情報とHTTPステータス200 OK
 	 */
 	@GetMapping
+	@PreAuthorize("hasAnyRole('GUEST', 'USER')")
 	public ResponseEntity<List<CategoryResponse>> getAllCategories() {
 		List<CategoryResponse> categorieList = categoryService.findAllCategories();
 

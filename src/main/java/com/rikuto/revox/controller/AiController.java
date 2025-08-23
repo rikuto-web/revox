@@ -6,6 +6,7 @@ import com.rikuto.revox.service.AiService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -39,6 +40,7 @@ public class AiController {
 	 * @return HTTPステータス200 OK
 	 */
 	@PostMapping("/bike/{bikeId}/category/{categoryId}")
+	@PreAuthorize("hasRole('USER')")
 	public ResponseEntity<AiQuestionResponse> createAiQuestion(@RequestBody @Valid AiQuestionCreateRequest request,
 	                                                           @PathVariable @Positive Integer userId,
 	                                                           @PathVariable @Positive Integer bikeId,
@@ -59,6 +61,7 @@ public class AiController {
 	 * @return AI質問履歴リストとHTTPステータス200 OK
 	 */
 	@GetMapping
+	@PreAuthorize("hasAnyRole('GUEST', 'USER')")
 	public ResponseEntity<List<AiQuestionResponse>> getAiQuestionsByUserId(@PathVariable @Positive Integer userId) {
 		List<AiQuestionResponse> responses = aiService.getAiQuestionByUserId(userId);
 

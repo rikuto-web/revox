@@ -8,15 +8,12 @@ import com.rikuto.revox.service.BikeService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDate;
@@ -27,7 +24,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -44,17 +40,20 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 				UserDetailsServiceAutoConfiguration.class
 		}
 )
-@Import(BikeControllerTest.BikeServiceTestConfig.class)
 class BikeControllerTest {
 
 	private final Integer testUserId = 1;
 	private final Integer testBikeId = 2;
+
 	@Autowired
 	private MockMvc mockMvc;
+
 	@Autowired
 	private ObjectMapper objectMapper;
-	@Autowired
+
+	@MockitoBean
 	private BikeService bikeService;
+
 	private BikeCreateRequest commonBikeCreateRequest;
 	private BikeResponse commonBikeResponse;
 
@@ -84,18 +83,6 @@ class BikeControllerTest {
 				.updatedAt(LocalDateTime.now())
 				.build();
 
-		reset(bikeService);
-	}
-
-	/**
-	 * BikeServiceのモックBeanを定義するテスト用の設定クラス
-	 */
-	@TestConfiguration
-	static class BikeServiceTestConfig {
-		@Bean
-		public BikeService bikeService() {
-			return Mockito.mock(BikeService.class);
-		}
 	}
 
 	@Nested

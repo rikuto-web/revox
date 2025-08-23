@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rikuto.revox.dto.auth.LoginRequest;
 import com.rikuto.revox.dto.auth.LoginResponse;
 import com.rikuto.revox.dto.user.UserResponse;
+import com.rikuto.revox.security.jwt.JwtTokenProvider;
 import com.rikuto.revox.service.AuthService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -12,15 +13,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDateTime;
 
-import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -34,16 +32,22 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 				UserDetailsServiceAutoConfiguration.class
 		}
 )
-@Import(AuthUserControllerTest.AuthUserControllerTestConfig.class)
 class AuthUserControllerTest {
 
 	private final String dummyAccessToken = "dummyAccessToken";
+
 	@Autowired
 	private MockMvc mockMvc;
+
 	@Autowired
 	private ObjectMapper objectMapper;
-	@Autowired
+
+	@MockitoBean
 	private AuthService authService;
+
+	@MockitoBean
+	private JwtTokenProvider jwtTokenProvider;
+
 	private LoginRequest LoginRequest;
 	private LoginResponse loginResponse;
 
@@ -62,8 +66,6 @@ class AuthUserControllerTest {
 						.createdAt(LocalDateTime.now())
 						.build())
 				.build();
-
-		reset(authService);
 	}
 
 	@Test
@@ -92,13 +94,5 @@ class AuthUserControllerTest {
 				.andExpect(status().isBadRequest());
 
 		verify(authService, Mockito.never()).loginWithGoogle(Mockito.anyString());
-	}
-
-	@TestConfiguration
-	static class AuthUserControllerTestConfig {
-		@Bean
-		public AuthService authService() {
-			return Mockito.mock(AuthService.class);
-		}
 	}
 }

@@ -4,19 +4,15 @@ import com.rikuto.revox.dto.category.CategoryResponse;
 import com.rikuto.revox.service.CategoryService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
 
-import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -29,14 +25,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 		controllers = CategoryController.class,
 		excludeAutoConfiguration = SecurityAutoConfiguration.class
 )
-@Import(CategoryControllerTest.CategoryServiceTestConfig.class)
 class CategoryControllerTest {
 
 	private final Integer testCategoryId = 1;
+
 	@Autowired
 	private MockMvc mockMvc;
-	@Autowired
+
+	@MockitoBean
 	private CategoryService categoryService;
+
 	private CategoryResponse commonCategoryResponse;
 
 	@BeforeEach
@@ -46,7 +44,6 @@ class CategoryControllerTest {
 				.name("TestCategory")
 				.build();
 
-		reset(categoryService);
 	}
 
 	@Test
@@ -78,17 +75,5 @@ class CategoryControllerTest {
 				.andExpect(status().isInternalServerError());
 
 		verify(categoryService, times(1)).findAllCategories();
-	}
-
-	/**
-	 * テスト用の設定クラス
-	 * CategoryServiceのモックBeanを定義します。
-	 */
-	@TestConfiguration
-	static class CategoryServiceTestConfig {
-		@Bean
-		public CategoryService categoryService() {
-			return Mockito.mock(CategoryService.class);
-		}
 	}
 }

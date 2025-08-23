@@ -1,5 +1,6 @@
 package com.rikuto.revox.security.jwt;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
@@ -39,13 +40,16 @@ public class JwtTokenProvider {
 	 * @param uniqueUserId ユーザーの一意なID
 	 * @return 生成されたJWT文字列
 	 */
-	public String generateToken(String uniqueUserId) {
+	public String generateToken(String uniqueUserId, String role) {
 		Date now = new Date();
 		Date validity = new Date(now.getTime() + validityInMilliseconds);
 
+		Claims claims = Jwts.claims().setSubject(uniqueUserId);
+		claims.put("role", role);
+
 		log.info("JWTトークンの生成を開始します。");
 		return Jwts.builder()
-				.setSubject(uniqueUserId)
+				.setClaims(claims)
 				.setIssuedAt(now)
 				.setExpiration(validity)
 				.signWith(secretKey, SignatureAlgorithm.HS256)
