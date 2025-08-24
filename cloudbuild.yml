@@ -24,7 +24,7 @@ steps:
       - compute
       - scp
       - ./update-deploy.sh
-      - portfolio-revox:/home/rikutoweb5_gmail_com/update-deploy.sh
+      - portfolio-revox:/tmp/update-deploy.sh
       - --zone=us-west1-a
       - --project=revoxprod
 
@@ -35,8 +35,8 @@ steps:
       - ssh
       - portfolio-revox
       - --zone=us-west1-a
-      - --command=sudo bash /home/rikutoweb5_gmail_com/update-deploy.sh
       - --project=revoxprod
+      - --command="sudo mv /tmp/update-deploy.sh /home/rikutoweb5/revox/update-deploy.sh && sudo chmod +x /home/rikutoweb5/revox/update-deploy.sh && sudo /home/rikutoweb5/revox/update-deploy.sh"
 
 options:
   logging: CLOUD_LOGGING_ONLY
