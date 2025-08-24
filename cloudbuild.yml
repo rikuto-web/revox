@@ -46,7 +46,7 @@ steps:
       - ssh
       - portfolio-revox
       - --zone=us-west1-a
-      - --command="sudo chmod +x /home/rikutoweb5/revox/update-deploy.sh && sudo /home/rikutoweb5/revox/update-deploy.sh"
+      - --command="cd /home/rikutoweb5/revox && git pull && sudo chmod +x update-deploy.sh && sudo ./update-deploy.sh"
       - --project=revoxprod
 
 options:
