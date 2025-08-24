@@ -21,9 +21,7 @@ services:
 
   # Spring Boot バックエンド
   backend:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: us-west1-docker.pkg.dev/revoxprod/revox-repository/backend:latest
     restart: always
     env_file:
       - ./secret/prod.env
@@ -34,7 +32,6 @@ services:
     depends_on:
       db:
         condition: service_healthy
-    command: java -jar /app/app.jar
     networks:
       - revox-network
 
