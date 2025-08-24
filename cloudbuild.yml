@@ -1,42 +1,50 @@
 steps:
-  # JARファイルをビルドする
+  # 0. GradleでJARビルド
   - name: 'gradle'
     entrypoint: 'sh'
     args: ['-c', 'gradle bootJar']
 
-  # Dockerイメージをビルド
+  # 1. Dockerイメージ作成
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['build', '-t', 'us-west1-docker.pkg.dev/revoxprod/revox-repository/backend:$COMMIT_SHA', '.']
+    args:
+      - build
+      - '-t'
+      - 'us-west1-docker.pkg.dev/revoxprod/revox-repository/backend:$COMMIT_SHA'
+      - '.'
 
-  # Artifact Registry にプッシュ
+  # 2. DockerイメージをArtifact Registryにプッシュ
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['push', 'us-west1-docker.pkg.dev/revoxprod/revox-repository/backend:$COMMIT_SHA']
+    args:
+      - push
+      - 'us-west1-docker.pkg.dev/revoxprod/revox-repository/backend:$COMMIT_SHA'
 
-  # 最新タグを付けてプッシュ（最新デプロイ用）
+  # 3. "latest" タグでもプッシュ
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['tag', 'us-west1-docker.pkg.dev/revoxprod/revox-repository/backend:$COMMIT_SHA', 'us-west1-docker.pkg.dev/revoxprod/revox-repository/backend:latest']
+    args:
+      - tag
+      - 'us-west1-docker.pkg.dev/revoxprod/revox-repository/backend:$COMMIT_SHA'
+      - 'us-west1-docker.pkg.dev/revoxprod/revox-repository/backend:latest'
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['push', 'us-west1-docker.pkg.dev/revoxprod/revox-repository/backend:latest']
+    args:
+      - push
+      - 'us-west1-docker.pkg.dev/revoxprod/revox-repository/backend:latest'
 
-  # VMに update-deploy.sh をコピー
+  # 4. VMにスクリプトをコピー
   - name: 'gcr.io/cloud-builders/gcloud'
     args:
       - compute
       - scp
-      - ./update-deploy.sh
-      - portfolio-revox:/tmp/update-deploy.sh
+      - update-deploy.sh
+      - portfolio-revox:/home/rikutoweb5/revox/update-deploy.sh
       - --zone=us-west1-a
       - --project=revoxprod
 
-  # VMでスクリプト実行
+  # 5. VM上で権限付与＆スクリプト実行
   - name: 'gcr.io/cloud-builders/gcloud'
     args:
       - compute
       - ssh
       - portfolio-revox
       - --zone=us-west1-a
+      - --command="sudo chmod +x /home/rikutoweb5/revox/update-deploy.sh && sudo /home/rikutoweb5/revox/update-deploy.sh"
       - --project=revoxprod
-      - --command="sudo mv /tmp/update-deploy.sh /home/rikutoweb5/revox/update-deploy.sh && sudo chmod +x /home/rikutoweb5/revox/update-deploy.sh && sudo /home/rikutoweb5/revox/update-deploy.sh"
-
-options:
-  logging: CLOUD_LOGGING_ONLY
