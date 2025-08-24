@@ -2,6 +2,7 @@ package com.rikuto.revox.controller;
 
 import com.rikuto.revox.dto.category.CategoryResponse;
 import com.rikuto.revox.service.CategoryService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,6 +14,7 @@ import java.util.List;
 /**
  * カテゴリー情報に関するコントローラーです。
  */
+@Tag(name = "カテゴリーに関する管理")
 @RestController
 @RequestMapping("/api/categories")
 public class CategoryController {
