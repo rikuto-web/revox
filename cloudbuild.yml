@@ -36,8 +36,9 @@ steps:
       - ssh
       - portfolio-revox
       - --zone=us-west1-a
-      - --command="sudo /home/rikutoweb5/revox/update-deploy.sh"
       - --project=revoxprod
+      - --tunnel-through-iap
+      - --command=sudo /home/rikutoweb5/revox/update-deploy.sh
 
 options:
   logging: CLOUD_LOGGING_ONLY
