@@ -21,3 +21,6 @@ steps:
       - --zone=us-west1-a
       - --command=./update-deploy.sh
       - --project=revoxprod
+
+options:
+  logging: CLOUD_LOGGING_ONLY
