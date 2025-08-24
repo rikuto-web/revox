@@ -3,6 +3,7 @@ package com.rikuto.revox.controller;
 import com.rikuto.revox.dto.ai.AiQuestionCreateRequest;
 import com.rikuto.revox.dto.ai.AiQuestionResponse;
 import com.rikuto.revox.service.AiService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +20,7 @@ import java.util.List;
 /**
  * AI(Gemini API)に関するコントローラーです。
  */
+@Tag(name = "AIに関する管理")
 @RestController
 @RequestMapping("/api/ai/user/{userId}")
 public class AiController {
