@@ -1,0 +1,23 @@
+steps:
+  # JARファイルをビルドする
+  - name: 'gradle'
+    entrypoint: 'sh'
+    args: ['-c', 'gradle bootJar']
+
+  # ビルドしたJARファイルを含むDockerイメージをビルド
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'us-west1-docker.pkg.dev/revoxprod/revox-repository/backend:$COMMIT_SHA', '.']
+
+  # イメージをArtifact Registryにプッシュ
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'us-west1-docker.pkg.dev/revoxprod/revox-repository/backend:$COMMIT_SHA']
+
+  # VMにSSH接続し、デプロイスクリプトを実行
+  - name: 'gcr.io/cloud-builders/gcloud'
+    args:
+      - compute
+      - ssh
+      - portfolio-revox
+      - --zone=us-west1-a
+      - --command=./update-deploy.sh
+      - --project=revoxprod

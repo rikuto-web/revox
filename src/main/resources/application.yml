@@ -16,7 +16,6 @@ spring:
     password: ${MYSQL_PASSWORD}
 
 gemini:
-  api-key: ${GEMINI_API_KEY}
   model: "gemini-2.5-flash"
   project-id: ${GOOGLE_CLOUD_PROJECT}
   location: ${GOOGLE_CLOUD_LOCATION}
