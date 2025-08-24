@@ -4,22 +4,38 @@ steps:
     entrypoint: 'sh'
     args: ['-c', 'gradle bootJar']
 
-  # ビルドしたJARファイルを含むDockerイメージをビルド
+  # Dockerイメージをビルド
   - name: 'gcr.io/cloud-builders/docker'
     args: ['build', '-t', 'us-west1-docker.pkg.dev/revoxprod/revox-repository/backend:$COMMIT_SHA', '.']
 
-  # イメージをArtifact Registryにプッシュ
+  # Artifact Registry にプッシュ
   - name: 'gcr.io/cloud-builders/docker'
     args: ['push', 'us-west1-docker.pkg.dev/revoxprod/revox-repository/backend:$COMMIT_SHA']
 
-  # VMにSSH接続し、デプロイスクリプトを実行
+  # 最新タグを付けてプッシュ（最新デプロイ用）
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['tag', 'us-west1-docker.pkg.dev/revoxprod/revox-repository/backend:$COMMIT_SHA', 'us-west1-docker.pkg.dev/revoxprod/revox-repository/backend:latest']
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'us-west1-docker.pkg.dev/revoxprod/revox-repository/backend:latest']
+
+  # VMに update-deploy.sh をコピー
+  - name: 'gcr.io/cloud-builders/gcloud'
+    args:
+      - compute
+      - scp
+      - ./update-deploy.sh
+      - portfolio-revox:/home/rikutoweb5_gmail_com/update-deploy.sh
+      - --zone=us-west1-a
+      - --project=revoxprod
+
+  # VMでスクリプト実行
   - name: 'gcr.io/cloud-builders/gcloud'
     args:
       - compute
       - ssh
       - portfolio-revox
       - --zone=us-west1-a
-      - --command=./update-deploy.sh
+      - --command=sudo bash /home/rikutoweb5_gmail_com/update-deploy.sh
       - --project=revoxprod
 
 options:
