@@ -24,9 +24,9 @@ services:
     image: us-west1-docker.pkg.dev/revoxprod/revox-repository/backend:latest
     restart: always
     env_file:
-      - ./secret/prod.env
+      - /home/rikutoweb5_gmail_com/revox-deploy/secret/prod.env
     volumes:
-      - ./secret/prod-vertex-sa.json:/secret/prod-vertex-sa.json:ro
+      - /home/rikutoweb5_gmail_com/revox-deploy/secret/prod-vertex-sa.json:/secret/prod-vertex-sa.json:ro
     environment:
       GOOGLE_APPLICATION_CREDENTIALS: /secret/prod-vertex-sa.json
     depends_on:
