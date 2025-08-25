@@ -3,6 +3,7 @@ package com.rikuto.revox.domain.maintenancetask;
 import com.rikuto.revox.domain.Category;
 import com.rikuto.revox.domain.bike.Bike;
 import com.rikuto.revox.dto.maintenancetask.MaintenanceTaskUpdateRequest;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -24,6 +25,7 @@ import java.time.LocalDateTime;
  * 整備タスク情報を表すドメインです。
  * データベースのmaintenance_tasksテーブルにマッピングされています。
  */
+@Schema(description = "整備タスク情報を表すドメイン")
 @Entity
 @Table(name = "maintenance_tasks")
 @Getter
