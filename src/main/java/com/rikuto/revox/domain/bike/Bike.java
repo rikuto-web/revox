@@ -2,6 +2,7 @@ package com.rikuto.revox.domain.bike;
 
 import com.rikuto.revox.domain.maintenancetask.MaintenanceTask;
 import com.rikuto.revox.domain.user.User;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -28,6 +29,7 @@ import java.util.List;
  * バイク情報を表すドメインです。
  * データベースのbikesテーブルにマッピングされています。
  */
+@Schema(description = "バイク情報を表すドメイン")
 @Entity
 @Table(name = "bikes")
 @Getter
