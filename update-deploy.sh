@@ -7,10 +7,11 @@ gcloud secrets versions access latest --secret="revox_prod_env" --project=revoxp
 # Vertex AI 用 JSON
 gcloud secrets versions access latest --secret="revox_prod_vertex_sa_json" --project=revoxprod > $HOME/revox/secret/prod-vertexAI-sa.json
 
-# Google credential JSON
-gcloud secrets versions access latest --secret="revox_google_credentials_prod_json" --project=revoxprod > $HOME/revox/secret/google-credential.prod.json
+# Google credential JSON（compute-sa-key.json を使用）
+gcloud secrets versions access latest --secret="compute-sa-key-json" --project=revoxprod > $HOME/revox/secret/compute-sa-key.json
 
 # Artifact Registry 認証
+gcloud auth activate-service-account --key-file=$HOME/revox/secret/compute-sa-key.json
 gcloud auth configure-docker us-west1-docker.pkg.dev --quiet
 
 # revoxディレクトリが存在しない場合に作成
