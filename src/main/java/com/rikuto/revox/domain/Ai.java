@@ -2,6 +2,7 @@ package com.rikuto.revox.domain;
 
 import com.rikuto.revox.domain.bike.Bike;
 import com.rikuto.revox.domain.user.User;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -23,6 +24,7 @@ import java.time.LocalDateTime;
  * AIへの質問および回答情報を表すドメインです。
  * データベースのai_questionsテーブルにマッピングされています。
  */
+@Schema(description = "AIへの質問および回答情報を表すドメイン")
 @Entity
 @Table(name = "ai_questions")
 @Getter
