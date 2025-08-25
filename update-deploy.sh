@@ -21,7 +21,7 @@ mkdir -p $HOME/revox
 sudo docker pull us-west1-docker.pkg.dev/revoxprod/revox-repository/backend:latest
 
 # 古いコンテナを停止して削除
-sudo docker-compose -f $HOME/revox/docker-compose-prod.yml down
+sudo docker-compose -f $HOME/revox-deploy/docker-compose-prod.yml down
 
 # 新しいコンテナを起動
-sudo docker-compose -f $HOME/revox/docker-compose-prod.yml up -d
+sudo docker-compose -f $HOME/revox-deploy/docker-compose-prod.yml up -d
