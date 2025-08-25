@@ -18,10 +18,10 @@ gcloud auth configure-docker us-west1-docker.pkg.dev --quiet
 mkdir -p $HOME/revox
 
 # 最新イメージをPull
-sudo docker pull us-west1-docker.pkg.dev/revoxprod/revox-repository/backend:latest
+docker pull us-west1-docker.pkg.dev/revoxprod/revox-repository/backend:latest
 
 # 古いコンテナを停止して削除
-sudo docker-compose -f $HOME/revox-deploy/docker-compose-prod.yml down
+docker-compose -f $HOME/revox-deploy/docker-compose-prod.yml down
 
 # 新しいコンテナを起動
-sudo docker-compose -f $HOME/revox-deploy/docker-compose-prod.yml up -d
+docker-compose -f $HOME/revox-deploy/docker-compose-prod.yml up -d
