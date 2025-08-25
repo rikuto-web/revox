@@ -38,7 +38,7 @@ steps:
       - --zone=us-west1-a
       - --project=revoxprod
       - --tunnel-through-iap
-      - --command=sudo /home/rikutoweb5/revox/update-deploy.sh
+      - "--command=sudo /home/rikutoweb5/revox/update-deploy.sh"
 
 options:
   logging: CLOUD_LOGGING_ONLY
