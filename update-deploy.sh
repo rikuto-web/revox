@@ -2,10 +2,16 @@
 set -e
 
 # Secret Manager から env を取得
+mkdir -p $HOME/revox/secret
+mkdir -p $HOME/revox-deploy/secret
+
+# prod.env
 gcloud secrets versions access latest --secret="revox_prod_env" --project=revoxprod > $HOME/revox/secret/prod.env
+cp $HOME/revox/secret/prod.env $HOME/revox-deploy/secret/prod.env
 
 # Vertex AI 用 JSON
 gcloud secrets versions access latest --secret="revox_prod_vertex_sa_json" --project=revoxprod > $HOME/revox/secret/prod-vertexAI-sa.json
+cp $HOME/revox/secret/prod-vertexAI-sa.json $HOME/revox-deploy/secret/prod-vertex-sa.json
 
 # Google credential JSON（compute-sa-key.json を使用）
 gcloud secrets versions access latest --secret="compute-sa-key-json" --project=revoxprod > $HOME/revox/secret/compute-sa-key.json
