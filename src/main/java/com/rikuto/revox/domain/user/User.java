@@ -1,6 +1,7 @@
 package com.rikuto.revox.domain.user;
 
 import com.rikuto.revox.domain.bike.Bike;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -27,6 +28,7 @@ import java.util.List;
  * ユーザ情報を表すドメインです。
  * データベースのusersテーブルにマッピングされています。
  */
+@Schema(description = "ユーザー情報を表すドメイン")
 @Entity
 @Table(name = "users")
 @Getter
