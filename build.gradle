@@ -33,6 +33,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
     implementation 'org.springframework.security:spring-security-oauth2-jose'
+
     // JWTライブラリ (jjwt)
     implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
     runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
@@ -40,9 +41,9 @@ dependencies {
 
     // --- データベース (Database) ---
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.postgresql:postgresql'
     implementation 'org.flywaydb:flyway-core'
-    implementation 'org.flywaydb:flyway-mysql'
-    runtimeOnly 'com.mysql:mysql-connector-j'
+    implementation 'org.flywaydb:flyway-database-postgresql:11.11.2'
 
     // --- 開発・補助ツール (Development & Tools) ---
     implementation 'org.jetbrains:annotations:24.0.1'
@@ -50,13 +51,13 @@ dependencies {
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
     annotationProcessor 'org.projectlombok:lombok'
+    implementation 'io.swagger.core.v3:swagger-annotations:2.2.36'
 
     // --- テスト (Test) ---
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-    testImplementation 'com.h2database:h2'
 
-    // --- 外部サービス連携 (External Services) ---
+    // Gemini AI SDK
     implementation 'com.google.genai:google-genai:1.12.0'
     implementation 'com.google.api-client:google-api-client:2.2.0'
     implementation 'com.bucket4j:bucket4j_jdk17-core:8.14.0'
@@ -68,8 +69,15 @@ tasks.withType(JavaCompile).configureEach {
 
 tasks.test {
     useJUnitPlatform()
-    jvmArgs += "-javaagent:${classpath.find { it.name.contains("byte-buddy-agent") }.absolutePath}"
-    systemProperty "spring.profiles.active", "test"
+    systemProperty 'spring.profiles.active', 'test'
+    def envFile = file('secret/dev/dev.env')
+    if (envFile.exists()) {
+        def envProperties = new Properties()
+        envFile.withInputStream { envProperties.load(it) }
+        envProperties.each { key, value ->
+            environment key, value
+        }
+    }
 }
 
 springBoot {

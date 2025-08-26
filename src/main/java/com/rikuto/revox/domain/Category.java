@@ -1,6 +1,7 @@
 package com.rikuto.revox.domain;
 
 import com.rikuto.revox.domain.maintenancetask.MaintenanceTask;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -27,6 +28,7 @@ import java.util.List;
  * カテゴリー情報は事前にデータベースに登録されておりユーザーからの変更は受け付けないため、バリデーションはDomainで行います。
  * 管理者がカテゴリー管理するため論理削除は実装しません。
  */
+@Schema(description = "カテゴリー情報を表すドメイン")
 @Entity
 @Table(name = "categories")
 @Getter

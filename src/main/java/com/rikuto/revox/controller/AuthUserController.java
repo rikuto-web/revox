@@ -5,6 +5,7 @@ import com.rikuto.revox.dto.auth.LoginRequest;
 import com.rikuto.revox.dto.auth.LoginResponse;
 import com.rikuto.revox.security.jwt.JwtTokenProvider;
 import com.rikuto.revox.service.AuthService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
  * 外部認証のコントローラーです。
  * Google認証以外も拡張予定です。
  */
+@Tag(name = "外部認証に関する管理")
 @RestController
 @RequestMapping("/api/auth")
 public class AuthUserController {

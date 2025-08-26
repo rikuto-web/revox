@@ -3,6 +3,7 @@ package com.rikuto.revox.controller;
 import com.rikuto.revox.dto.user.UserResponse;
 import com.rikuto.revox.dto.user.UserUpdateRequest;
 import com.rikuto.revox.service.UserService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 /**
  * ユーザー情報に関するコントローラーです。
  */
+@Tag(name = "ユーザー情報に関する管理")
 @RestController
 @RequestMapping("/api/users")
 public class UserController {

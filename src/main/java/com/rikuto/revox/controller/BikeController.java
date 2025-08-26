@@ -4,6 +4,7 @@ import com.rikuto.revox.dto.bike.BikeCreateRequest;
 import com.rikuto.revox.dto.bike.BikeResponse;
 import com.rikuto.revox.dto.bike.BikeUpdateRequest;
 import com.rikuto.revox.service.BikeService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import org.springframework.http.HttpStatus;
@@ -22,6 +23,7 @@ import java.util.List;
 /**
  * バイク情報に関するコントローラーです。
  */
+@Tag(name = "バイク情報に関する管理")
 @RestController
 @RequestMapping("/api/bikes/user/{userId}")
 public class BikeController {

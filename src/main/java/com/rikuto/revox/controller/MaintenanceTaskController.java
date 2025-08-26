@@ -4,6 +4,7 @@ import com.rikuto.revox.dto.maintenancetask.MaintenanceTaskRequest;
 import com.rikuto.revox.dto.maintenancetask.MaintenanceTaskResponse;
 import com.rikuto.revox.dto.maintenancetask.MaintenanceTaskUpdateRequest;
 import com.rikuto.revox.service.MaintenanceTaskService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import org.springframework.http.HttpStatus;
@@ -22,6 +23,7 @@ import java.util.List;
 /**
  * 整備タスクに関するコントローラーです。
  */
+@Tag(name = "整備タスクに関する管理")
 @RestController
 @RequestMapping("/api/maintenance-task")
 public class MaintenanceTaskController {

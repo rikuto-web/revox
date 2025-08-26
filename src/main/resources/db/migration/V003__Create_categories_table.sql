@@ -1,12 +1,15 @@
 CREATE TABLE categories (
-    id INT AUTO_INCREMENT PRIMARY KEY COMMENT 'カテゴリID（主キー）',
-    name VARCHAR(50) NOT NULL COMMENT 'カテゴリ名（エンジン、ブレーキ等）',
-    display_order INT COMMENT '表示順序',
-    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '作成日時',
-    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新日時',
-
-    CONSTRAINT uk_categories_name UNIQUE (name)
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(50) NOT NULL UNIQUE,
+    display_order INT,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE TRIGGER update_categories_updated_at
+BEFORE UPDATE ON categories
+FOR EACH ROW
+EXECUTE FUNCTION set_updated_at_to_now();
 
 INSERT INTO categories (name, display_order) VALUES
     ('エンジン', 1),

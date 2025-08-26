@@ -1,10 +1,11 @@
-# Gradle を使って JAR ファイルをビルド
+# アプリケーションのビルド
 FROM gradle:jdk21-alpine AS builder
 WORKDIR /app
 COPY . .
 RUN gradle bootJar
 
-# アプリケーションを実行
+# アプリケーションの実行
 FROM eclipse-temurin:21-jre-alpine
-COPY --from=builder /app/build/libs/revox-0.0.1-SNAPSHOT.jar app.jar
-ENTRYPOINT ["java", "-jar", "/app.jar"]
+WORKDIR /app
+COPY --from=builder /app/build/libs/*.jar app.jar
+ENTRYPOINT ["java", "-jar", "app.jar"]
