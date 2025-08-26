@@ -1,7 +1,9 @@
-# application.yml
+# 共通
+jwt:
+  secret-key: ${JWT_SECRET_KEY}
 
-# 開発環境プロファイル
 ---
+# 開発環境プロファイル
 spring:
   config:
     activate:
