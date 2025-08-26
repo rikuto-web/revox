@@ -47,6 +47,6 @@ spring:
     show-sql: false
 
   flyway:
-    enabled: true
+    enabled: false
     locations: classpath:db/migration
     schemas: prod
