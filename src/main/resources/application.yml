@@ -11,6 +11,8 @@ spring:
     url: ${DEV_DB_URL}
     username: ${DB_USER}
     password: ${DB_PASSWORD}
+    hikari:
+      schema: dev
 
   jpa:
     hibernate:
@@ -34,6 +36,8 @@ spring:
     url: ${PROD_DB_URL}
     username: ${DB_USER}
     password: ${DB_PASSWORD}
+    hikari:
+      schema: prod
 
   jpa:
     hibernate:
