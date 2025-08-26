@@ -1,13 +1,26 @@
 CREATE TABLE users (
-    id INT AUTO_INCREMENT PRIMARY KEY COMMENT 'ユーザーID（主キー）',
-    nickname VARCHAR(50) NOT NULL COMMENT 'ユーザーのニックネーム',
-    display_email VARCHAR(255) COMMENT '外部認証から取得したメールアドレス（表示用のみ）',
-    unique_user_id VARCHAR(255) NOT NULL UNIQUE COMMENT '外部認証システムから取得した一意なユーザーID',
-    roles VARCHAR(100) NOT NULL DEFAULT 'USER' COMMENT 'ユーザーの権限情報',
-    is_deleted BOOLEAN NOT NULL DEFAULT FALSE COMMENT '論理削除フラグ',
-    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '作成日時',
-    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新日時'
+    id SERIAL PRIMARY KEY,
+    nickname VARCHAR(50) NOT NULL,
+    display_email VARCHAR(255),
+    unique_user_id VARCHAR(255) NOT NULL UNIQUE,
+    roles VARCHAR(100) NOT NULL DEFAULT 'USER',
+    is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE INDEX idx_users_unique_user_id ON users(unique_user_id);
 CREATE INDEX idx_users_is_deleted ON users(is_deleted);
+
+CREATE OR REPLACE FUNCTION set_updated_at_to_now()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.updated_at = NOW();
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER update_users_updated_at
+BEFORE UPDATE ON users
+FOR EACH ROW
+EXECUTE FUNCTION set_updated_at_to_now();

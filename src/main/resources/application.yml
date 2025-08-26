@@ -1,26 +1,44 @@
-# 共通設定
+# application.yml
+
+# 開発環境プロファイル
+---
 spring:
+  config:
+    activate:
+      on-profile: dev
   datasource:
-    url: jdbc:mysql://db:3306/${MYSQL_DATABASE}?serverTimezone=Asia/Tokyo&useSSL=false
-    username: ${MYSQL_USER}
-    password: ${MYSQL_PASSWORD}
-    driver-class-name: com.mysql.cj.jdbc.Driver
+    # 開発環境は dev スキーマを使用
+    url: ${DEV_DB_URL}
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
 
   jpa:
-    database: MYSQL
+    hibernate:
+      ddl-auto: validate
+    show-sql: true
 
   flyway:
     enabled: true
     locations: classpath:db/migration
-    user: ${MYSQL_USER}
-    password: ${MYSQL_PASSWORD}
+    baseline-on-migrate: true
 
-gemini:
-  model: "gemini-2.5-flash"
-  project-id: ${GOOGLE_CLOUD_PROJECT}
-  location: ${GOOGLE_CLOUD_LOCATION}
-  system-instruction: "あなたはバイクの専門家です..."
+---
+# 本番環境プロファイル
+spring:
+  config:
+    activate:
+      on-profile: prod
+  datasource:
+    # 本番環境は prod スキーマを使用
+    url: ${PROD_DB_URL}
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
 
-jwt:
-  secret-key: ${JWT_SECRET_KEY}
-  expiration: ${JWT_EXPIRATION}
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: false
+
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
