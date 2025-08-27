@@ -2,6 +2,9 @@
 jwt:
   secret-key: ${JWT_SECRET_KEY}
 
+server:
+  port: ${PORT:8080}
+
 ---
 
 # 開発環境プロファイル
