@@ -9,10 +9,10 @@ spring:
     activate:
       on-profile: dev
   datasource:
-    # 開発環境は dev スキーマを使用
     url: ${DEV_DB_URL}
     username: ${DB_USER}
     password: ${DB_PASSWORD}
+    driver-class-name: org.postgresql.Driver
     hikari:
       schema: dev
 
@@ -20,6 +20,10 @@ spring:
     hibernate:
       ddl-auto: validate
     show-sql: true
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
 
   flyway:
     enabled: true
@@ -34,10 +38,10 @@ spring:
     activate:
       on-profile: prod
   datasource:
-    # 本番環境は prod スキーマを使用
     url: ${PROD_DB_URL}
     username: ${DB_USER}
     password: ${DB_PASSWORD}
+    driver-class-name: org.postgresql.Driver
     hikari:
       schema: prod
 
@@ -45,6 +49,10 @@ spring:
     hibernate:
       ddl-auto: none
     show-sql: false
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
 
   flyway:
     enabled: false
