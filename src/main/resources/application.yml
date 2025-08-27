@@ -61,3 +61,5 @@ spring:
     enabled: true
     locations: classpath:db/migration
     schemas: prod
+    connect-retries: 10
+    retry-interval: 5s
