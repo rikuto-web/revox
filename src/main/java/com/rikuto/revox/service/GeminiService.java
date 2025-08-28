@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
@@ -28,6 +29,14 @@ public class GeminiService {
 	 * Gemini　AIへの認証およびクライアントの初期化を行います。
 	 */
 	public GeminiService() {
+		try {
+			Path p = Paths.get(System.getenv("GOOGLE_APPLICATION_CREDENTIALS"));
+			log.info("Secret file path: " + p);
+			log.info("Exists: " + Files.exists(p));
+			log.info("Readable: " + Files.isReadable(p));
+		} catch (Exception e) {
+			log.error("Secret file check failed", e);
+		}
 		try {
 			log.info("Gemini　APIへアクセスします。環境変数を確認します。");
 
