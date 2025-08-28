@@ -1,5 +1,6 @@
 package com.rikuto.revox.service;
 
+import com.google.auth.oauth2.GoogleCredentials;
 import com.google.genai.Client;
 import com.google.genai.types.Content;
 import com.google.genai.types.GenerateContentConfig;
@@ -10,6 +11,7 @@ import com.rikuto.revox.dto.ai.AiCreatePrompt;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.io.ByteArrayInputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -30,43 +32,41 @@ public class GeminiService {
 	 */
 	public GeminiService() {
 		try {
-			Path p = Paths.get(System.getenv("GOOGLE_APPLICATION_CREDENTIALS"));
-			log.info("Secret file path: " + p);
-			log.info("Exists: " + Files.exists(p));
-			log.info("Readable: " + Files.isReadable(p));
-		} catch (Exception e) {
-			log.error("Secret file check failed", e);
-		}
-		try {
-			log.info("Gemini　APIへアクセスします。環境変数を確認します。");
+			log.info("Gemini API へアクセスします。認証ファイルを読み込みます。");
+
+			String renderPath = System.getenv("GOOGLE_APPLICATION_CREDENTIALS");
+			if (renderPath == null) {
+				throw new IllegalArgumentException("RenderでGOOGLE_APPLICATION_CREDENTIALS が設定されていません。");
+			}
+
+			Path jsonFilesPath = Paths.get(renderPath);
+			if (!Files.exists(jsonFilesPath)) {
+				throw new IllegalArgumentException("認証ファイルが存在しません: " + renderPath);
+			}
+
+			GoogleCredentials credentials =
+					GoogleCredentials.fromStream(Files.newInputStream(jsonFilesPath));
+			log.info("GoogleCredentials を正常に作成しました。");
 
 			String projectId = Optional.ofNullable(System.getenv("GOOGLE_CLOUD_PROJECT"))
 					.orElseThrow(() -> new IllegalArgumentException("GOOGLE_CLOUD_PROJECT is not set."));
-			log.info("GOOGLE_CLOUD_PROJECTが正常に読み込まれました。");
-
 			String location = Optional.ofNullable(System.getenv("GOOGLE_CLOUD_LOCATION"))
 					.orElseThrow(() -> new IllegalArgumentException("GOOGLE_CLOUD_LOCATION is not set."));
-			log.info("GOOGLE_CLOUD_LOCATIONが正常に読み込まれました。");
-
-			String credPath = System.getenv("GOOGLE_APPLICATION_CREDENTIALS");
-			if (credPath == null) {
-				log.error("環境変数 GOOGLE_APPLICATION_CREDENTIALS が設定されていません。");
-			} else if (! Files.exists(Paths.get(credPath))) {
-				log.error("認証ファイルが存在しません: " + credPath);
-			} else {
-				log.info("認証ファイルが存在します: " + credPath);
-			}
 
 			this.client = Client.builder()
 					.project(projectId)
 					.location(location)
 					.vertexAI(true)
+					.credentials(credentials)
 					.httpOptions(HttpOptions.builder().apiVersion("v1").timeout(90_000).build())
 					.build();
-		} catch(Exception e) {
+
+		} catch (Exception e) {
 			throw new RuntimeException("クライアントの初期化に失敗しました。", e);
 		}
 	}
+
+
 
 	/**
 	 * AIからの回答を生成するためのビジネスロジックです。
