@@ -10,6 +10,8 @@ import com.rikuto.revox.dto.ai.AiCreatePrompt;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
 
@@ -36,6 +38,15 @@ public class GeminiService {
 			String location = Optional.ofNullable(System.getenv("GOOGLE_CLOUD_LOCATION"))
 					.orElseThrow(() -> new IllegalArgumentException("GOOGLE_CLOUD_LOCATION is not set."));
 			log.info("GOOGLE_CLOUD_LOCATIONが正常に読み込まれました。");
+
+			String credPath = System.getenv("GOOGLE_APPLICATION_CREDENTIALS");
+			if (credPath == null) {
+				log.error("環境変数 GOOGLE_APPLICATION_CREDENTIALS が設定されていません。");
+			} else if (! Files.exists(Paths.get(credPath))) {
+				log.error("認証ファイルが存在しません: " + credPath);
+			} else {
+				log.info("認証ファイルが存在します: " + credPath);
+			}
 
 			this.client = Client.builder()
 					.project(projectId)
