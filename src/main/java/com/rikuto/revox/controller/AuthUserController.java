@@ -8,6 +8,7 @@ import com.rikuto.revox.service.AuthService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -52,5 +53,14 @@ public class AuthUserController {
 		String token = jwtTokenProvider.generateToken(guestId, guestRole);
 
 		return ResponseEntity.ok(AuthResponse.builder().token(token).build());
+	}
+
+	/**
+	 * コールドスタート防止のためのウォームアップエンドポイント
+	 * @return Httpステータス200　OK
+	 */
+	@GetMapping("/ping")
+	public ResponseEntity<String> ping() {
+		return ResponseEntity.ok("OK");
 	}
 }

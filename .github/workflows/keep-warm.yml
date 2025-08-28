@@ -1,0 +1,14 @@
+name: Keep Render Warm
+
+on:
+  schedule:
+    - cron: "*/10 * * * *"  # 10分ごとに実行
+  workflow_dispatch:        # 手動実行も可能
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Call warmup endpoint
+        run: |
+          curl -s https://revox-portfolio.onrender.com/api/ping
