@@ -11,10 +11,7 @@ import com.rikuto.revox.dto.ai.AiCreatePrompt;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.io.ByteArrayInputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.io.FileInputStream;
 import java.util.List;
 import java.util.Optional;
 
@@ -32,34 +29,30 @@ public class GeminiService {
 	 */
 	public GeminiService() {
 		try {
-			log.info("Gemini API へアクセスします。認証ファイルを読み込みます。");
-
-			String renderPath = System.getenv("GOOGLE_APPLICATION_CREDENTIALS");
-			if (renderPath == null) {
-				throw new IllegalArgumentException("RenderでGOOGLE_APPLICATION_CREDENTIALS が設定されていません。");
-			}
-
-			Path jsonFilesPath = Paths.get(renderPath);
-			if (!Files.exists(jsonFilesPath)) {
-				throw new IllegalArgumentException("認証ファイルが存在しません: " + renderPath);
-			}
-
-			GoogleCredentials credentials =
-					GoogleCredentials.fromStream(Files.newInputStream(jsonFilesPath));
-			log.info("GoogleCredentials を正常に作成しました。");
+			log.info("Gemini API へアクセスします。Render が認識する環境変数を使用します。");
 
 			String projectId = Optional.ofNullable(System.getenv("GOOGLE_CLOUD_PROJECT"))
-					.orElseThrow(() -> new IllegalArgumentException("GOOGLE_CLOUD_PROJECT is not set."));
+					.orElseThrow(() -> new IllegalArgumentException("GOOGLE_CLOUD_PROJECT が見つかりません。"));
 			String location = Optional.ofNullable(System.getenv("GOOGLE_CLOUD_LOCATION"))
-					.orElseThrow(() -> new IllegalArgumentException("GOOGLE_CLOUD_LOCATION is not set."));
+					.orElseThrow(() -> new IllegalArgumentException("GOOGLE_CLOUD_LOCATION が見つかりません。"));
+			String jsonPath = Optional.ofNullable(System.getenv("GOOGLE_APPLICATION_CREDENTIALS"))
+					.orElseThrow(() -> new IllegalArgumentException("GOOGLE_APPLICATION_CREDENTIALS が見つかりません。"));
+
+			GoogleCredentials creds = GoogleCredentials
+					.fromStream(new FileInputStream(jsonPath))
+					.createScoped(List.of(
+							"https://www.googleapis.com/auth/cloud-platform"
+					));
 
 			this.client = Client.builder()
 					.project(projectId)
 					.location(location)
 					.vertexAI(true)
-					.credentials(credentials)
+					.credentials(creds)
 					.httpOptions(HttpOptions.builder().apiVersion("v1").timeout(90_000).build())
 					.build();
+
+			log.info("Gemini Client を初期化しました。");
 
 		} catch (Exception e) {
 			throw new RuntimeException("クライアントの初期化に失敗しました。", e);
