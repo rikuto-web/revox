@@ -50,6 +50,7 @@ Google認証、ゲストログインがあります。
 | データベース | Supabase |
 
 ## APIエンドポイント一覧
+[API仕様書はこちら](https://rikuto-web.github.io/revox/)
 ### 外部認証に関する管理
 
 | HTTPメソッド | エンドポイント | 機能名 |
@@ -108,8 +109,6 @@ Google認証、ゲストログインがあります。
 | HTTPメソッド | エンドポイント | 機能名 |
 |--------------|----------------|--------|
 | GET | /api/categories | 全カテゴリー情報を取得する |
-
-[API仕様書はこちら](https://rikuto-web.github.io/revox/)
 
 ---
 ER図
