@@ -74,6 +74,20 @@ Google認証、ゲストログインがあります。
 
 ---
 
+### バイク情報に関する管理
+
+| HTTPメソッド | エンドポイント | 機能名 |
+|--------------|----------------|--------|
+| GET   | /api/bikes/user/{userId}                      | ユーザーのバイク情報リストを取得する |
+| POST  | /api/bikes/user/{userId}                      | バイク情報を新規登録する |
+| GET   | /api/bikes/user/{userId}/bike/{bikeId}        | 特定のバイク情報を取得する |
+| PATCH | /api/bikes/user/{userId}/bike/{bikeId}        | バイク情報を更新する |
+| PATCH | /api/bikes/user/{userId}/bike/{bikeId}/softDelete | バイク情報を論理削除する |
+
+![ezgif com-video-to-gif-converter (1)](https://github.com/user-attachments/assets/acbae37c-102c-4020-8383-3678904d4219)
+
+---
+
 ### 整備タスクに関する管理
 
 | HTTPメソッド | エンドポイント | 機能名 |
@@ -86,20 +100,6 @@ Google認証、ゲストログインがあります。
 | GET   | /api/maintenance-task/bike/{bikeId}/category/{categoryId} | バイクとカテゴリーで整備タスクを取得する |
 
 ![ezgif com-video-to-gif-converter](https://github.com/user-attachments/assets/3d73e32c-a659-4c21-9719-c58c8bc9b0f0)
-
----
-
-### バイク情報に関する管理
-
-| HTTPメソッド | エンドポイント | 機能名 |
-|--------------|----------------|--------|
-| GET   | /api/bikes/user/{userId}                      | ユーザーのバイク情報リストを取得する |
-| POST  | /api/bikes/user/{userId}                      | バイク情報を新規登録する |
-| GET   | /api/bikes/user/{userId}/bike/{bikeId}        | 特定のバイク情報を取得する |
-| PATCH | /api/bikes/user/{userId}/bike/{bikeId}        | バイク情報を更新する |
-| PATCH | /api/bikes/user/{userId}/bike/{bikeId}/softDelete | バイク情報を論理削除する |
-
-![ezgif com-video-to-gif-converter (1)](https://github.com/user-attachments/assets/acbae37c-102c-4020-8383-3678904d4219)
 
 ---
 
@@ -243,12 +243,12 @@ AIプロンプトの最適化・回答生成速度の改善
 
 長期目標
 可読・堅牢性のある安全なコードにリファクタリング
-SpringSecrityの理解
+Spring Securityの理解
 パフォーマンスの改善
 テストカバレッジの改善
 
 ## 製作期間
-2025.7月 ~ 2025年.8月
+2025年7月～8月
 制作時間　220時間
 
 ## リンク
