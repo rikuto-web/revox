@@ -1,7 +1,6 @@
-package com.rikuto.revox.domain.bike;
+package com.rikuto.revox.domain;
 
-import com.rikuto.revox.domain.maintenancetask.MaintenanceTask;
-import com.rikuto.revox.domain.user.User;
+import com.rikuto.revox.dto.bike.BikeUpdateRequest;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -29,7 +28,7 @@ import java.util.List;
  * バイク情報を表すドメインです。
  * データベースのbikesテーブルにマッピングされています。
  */
-@Schema(description = "バイク情報を表すドメイン")
+@Schema(description = "ユーザーが所有するバイクの情報を表すドメインです。")
 @Entity
 @Table(name = "bikes")
 @Getter
@@ -43,6 +42,7 @@ public class Bike {
 	 */
 	@ManyToOne(optional = false, fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id", nullable = false)
+	@Schema(description = "バイクを所有するユーザー情報。")
 	private User user;
 
 	/**
@@ -50,6 +50,7 @@ public class Bike {
 	 */
 	@OneToMany(mappedBy = "bike", cascade = CascadeType.ALL, orphanRemoval = true)
 	@Builder.Default
+	@Schema(description = "このバイクに紐づく整備タスクのリスト。")
 	private List<MaintenanceTask> maintenanceTasks = new ArrayList<>();
 
 	/**
@@ -58,6 +59,7 @@ public class Bike {
 	 */
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Schema(description = "バイクの一意なID。データベースで自動生成されます。")
 	private int id;
 
 	/**
@@ -66,6 +68,7 @@ public class Bike {
 	 * Nullは許容しません。
 	 */
 	@Column(name = "manufacturer", length = 50, nullable = false)
+	@Schema(description = "バイクのメーカー名。必須項目です。")
 	private String manufacturer;
 
 	/**
@@ -74,6 +77,7 @@ public class Bike {
 	 * Nullは許容しません。
 	 */
 	@Column(name = "model_name", length = 100, nullable = false)
+	@Schema(description = "バイクの車両名。必須項目です。")
 	private String modelName;
 
 	/**
@@ -81,6 +85,7 @@ public class Bike {
 	 * 分からないユーザーもいるためnullは許容します。
 	 */
 	@Column(name = "model_code", length = 20)
+	@Schema(description = "バイクの型式。未入力も可能です。")
 	private String modelCode;
 
 	/**
@@ -88,6 +93,7 @@ public class Bike {
 	 * 分からないユーザーもいるためnullは許容します。
 	 */
 	@Column(name = "model_year")
+	@Schema(description = "バイクの年式。未入力も可能です。")
 	private Integer modelYear;
 
 	/**
@@ -96,6 +102,7 @@ public class Bike {
 	 * 未入力でも許容するためnullを許容します。
 	 */
 	@Column(name = "current_mileage")
+	@Schema(description = "バイクの現在の走行距離。メンテナンス時期の指標となります。")
 	private Integer currentMileage;
 
 	/**
@@ -103,6 +110,7 @@ public class Bike {
 	 * 未入力でも許容するためnullを許容します。
 	 */
 	@Column(name = "purchase_date")
+	@Schema(description = "バイクの購入日。")
 	private LocalDate purchaseDate;
 
 	/**
@@ -110,6 +118,7 @@ public class Bike {
 	 * 未入力でも許容するためnullを許容します。
 	 */
 	@Column(name = "image_url", length = 2048)
+	@Schema(description = "バイクの画像URL。")
 	private String imageUrl;
 
 	/**
@@ -118,6 +127,7 @@ public class Bike {
 	 */
 	@Column(name = "is_deleted", nullable = false)
 	@Builder.Default
+	@Schema(description = "論理削除フラグ。trueの場合、レコードは削除済みとして扱われます。")
 	private boolean isDeleted = false;
 
 	/**
@@ -125,6 +135,7 @@ public class Bike {
 	 * 日時はDBで自動設定されるためシステム側では日時の更新は行いません。
 	 */
 	@Column(name = "created_at", nullable = false, insertable = false, updatable = false)
+	@Schema(description = "レコードが作成された日時", accessMode = Schema.AccessMode.READ_ONLY)
 	private LocalDateTime createdAt;
 
 	/**
@@ -132,6 +143,7 @@ public class Bike {
 	 * 日時はDBで自動設定されるためシステム側では日時の更新は行いません。
 	 */
 	@Column(name = "updated_at", nullable = false, insertable = false, updatable = false)
+	@Schema(description = "レコードが更新された最終日時", accessMode = Schema.AccessMode.READ_ONLY)
 	private LocalDateTime updatedAt;
 
 
@@ -141,7 +153,7 @@ public class Bike {
 	 *
 	 * @param data 更新するバイク情報
 	 */
-	public void updateFrom(BikeUpdateData data) {
+	public void updateFrom(BikeUpdateRequest data) {
 		if(data.getManufacturer() != null) {
 			this.manufacturer = data.getManufacturer();
 		}

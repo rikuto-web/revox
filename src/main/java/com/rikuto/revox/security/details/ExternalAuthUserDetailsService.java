@@ -1,6 +1,6 @@
 package com.rikuto.revox.security.details;
 
-import com.rikuto.revox.domain.user.User;
+import com.rikuto.revox.domain.User;
 import com.rikuto.revox.repository.UserRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;

@@ -1,8 +1,7 @@
 package com.rikuto.revox.service;
 
-import com.rikuto.revox.domain.bike.Bike;
-import com.rikuto.revox.domain.bike.BikeUpdateData;
-import com.rikuto.revox.domain.user.User;
+import com.rikuto.revox.domain.Bike;
+import com.rikuto.revox.domain.User;
 import com.rikuto.revox.dto.bike.BikeCreateRequest;
 import com.rikuto.revox.dto.bike.BikeResponse;
 import com.rikuto.revox.dto.bike.BikeUpdateRequest;
@@ -106,7 +105,7 @@ public class BikeService {
 		Bike existingBike = bikeRepository.findByIdAndUserIdAndIsDeletedFalse(bikeId, userId)
 				.orElseThrow(() -> new ResourceNotFoundException("ユーザーID " + userId + " に紐づくバイクID " + bikeId + " が見つかりません。"));
 
-		BikeUpdateData updateBikeData = BikeUpdateData.builder()
+		BikeUpdateRequest updateBikeData = BikeUpdateRequest.builder()
 				.manufacturer(request.getManufacturer())
 				.modelName(request.getModelName())
 				.modelCode(request.getModelCode())
