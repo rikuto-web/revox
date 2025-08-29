@@ -2,8 +2,8 @@ package com.rikuto.revox.repository;
 
 import com.rikuto.revox.domain.Ai;
 import com.rikuto.revox.domain.Category;
-import com.rikuto.revox.domain.bike.Bike;
-import com.rikuto.revox.domain.user.User;
+import com.rikuto.revox.domain.Bike;
+import com.rikuto.revox.domain.User;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;

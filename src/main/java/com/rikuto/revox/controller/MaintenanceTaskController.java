@@ -4,6 +4,12 @@ import com.rikuto.revox.dto.maintenancetask.MaintenanceTaskRequest;
 import com.rikuto.revox.dto.maintenancetask.MaintenanceTaskResponse;
 import com.rikuto.revox.dto.maintenancetask.MaintenanceTaskUpdateRequest;
 import com.rikuto.revox.service.MaintenanceTaskService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
@@ -23,7 +29,7 @@ import java.util.List;
 /**
  * 整備タスクに関するコントローラーです。
  */
-@Tag(name = "整備タスクに関する管理")
+@Tag(name = "整備タスクに関する管理", description = "バイクの整備タスク情報の登録、取得、更新、削除を管理するエンドポイント群です。")
 @RestController
 @RequestMapping("/api/maintenance-task")
 public class MaintenanceTaskController {
@@ -39,16 +45,21 @@ public class MaintenanceTaskController {
 
 	/**
 	 * 整備タスクの新規登録を行います。
-	 * POST /api/maintenance-task
-	 *
-	 * @param request 登録する整備タスク情報
-	 * @return 登録済みの整備タスク情報とHTTPステータス200 OK
 	 */
+	@Operation(summary = "整備タスクを新規登録する", description = "新しい整備タスクをシステムに登録します。")
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "201", description = "整備タスクの登録に成功",
+					content = @Content(mediaType = "application/json",
+							schema = @Schema(implementation = MaintenanceTaskResponse.class))),
+			@ApiResponse(responseCode = "400", description = "不正なリクエスト（バリデーションエラーなど）"),
+			@ApiResponse(responseCode = "403", description = "アクセス権限がない")
+	})
 	@PostMapping
 	@PreAuthorize("hasRole('USER')")
-	public ResponseEntity<MaintenanceTaskResponse> registerMaintenanceTask(@RequestBody @Valid MaintenanceTaskRequest request) {
+	public ResponseEntity<MaintenanceTaskResponse> registerMaintenanceTask(
+			@RequestBody @Valid MaintenanceTaskRequest request
+	) {
 		MaintenanceTaskResponse registerMaintenanceTask = maintenanceTaskService.registerMaintenanceTask(request);
-
 		return new ResponseEntity<>(registerMaintenanceTask, HttpStatus.CREATED);
 	}
 
@@ -58,48 +69,66 @@ public class MaintenanceTaskController {
 	/**
 	 * ユーザーIDに紐づく整備タスクを取得します。
 	 * ダッシュボードでの最新記録表示に利用します。
-	 * GET /api/maintenance-task/user/{userId}
-	 *
-	 * @param userId ユーザーID
-	 * @return ユーザーIDに紐づく全ての整備タスクとHTTPステータス200 OK
 	 */
+	@Operation(summary = "ユーザーの最新整備タスクリストを取得する", description = "指定されたユーザーIDに紐づく最新の整備タスク情報をリスト形式で取得します。ダッシュボードでの最新記録表示に利用されます。")
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "200", description = "整備タスクリストの取得に成功",
+					content = @Content(mediaType = "application/json",
+							schema = @Schema(implementation = MaintenanceTaskResponse.class))),
+			@ApiResponse(responseCode = "400", description = "不正なリクエスト（ユーザーIDが不正など）"),
+			@ApiResponse(responseCode = "403", description = "アクセス権限がない")
+	})
 	@GetMapping("/user/{userId}")
 	@PreAuthorize("hasAnyRole('GUEST', 'USER')")
-	public ResponseEntity<List<MaintenanceTaskResponse>> getLatestMaintenanceTasksByUserId(@PathVariable @Positive Integer userId) {
+	public ResponseEntity<List<MaintenanceTaskResponse>> getLatestMaintenanceTasksByUserId(
+			@Parameter(description = "整備タスクリストを取得したいユーザーの一意の識別子。", required = true)
+			@PathVariable @Positive Integer userId
+	) {
 		List<MaintenanceTaskResponse> responseListByUserId = maintenanceTaskService.findLatestMaintenanceTasksByUserId(userId);
-
 		return ResponseEntity.ok(responseListByUserId);
 	}
 
 	/**
 	 * バイクIDに紐づいた整備タスクを取得します。
-	 * GET /api/maintenance-task/bike/{bikeId}
-	 *
-	 * @param bikeId バイクID
-	 * @return バイクIDに紐づいた整備タスクリストとHTTPステータス200 OK
 	 */
+	@Operation(summary = "特定のバイクの全整備タスクを取得する", description = "指定されたバイクIDに紐づく全ての整備タスクをリスト形式で取得します。")
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "200", description = "整備タスクリストの取得に成功",
+					content = @Content(mediaType = "application/json",
+							schema = @Schema(implementation = MaintenanceTaskResponse.class))),
+			@ApiResponse(responseCode = "400", description = "不正なリクエスト（バイクIDが不正など）"),
+			@ApiResponse(responseCode = "403", description = "アクセス権限がない")
+	})
 	@GetMapping("/bike/{bikeId}")
 	@PreAuthorize("hasAnyRole('GUEST', 'USER')")
-	public ResponseEntity<List<MaintenanceTaskResponse>> getMaintenanceTaskByBikeID(@PathVariable @Positive Integer bikeId) {
+	public ResponseEntity<List<MaintenanceTaskResponse>> getMaintenanceTaskByBikeID(
+			@Parameter(description = "整備タスクを取得したいバイクの一意の識別子。", required = true)
+			@PathVariable @Positive Integer bikeId
+	) {
 		List<MaintenanceTaskResponse> responseListByBikeId = maintenanceTaskService.findByBikeId(bikeId);
-
 		return ResponseEntity.ok(responseListByBikeId);
 	}
 
 	/**
 	 * バイクIDとカテゴリーIDに紐づいた整備タスクを取得します。
-	 * GET /api/maintenance-task/bike/{bikeId}/category/{categoryId}
-	 *
-	 * @param bikeId     バイクID
-	 * @param categoryId カテゴリーID
-	 * @return バイクIDとカテゴリーIDで絞り込んだ整備タスクリストとHTTPステータス200 OK
 	 */
+	@Operation(summary = "バイクとカテゴリーで整備タスクを絞り込んで取得する", description = "指定されたバイクIDとカテゴリーIDで絞り込んだ整備タスクのリストを取得します。")
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "200", description = "整備タスクリストの取得に成功",
+					content = @Content(mediaType = "application/json",
+							schema = @Schema(implementation = MaintenanceTaskResponse.class))),
+			@ApiResponse(responseCode = "400", description = "不正なリクエスト（IDが不正など）"),
+			@ApiResponse(responseCode = "403", description = "アクセス権限がない")
+	})
 	@GetMapping("/bike/{bikeId}/category/{categoryId}")
 	@PreAuthorize("hasAnyRole('GUEST', 'USER')")
-	public ResponseEntity<List<MaintenanceTaskResponse>> getMaintenanceTaskByBikeIdAndCategoryId(@PathVariable("bikeId") @Positive Integer bikeId,
-	                                                                                             @PathVariable("categoryId") @Positive Integer categoryId) {
+	public ResponseEntity<List<MaintenanceTaskResponse>> getMaintenanceTaskByBikeIdAndCategoryId(
+			@Parameter(description = "整備タスクを取得したいバイクの一意の識別子。", required = true)
+			@PathVariable("bikeId") @Positive Integer bikeId,
+			@Parameter(description = "整備タスクを取得したいカテゴリーの一意の識別子。", required = true)
+			@PathVariable("categoryId") @Positive Integer categoryId
+	) {
 		List<MaintenanceTaskResponse> responseList = maintenanceTaskService.findByBikeIdAndCategoryId(bikeId, categoryId);
-
 		return ResponseEntity.ok(responseList);
 	}
 
@@ -108,18 +137,24 @@ public class MaintenanceTaskController {
 
 	/**
 	 * 整備タスクの更新を行います。
-	 * PATCH /api/maintenance-task/{maintenanceTaskId}
-	 *
-	 * @param maintenanceTaskId 整備タスクID
-	 * @param request           更新された整備タスク情報を含むリクエストDTO
-	 * @return 更新後の整備タスク情報とHTTPステータス200 OK
 	 */
+	@Operation(summary = "整備タスクを更新する", description = "既存の整備タスク情報を部分的に更新します。")
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "200", description = "整備タスクの更新に成功",
+					content = @Content(mediaType = "application/json",
+							schema = @Schema(implementation = MaintenanceTaskResponse.class))),
+			@ApiResponse(responseCode = "400", description = "不正なリクエスト（バリデーションエラーなど）"),
+			@ApiResponse(responseCode = "403", description = "アクセス権限がない"),
+			@ApiResponse(responseCode = "404", description = "整備タスクが見つからない")
+	})
 	@PatchMapping("/{maintenanceTaskId}")
 	@PreAuthorize("hasRole('USER')")
-	public ResponseEntity<MaintenanceTaskResponse> updateMaintenanceTask(@PathVariable @Positive Integer maintenanceTaskId,
-	                                                                     @RequestBody @Valid MaintenanceTaskUpdateRequest request) {
+	public ResponseEntity<MaintenanceTaskResponse> updateMaintenanceTask(
+			@Parameter(description = "更新したい整備タスクの一意の識別子。", required = true)
+			@PathVariable @Positive Integer maintenanceTaskId,
+			@RequestBody @Valid MaintenanceTaskUpdateRequest request
+	) {
 		MaintenanceTaskResponse updateTask = maintenanceTaskService.updateMaintenanceTask(maintenanceTaskId, request);
-
 		return ResponseEntity.ok(updateTask);
 	}
 
@@ -128,16 +163,21 @@ public class MaintenanceTaskController {
 
 	/**
 	 * 整備タスクの論理削除を行います。
-	 * PATCH /api/maintenance-task/{maintenanceTaskId}/softDelete
-	 *
-	 * @param maintenanceTaskId 整備タスクID
-	 * @return Httpステータス　204 No Content
 	 */
+	@Operation(summary = "整備タスクを論理削除する", description = "指定された整備タスクを物理的に削除するのではなく、論理的に削除（非表示）にします。")
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "204", description = "整備タスクの論理削除に成功"),
+			@ApiResponse(responseCode = "400", description = "不正なリクエスト（IDが不正など）"),
+			@ApiResponse(responseCode = "403", description = "アクセス権限がない"),
+			@ApiResponse(responseCode = "404", description = "整備タスクが見つからない")
+	})
 	@PatchMapping("/{maintenanceTaskId}/softDelete")
 	@PreAuthorize("hasRole('USER')")
-	public ResponseEntity<Void> softDeleteMaintenanceTask(@PathVariable @Positive Integer maintenanceTaskId) {
+	public ResponseEntity<Void> softDeleteMaintenanceTask(
+			@Parameter(description = "論理削除したい整備タスクの一意の識別子。", required = true)
+			@PathVariable @Positive Integer maintenanceTaskId
+	) {
 		maintenanceTaskService.softDeleteMaintenanceTask(maintenanceTaskId);
-
 		return ResponseEntity.noContent().build();
 	}
 }

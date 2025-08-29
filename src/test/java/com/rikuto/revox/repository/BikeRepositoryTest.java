@@ -1,7 +1,7 @@
 package com.rikuto.revox.repository;
 
-import com.rikuto.revox.domain.bike.Bike;
-import com.rikuto.revox.domain.user.User;
+import com.rikuto.revox.domain.Bike;
+import com.rikuto.revox.domain.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;

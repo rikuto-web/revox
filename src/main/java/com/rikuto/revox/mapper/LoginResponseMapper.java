@@ -1,6 +1,6 @@
 package com.rikuto.revox.mapper;
 
-import com.rikuto.revox.domain.user.User;
+import com.rikuto.revox.domain.User;
 import com.rikuto.revox.dto.auth.LoginResponse;
 import com.rikuto.revox.dto.user.UserResponse;
 import org.springframework.stereotype.Component;

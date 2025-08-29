@@ -1,7 +1,6 @@
 package com.rikuto.revox.service;
 
-import com.rikuto.revox.domain.user.User;
-import com.rikuto.revox.domain.user.UserUpdateDate;
+import com.rikuto.revox.domain.User;
 import com.rikuto.revox.dto.user.UserResponse;
 import com.rikuto.revox.dto.user.UserUpdateRequest;
 import com.rikuto.revox.exception.ResourceNotFoundException;
@@ -98,7 +97,7 @@ public class UserService {
 		User existingUser = userRepository.findByIdAndIsDeletedFalse(userId)
 				.orElseThrow(() -> new ResourceNotFoundException("ユーザーが見つかりません" + userId));
 
-		UserUpdateDate updateUser = UserUpdateDate.builder()
+		UserUpdateRequest updateUser = UserUpdateRequest.builder()
 				.nickname(updateRequest.getNickname())
 				.build();
 

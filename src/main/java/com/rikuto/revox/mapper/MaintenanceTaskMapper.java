@@ -1,8 +1,8 @@
 package com.rikuto.revox.mapper;
 
 import com.rikuto.revox.domain.Category;
-import com.rikuto.revox.domain.bike.Bike;
-import com.rikuto.revox.domain.maintenancetask.MaintenanceTask;
+import com.rikuto.revox.domain.Bike;
+import com.rikuto.revox.domain.MaintenanceTask;
 import com.rikuto.revox.dto.maintenancetask.MaintenanceTaskRequest;
 import com.rikuto.revox.dto.maintenancetask.MaintenanceTaskResponse;
 import org.springframework.stereotype.Component;
