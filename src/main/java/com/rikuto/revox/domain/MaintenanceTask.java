@@ -1,7 +1,5 @@
-package com.rikuto.revox.domain.maintenancetask;
+package com.rikuto.revox.domain;
 
-import com.rikuto.revox.domain.Category;
-import com.rikuto.revox.domain.bike.Bike;
 import com.rikuto.revox.dto.maintenancetask.MaintenanceTaskUpdateRequest;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.Column;
@@ -25,7 +23,7 @@ import java.time.LocalDateTime;
  * 整備タスク情報を表すドメインです。
  * データベースのmaintenance_tasksテーブルにマッピングされています。
  */
-@Schema(description = "整備タスク情報を表すドメイン")
+@Schema(description = "バイクの整備タスク情報を表すドメインです。")
 @Entity
 @Table(name = "maintenance_tasks")
 @Getter
@@ -39,6 +37,7 @@ public class MaintenanceTask {
 	 */
 	@ManyToOne(optional = false, fetch = FetchType.LAZY)
 	@JoinColumn(name = "category_id", nullable = false)
+	@Schema(description = "整備タスクが属するカテゴリー情報。")
 	private Category category;
 
 	/**
@@ -46,6 +45,7 @@ public class MaintenanceTask {
 	 */
 	@ManyToOne(optional = false, fetch = FetchType.LAZY)
 	@JoinColumn(name = "bike_id", nullable = false)
+	@Schema(description = "整備タスクが関連するバイク情報。")
 	private Bike bike;
 
 	/**
@@ -54,6 +54,7 @@ public class MaintenanceTask {
 	 */
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Schema(description = "整備タスクの一意なID。")
 	private int id;
 
 	/**
@@ -62,6 +63,7 @@ public class MaintenanceTask {
 	 * nullおよび空文字は許容しません。
 	 */
 	@Column(length = 100, nullable = false)
+	@Schema(description = "整備タスクのタイトル名。ユーザーが自由に設定でき、必須項目です。", requiredMode = Schema.RequiredMode.REQUIRED)
 	private String name;
 
 	/**
@@ -69,6 +71,7 @@ public class MaintenanceTask {
 	 * AIから出力された結果を元にユーザーが編集を加えたものが保持されます。
 	 */
 	@Column(columnDefinition = "TEXT", nullable = false)
+	@Schema(description = "整備タスクの詳細内容。AIの出力やユーザーの編集内容が保持されます。", requiredMode = Schema.RequiredMode.REQUIRED)
 	private String description;
 
 	/**
@@ -77,6 +80,7 @@ public class MaintenanceTask {
 	 */
 	@Column(name = "is_deleted", nullable = false)
 	@Builder.Default
+	@Schema(description = "論理削除フラグ。trueの場合、レコードは削除済みとして扱われます。")
 	private boolean isDeleted = false;
 
 	/**
@@ -84,6 +88,7 @@ public class MaintenanceTask {
 	 * DBでの自動設定に任せるためシステム側での日時の設定は行いません。
 	 */
 	@Column(name = "created_at", nullable = false, insertable = false, updatable = false)
+	@Schema(description = "レコードが作成された日時", accessMode = Schema.AccessMode.READ_ONLY)
 	private LocalDateTime createdAt;
 
 	/**
@@ -91,6 +96,7 @@ public class MaintenanceTask {
 	 * 日時はDBで自動設定されるためシステム側では日時の更新は行いません。
 	 */
 	@Column(name = "updated_at", nullable = false, insertable = false, updatable = false)
+	@Schema(description = "レコードが更新された最終日時", accessMode = Schema.AccessMode.READ_ONLY)
 	private LocalDateTime updatedAt;
 
 

@@ -1,6 +1,5 @@
 package com.rikuto.revox.domain;
 
-import com.rikuto.revox.domain.maintenancetask.MaintenanceTask;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -28,7 +27,7 @@ import java.util.List;
  * カテゴリー情報は事前にデータベースに登録されておりユーザーからの変更は受け付けないため、バリデーションはDomainで行います。
  * 管理者がカテゴリー管理するため論理削除は実装しません。
  */
-@Schema(description = "カテゴリー情報を表すドメイン")
+@Schema(description = "カテゴリー情報を表すドメイン。事前にデータベースに登録されており、ユーザーからの変更はできません。")
 @Entity
 @Table(name = "categories")
 @Getter
@@ -51,6 +50,7 @@ public class Category {
 	 */
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Schema(description = "カテゴリーの一意なID。")
 	private int id;
 
 	/**
@@ -59,6 +59,7 @@ public class Category {
 	@Column(length = 50, unique = true, nullable = false)
 	@Size(max = 50)
 	@NotBlank
+	@Schema(description = "カテゴリー名。データベースに登録されているカテゴリーから詳細検索を行うための名称です。")
 	private String name;
 
 	/**
@@ -66,6 +67,7 @@ public class Category {
 	 * ユーザー側への表示の際にカテゴリーを適切な並び順で認識させます。
 	 */
 	@Column(name = "display_order")
+	@Schema(description = "カテゴリーの表示順。ユーザーインターフェースで適切な並び順で表示するために使用されます。")
 	private Integer displayOrder;
 
 	/**
@@ -73,6 +75,7 @@ public class Category {
 	 * 日時はDBで自動設定されるためシステム側では日時の更新は行いません。
 	 */
 	@Column(name = "created_at", nullable = false, insertable = false, updatable = false)
+	@Schema(description = "レコードが作成された日時。", accessMode = Schema.AccessMode.READ_ONLY)
 	private LocalDateTime createdAt;
 
 	/**
@@ -80,5 +83,6 @@ public class Category {
 	 * 日時はDBで自動設定されるためシステム側では日時の更新は行いません。
 	 */
 	@Column(name = "updated_at", nullable = false, insertable = false, updatable = false)
+	@Schema(description = "レコードが更新された最終日時。", accessMode = Schema.AccessMode.READ_ONLY)
 	private LocalDateTime updatedAt;
 }

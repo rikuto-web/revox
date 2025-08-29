@@ -1,6 +1,6 @@
 package com.rikuto.revox.security.details;
 
-import com.rikuto.revox.domain.user.User;
+import com.rikuto.revox.domain.User;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;

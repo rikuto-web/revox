@@ -2,7 +2,7 @@ package com.rikuto.revox.service;
 
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
-import com.rikuto.revox.domain.user.User;
+import com.rikuto.revox.domain.User;
 import com.rikuto.revox.dto.auth.GoogleTokenPayload;
 import com.rikuto.revox.dto.auth.LoginResponse;
 import com.rikuto.revox.exception.AuthenticationException;

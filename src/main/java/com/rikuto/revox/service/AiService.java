@@ -2,8 +2,8 @@ package com.rikuto.revox.service;
 
 import com.rikuto.revox.domain.Ai;
 import com.rikuto.revox.domain.Category;
-import com.rikuto.revox.domain.bike.Bike;
-import com.rikuto.revox.domain.user.User;
+import com.rikuto.revox.domain.Bike;
+import com.rikuto.revox.domain.User;
 import com.rikuto.revox.dto.ai.AiCreatePrompt;
 import com.rikuto.revox.dto.ai.AiQuestionCreateRequest;
 import com.rikuto.revox.dto.ai.AiQuestionResponse;
@@ -15,7 +15,6 @@ import com.rikuto.revox.repository.CategoryRepository;
 import com.rikuto.revox.repository.UserRepository;
 import io.github.bucket4j.Bucket;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.query.spi.Limit;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
