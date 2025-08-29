@@ -199,6 +199,11 @@ C4Context
   ### ログイン
   動画
 
+## テスト結果
+<img width="1251" height="564" alt="image" src="https://github.com/user-attachments/assets/55cc3173-f6fb-4dfd-84e8-162cbd47717e" />
+行・ブランチカバレッジが低くテストコードの改善が必要であり今後の課題です。  
+またSpringSecrityや外部APIに関するテストは現状実施できていません。学習を継続し実装していきます。
+
 ## 技術的な挑戦と学び
 ### 1. カリキュラム外の技術導入
 スクールのカリキュラムではMyBatisを使用していましたが、より開発現場で広く利用されているJPAとFlywayを自主的に導入しました。  
@@ -222,7 +227,6 @@ AIと対話しながら開発を進めましたが、回答の信憑性が低い
 
 ## 今後の開発計画
 短期目標
-テストのカバレッジを上げる
 AI回答履歴の物理削除機能の実装
 バイク情報の論理削除済み情報の検索機能（以前所有していたバイクとして）
 
@@ -233,8 +237,9 @@ AIプロンプトの最適化・回答生成速度の改善
 
 長期目標
 可読・堅牢性のある安全なコードにリファクタリング
-SpringSecrityの知識深堀
+SpringSecrityの理解
 パフォーマンスの改善
+テストカバレッジの改善
 
 ## 製作期間
 2025.7月 ~ 2025年.8月
@@ -243,6 +248,6 @@ SpringSecrityの知識深堀
 ## 注意事項
 
 ## リンク
-[ログイン画面](https://rikuto-web.github.io/revox_frontend)  
-[フロントエンドリポジトリ](https://github.com/rikuto-web/revox_frontend)  
-[API仕様書](https://rikuto-web.github.io/revox/)
+デプロイ版：https://rikuto-web.github.io/revox_frontend  
+フロントエンドリポジトリ：https://github.com/rikuto-web/revox_frontend  
+API仕様書：https://rikuto-web.github.io/revox/
