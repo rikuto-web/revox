@@ -111,7 +111,75 @@ Google認証、ゲストログインがあります。
 
 [API仕様書はこちら](https://rikuto-web.github.io/revox/)
 
-## ER図
+---
+ER図
+---
+```mermaid
+erDiagram
+    User ||--o{ Bike : "has"
+    User ||--o{ AiQuestion : "submitted by"
+    Bike ||--o{ MaintenanceTask : "has"
+    Bike ||--o{ AiQuestion : "has"
+    Category ||--o{ MaintenanceTask : "has"
+    Category ||--o{ AiQuestion : "relates to"
+
+    User {
+        int id PK
+        string nickname "NOT NULL"
+        string display_email
+        string unique_user_id "NOT NULL, UNIQUE"
+        string roles "NOT NULL"
+        bool is_deleted "NOT NULL"
+        timestamp created_at "NOT NULL"
+        timestamp updated_at "NOT NULL"
+    }
+
+    Bike {
+        int id PK
+        int user_id FK "NOT NULL"
+        string manufacturer "NOT NULL"
+        string model_name "NOT NULL"
+        string model_code
+        int model_year
+        int current_mileage
+        date purchase_date
+        string image_url
+        bool is_deleted "NOT NULL"
+        timestamp created_at "NOT NULL"
+        timestamp updated_at "NOT NULL"
+    }
+    
+    MaintenanceTask {
+        int id PK
+        int category_id FK "NOT NULL"
+        int bike_id FK "NOT NULL"
+        string name "NOT NULL"
+        text description "NOT NULL"
+        bool is_deleted "NOT NULL"
+        timestamp created_at "NOT NULL"
+        timestamp updated_at "NOT NULL"
+    }
+    
+    Category {
+        int id PK
+        string name "NOT NULL, UNIQUE"
+        int display_order
+        timestamp created_at "NOT NULL"
+        timestamp updated_at "NOT NULL"
+    }
+
+    AiQuestion {
+        int id PK
+        int user_id FK "NOT NULL"
+        int bike_id FK "NOT NULL"
+        int category_id FK "NOT NULL"
+        text question "NOT NULL"
+        text answer "NOT NULL"
+        bool is_deleted "NOT NULL"
+        timestamp created_at "NOT NULL"
+        timestamp updated_at "NOT NULL"
+    }
+```
 
 ## インフラ構成図
 
