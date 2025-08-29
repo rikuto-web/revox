@@ -49,6 +49,66 @@ Google認証、ゲストログインがあります。
 | データベース | Supabase |
 
 ## APIエンドポイント一覧
+### 外部認証に関する管理
+
+| HTTPメソッド | エンドポイント | 機能名 |
+|--------------|----------------|--------|
+| GET  | /api/auth/ping   | サーバーのウォームアップ |
+| POST | /api/auth/guest  | ゲストユーザーとしてログインする |
+| POST | /api/auth/google | Google認証でログインする |
+
+---
+
+### ユーザー情報に関する管理
+
+| HTTPメソッド | エンドポイント | 機能名 |
+|--------------|----------------|--------|
+| PATCH | /api/users/{userId}              | ユーザー情報を更新する |
+| PATCH | /api/users/{userId}/softDelete   | ユーザーを論理削除する |
+
+---
+
+### 整備タスクに関する管理
+
+| HTTPメソッド | エンドポイント | 機能名 |
+|--------------|----------------|--------|
+| POST  | /api/maintenance-task | 整備タスクを新規登録する |
+| PATCH | /api/maintenance-task/{maintenanceTaskId}            | 整備タスクを更新する |
+| PATCH | /api/maintenance-task/{maintenanceTaskId}/softDelete | 整備タスクを論理削除する |
+| GET   | /api/maintenance-task/user/{userId}                  | ユーザーの最新整備タスクリストを取得する |
+| GET   | /api/maintenance-task/bike/{bikeId}                  | 特定のバイクの全整備タスクを取得する |
+| GET   | /api/maintenance-task/bike/{bikeId}/category/{categoryId} | バイクとカテゴリーで整備タスクを取得する |
+
+---
+
+### バイク情報に関する管理
+
+| HTTPメソッド | エンドポイント | 機能名 |
+|--------------|----------------|--------|
+| GET   | /api/bikes/user/{userId}                      | ユーザーのバイク情報リストを取得する |
+| POST  | /api/bikes/user/{userId}                      | バイク情報を新規登録する |
+| GET   | /api/bikes/user/{userId}/bike/{bikeId}        | 特定のバイク情報を取得する |
+| PATCH | /api/bikes/user/{userId}/bike/{bikeId}        | バイク情報を更新する |
+| PATCH | /api/bikes/user/{userId}/bike/{bikeId}/softDelete | バイク情報を論理削除する |
+
+---
+
+### AIに関する管理
+
+| HTTPメソッド | エンドポイント | 機能名 |
+|--------------|----------------|--------|
+| POST | /api/ai/user/{userId}/bike/{bikeId}/category/{categoryId} | AIに質問を送信する |
+| GET  | /api/ai/user/{userId}                                    | AI質問履歴を取得する |
+
+---
+
+### カテゴリーに関する管理
+
+| HTTPメソッド | エンドポイント | 機能名 |
+|--------------|----------------|--------|
+| GET | /api/categories | 全カテゴリー情報を取得する |
+
+[API仕様書はこちら]()
 
 ## ER図
 
