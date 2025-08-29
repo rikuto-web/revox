@@ -18,4 +18,4 @@ spring:
         format_sql: true
 
   flyway:
-    enabled: false
+    enabled: true

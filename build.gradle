@@ -1,8 +1,8 @@
 plugins {
     id 'java'
-    id 'org.springframework.boot' version '3.5.3'
+    id 'org.springframework.boot' version '3.5.5'
     id 'io.spring.dependency-management' version '1.1.7'
-    id 'org.flywaydb.flyway' version '9.22.3'
+    id 'org.flywaydb.flyway' version '11.11.2'
 }
 
 group = 'com.rikuto.revox'
@@ -28,22 +28,19 @@ dependencies {
     // --- Spring Boot Core & Web ---
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.postgresql:postgresql'
 
     // --- 認証・認可 (Security) ---
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
     implementation 'org.springframework.security:spring-security-oauth2-jose'
-
-    // JWTライブラリ (jjwt)
     implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
     runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
     runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
 
-    // --- データベース (Database) ---
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    implementation 'org.postgresql:postgresql'
-    implementation 'org.flywaydb:flyway-core'
-    implementation 'org.flywaydb:flyway-database-postgresql:11.11.2'
+    // --- データベースマイグレーション (Migration) ---
+    testImplementation 'org.flywaydb:flyway-database-postgresql:11.11.2'
 
     // --- 開発・補助ツール (Development & Tools) ---
     implementation 'org.jetbrains:annotations:24.0.1'
@@ -52,11 +49,13 @@ dependencies {
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
     annotationProcessor 'org.projectlombok:lombok'
     implementation 'io.swagger.core.v3:swagger-annotations:2.2.36'
-    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.11'
 
     // --- テスト (Test) ---
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    testImplementation 'org.springframework.boot:spring-boot-testcontainers'
+    testImplementation 'org.testcontainers:junit-jupiter'
+    testImplementation 'org.testcontainers:postgresql'
 
     // Gemini AI SDK
     implementation 'com.google.genai:google-genai:1.12.0'
@@ -70,15 +69,6 @@ tasks.withType(JavaCompile).configureEach {
 
 tasks.test {
     useJUnitPlatform()
-    systemProperty 'spring.profiles.active', 'test'
-    def envFile = file('secret/dev/dev.env')
-    if (envFile.exists()) {
-        def envProperties = new Properties()
-        envFile.withInputStream { envProperties.load(it) }
-        envProperties.each { key, value ->
-            environment key, value
-        }
-    }
 }
 
 springBoot {
