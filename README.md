@@ -108,7 +108,7 @@ Google認証、ゲストログインがあります。
 |--------------|----------------|--------|
 | GET | /api/categories | 全カテゴリー情報を取得する |
 
-[API仕様書はこちら]()
+[API仕様書はこちら](https://rikuto-web.github.io/revox/)
 
 ## ER図
 
