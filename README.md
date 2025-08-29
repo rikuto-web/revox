@@ -181,6 +181,19 @@ erDiagram
 ```
 
 ## インフラ構成図
+```mermaid
+C4Context
+    title Revox アプリ - インフラ構成図
+
+    Person(user, "ユーザー")
+    System(frontend, "フロントエンド", "GitHub Pages")
+    System(backend, "バックエンド", "Render（コンテナ）")
+    System(db, "データベース", "Supabase（BaaS）")
+
+    Rel(user, frontend, "利用")
+    Rel(frontend, backend, "API通信")
+    Rel(backend, db, "DB接続")
+```
 
 ## 機能一覧　　　（動画）
   ### ログイン
