@@ -59,6 +59,8 @@ Google認証、ゲストログインがあります。
 | POST | /api/auth/guest  | ゲストユーザーとしてログインする |
 | POST | /api/auth/google | Google認証でログインする |
 
+![ezgif com-video-to-gif-converter](https://github.com/user-attachments/assets/1bec3d8e-320c-409d-800d-f4b7fd95fa1d)
+
 ---
 
 ### ユーザー情報に関する管理
@@ -67,6 +69,8 @@ Google認証、ゲストログインがあります。
 |--------------|----------------|--------|
 | PATCH | /api/users/{userId}              | ユーザー情報を更新する |
 | PATCH | /api/users/{userId}/softDelete   | ユーザーを論理削除する |
+
+![ezgif com-video-to-gif-converter (1)](https://github.com/user-attachments/assets/bca34675-6be2-43cb-8be1-24d2f02d72f0)
 
 ---
 
@@ -81,6 +85,8 @@ Google認証、ゲストログインがあります。
 | GET   | /api/maintenance-task/bike/{bikeId}                  | 特定のバイクの全整備タスクを取得する |
 | GET   | /api/maintenance-task/bike/{bikeId}/category/{categoryId} | バイクとカテゴリーで整備タスクを取得する |
 
+![ezgif com-video-to-gif-converter](https://github.com/user-attachments/assets/3d73e32c-a659-4c21-9719-c58c8bc9b0f0)
+
 ---
 
 ### バイク情報に関する管理
@@ -93,6 +99,8 @@ Google認証、ゲストログインがあります。
 | PATCH | /api/bikes/user/{userId}/bike/{bikeId}        | バイク情報を更新する |
 | PATCH | /api/bikes/user/{userId}/bike/{bikeId}/softDelete | バイク情報を論理削除する |
 
+![ezgif com-video-to-gif-converter (1)](https://github.com/user-attachments/assets/acbae37c-102c-4020-8383-3678904d4219)
+
 ---
 
 ### AIに関する管理
@@ -101,6 +109,8 @@ Google認証、ゲストログインがあります。
 |--------------|----------------|--------|
 | POST | /api/ai/user/{userId}/bike/{bikeId}/category/{categoryId} | AIに質問を送信する |
 | GET  | /api/ai/user/{userId}                                    | AI質問履歴を取得する |
+
+![ezgif com-video-to-gif-converter](https://github.com/user-attachments/assets/41bb4772-aa77-47d1-ad21-7f71752bbd16)
 
 ---
 
@@ -195,10 +205,6 @@ C4Context
     Rel(backend, db, "DB接続")
 ```
 
-## 機能一覧　　　（動画）
-  ### ログイン
-  動画
-
 ## テスト結果
 <img width="1251" height="564" alt="image" src="https://github.com/user-attachments/assets/55cc3173-f6fb-4dfd-84e8-162cbd47717e" />
 行・ブランチカバレッジが低くテストコードの改善が必要であり今後の課題です。  
@@ -243,9 +249,7 @@ SpringSecrityの理解
 
 ## 製作期間
 2025.7月 ~ 2025年.8月
-制作時間　200時間
-
-## 注意事項
+制作時間　220時間
 
 ## リンク
 デプロイ版：https://rikuto-web.github.io/revox_frontend  
