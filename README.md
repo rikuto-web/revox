@@ -14,7 +14,8 @@
 アプリ名「Revox（レボックス）」は、バイクのエンジン音を表す「Rev」と、声や響きを意味する「Vox」を組み合わせた造語です。既存のサービス名と被らない独自性を意識して命名しました。
 
 ## ログイン画面
-***URL***
+<img width="1838" height="776" alt="image" src="https://github.com/user-attachments/assets/1b1d2b40-97be-4ff5-948a-87451ece55c6" />
+
 [ログイン画面](https://rikuto-web.github.io/revox_frontend)  
 Google認証、ゲストログインがあります。  
 *ゲストログインは閲覧のみ可能で、登録・更新・削除・AIへの質問はできません
