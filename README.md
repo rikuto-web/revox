@@ -30,7 +30,7 @@ Google認証、ゲストログインがあります。
 | ORM      | Spring Data JPA |
 | マイグレーション | Flyway |
 | データベース | PostgreSQL |
-| AI / SDK | Gemini AI SDK (Google GenAI) |
+| AI / SDK | Google GenAI |
 | コンテナ / 環境構築 | Docker |
 | テスト   | JUnit 5 |
 
