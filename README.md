@@ -13,13 +13,6 @@
   
 アプリ名「Revox（レボックス）」は、バイクのエンジン音を表す「Rev」と、声や響きを意味する「Vox」を組み合わせた造語です。既存のサービス名と被らない独自性を意識して命名しました。
 
-## ログイン画面
-<img width="1838" height="776" alt="image" src="https://github.com/user-attachments/assets/1b1d2b40-97be-4ff5-948a-87451ece55c6" />
-
-[ログイン画面](https://rikuto-web.github.io/revox_frontend)  
-Google認証、ゲストログインがあります。  
-*ゲストログインは閲覧のみ可能で、登録・更新・削除・AIへの質問はできません
-
 ## 使用技術
   ### バックエンド
   | カテゴリ | 使用技術 |
@@ -30,7 +23,7 @@ Google認証、ゲストログインがあります。
 | ORM      | Spring Data JPA |
 | マイグレーション | Flyway |
 | データベース | PostgreSQL |
-| AI / SDK | Gemini AI SDK (Google GenAI) |
+| AI / SDK | Google GenAI |
 | コンテナ / 環境構築 | Docker |
 | テスト   | JUnit 5 |
 
@@ -48,6 +41,15 @@ Google認証、ゲストログインがあります。
 | フロントエンド | GitHub Pages |
 | バックエンド | Render | 
 | データベース | Supabase |
+  
+
+## ログイン画面
+<img width="600" height="776" alt="image" src="https://github.com/user-attachments/assets/1b1d2b40-97be-4ff5-948a-87451ece55c6"/>
+
+[ログイン画面](https://rikuto-web.github.io/revox_frontend)  
+Google認証、ゲストログインがあります。  
+*ゲストログインは閲覧のみ可能で、登録・更新・削除・AIへの質問はできません
+  
 
 ## APIエンドポイント一覧
 [API仕様書はこちら](https://rikuto-web.github.io/revox/)
@@ -59,6 +61,8 @@ Google認証、ゲストログインがあります。
 | POST | /api/auth/guest  | ゲストユーザーとしてログインする |
 | POST | /api/auth/google | Google認証でログインする |
 
+![ezgif com-video-to-gif-converter](https://github.com/user-attachments/assets/1bec3d8e-320c-409d-800d-f4b7fd95fa1d)
+
 ---
 
 ### ユーザー情報に関する管理
@@ -67,6 +71,22 @@ Google認証、ゲストログインがあります。
 |--------------|----------------|--------|
 | PATCH | /api/users/{userId}              | ユーザー情報を更新する |
 | PATCH | /api/users/{userId}/softDelete   | ユーザーを論理削除する |
+
+![ezgif com-video-to-gif-converter (1)](https://github.com/user-attachments/assets/bca34675-6be2-43cb-8be1-24d2f02d72f0)
+
+---
+
+### バイク情報に関する管理
+
+| HTTPメソッド | エンドポイント | 機能名 |
+|--------------|----------------|--------|
+| GET   | /api/bikes/user/{userId}                      | ユーザーのバイク情報リストを取得する |
+| POST  | /api/bikes/user/{userId}                      | バイク情報を新規登録する |
+| GET   | /api/bikes/user/{userId}/bike/{bikeId}        | 特定のバイク情報を取得する |
+| PATCH | /api/bikes/user/{userId}/bike/{bikeId}        | バイク情報を更新する |
+| PATCH | /api/bikes/user/{userId}/bike/{bikeId}/softDelete | バイク情報を論理削除する |
+
+![ezgif com-video-to-gif-converter (1)](https://github.com/user-attachments/assets/acbae37c-102c-4020-8383-3678904d4219)
 
 ---
 
@@ -81,17 +101,7 @@ Google認証、ゲストログインがあります。
 | GET   | /api/maintenance-task/bike/{bikeId}                  | 特定のバイクの全整備タスクを取得する |
 | GET   | /api/maintenance-task/bike/{bikeId}/category/{categoryId} | バイクとカテゴリーで整備タスクを取得する |
 
----
-
-### バイク情報に関する管理
-
-| HTTPメソッド | エンドポイント | 機能名 |
-|--------------|----------------|--------|
-| GET   | /api/bikes/user/{userId}                      | ユーザーのバイク情報リストを取得する |
-| POST  | /api/bikes/user/{userId}                      | バイク情報を新規登録する |
-| GET   | /api/bikes/user/{userId}/bike/{bikeId}        | 特定のバイク情報を取得する |
-| PATCH | /api/bikes/user/{userId}/bike/{bikeId}        | バイク情報を更新する |
-| PATCH | /api/bikes/user/{userId}/bike/{bikeId}/softDelete | バイク情報を論理削除する |
+![ezgif com-video-to-gif-converter](https://github.com/user-attachments/assets/3d73e32c-a659-4c21-9719-c58c8bc9b0f0)
 
 ---
 
@@ -101,6 +111,8 @@ Google認証、ゲストログインがあります。
 |--------------|----------------|--------|
 | POST | /api/ai/user/{userId}/bike/{bikeId}/category/{categoryId} | AIに質問を送信する |
 | GET  | /api/ai/user/{userId}                                    | AI質問履歴を取得する |
+
+![ezgif com-video-to-gif-converter](https://github.com/user-attachments/assets/41bb4772-aa77-47d1-ad21-7f71752bbd16)
 
 ---
 
@@ -195,30 +207,36 @@ C4Context
     Rel(backend, db, "DB接続")
 ```
 
-## 機能一覧　　　（動画）
-  ### ログイン
-  動画
-
 ## テスト結果
 <img width="1251" height="564" alt="image" src="https://github.com/user-attachments/assets/55cc3173-f6fb-4dfd-84e8-162cbd47717e" />
-行・ブランチカバレッジが低くテストコードの改善が必要であり今後の課題です。  
-またSpringSecrityや外部APIに関するテストは現状実施できていません。学習を継続し実装していきます。
+  
 
 ## 技術的な挑戦と学び
-### 1. カリキュラム外の技術導入
-スクールのカリキュラムではMyBatisを使用していましたが、より開発現場で広く利用されているJPAとFlywayを自主的に導入しました。  
-  
-JPAの導入では、MyBatisのXMLベースのSQL記述から、アノテーションベースの記述に移行することで、コードの可読性を高めました。また、Flywayを使ってV1__create_tables.sqlのような命名規則でスキーマ変更履歴を管理し、安全なDB運用フローを学びました。  
-  
-Dockerを導入することで、開発環境のコンテナ化を体験し、環境構築の効率性を実感しました。
+### 1. 自主的な技術選定と導入
+学習段階ではMyBatisとMySQLを用いた演習が中心でしたが、実務での利用状況やSpring Bootとの親和性を調査した上で、JPAとFlywayを自主的に導入しました。
 
-### 2. AI機能の実装
-AI機能の実装では、SDKのバージョン違いや認証エラーといったAPI連携の課題に直面しました。  
+MyBatisのXMLベースのSQL記述に比べ、JPAではアノテーションベースで直感的にエンティティやリレーションを定義でき、コードの可読性や保守性が向上します。  
+また、JPAはSpring Bootで標準サポートされており、現場での採用例が多いため、実務で役立つ技術と判断しました。
   
-AIと対話しながら開発を進めましたが、回答の信憑性が低いことが多く、解決できず公式ドキュメントやGitHubのREADMEを熟読し、得た情報をもとに試行錯誤を繰り返すことで問題を解決しました。  
-この経験から、ツールの限界を理解し、信頼できる情報源を主体的に活用する力を学びました。  
+今回のプロジェクトでは、Flywayと併用したためddl-auto の update 機能は使用せず、マイグレーションスクリプトでSQLを管理しました。
+validate に変更することで、エンティティ定義とスクリプトの差分をチェックし、安全にスキーマ管理が行える設計としています。
   
-また、サービスを安全に運用するためには、APIの悪用防止策を実装しなければならないと気づきました。具体的には、無制限なリクエストがサービスの負担になることを考慮し、1分間に5回、1日に30回というリクエスト制限をアプリケーション側で設ける仕組みを独自に実装しました。
+Docker
+開発環境をコンテナ化し、環境依存の不具合を回避。再現性の高い環境構築の効率性と重要性を実感しました。
+
+### AI機能の実装（整備アドバイス機能）
+本アプリでは、ユーザーが保有するバイク情報をもとに、AIが質問に対して回答する機能を実装しました。
+> **機能概要**
+> - ユーザーがバイクのメーカー・名前・型式・年式を登録
+> - AIに質問を入力（例：オイル交換がしたい・適合バッテリーを教えて）
+> - AIが登録情報を参照し、選択したバイクに合わせた適合情報を生成して回答
+> - この仕組みにより、ユーザーは自分の保有する特定のバイクに対して、部品の適合や整備のヒントを手軽に得られます
+
+AI機能の実装では、SDKのバージョン違いや認証エラーなどのAPI連携の課題に直面しました。  
+AIの回答は信憑性にばらつきがあったため、公式ドキュメントやGitHubのREADMEを参照して情報を補完し、試行錯誤を繰り返すことで解決しました。  
+  
+また、サービスの安全性を考慮し、アプリケーション側で5回/分・30回/日のリクエスト制限を独自に実装しました。  
+この経験を通じ、AIツールの限界を理解しつつ、信頼できる情報源を主体的に活用する力や、現場に即した情報を取得するUX設計の重要性を学びました。
 
 ### 3. コストを意識したデプロイ
 ポートフォリオとして提出後も開発を継続することを前提に、運用コストを抑えるため無料枠のあるRenderとSupabaseの利用を選択しました。  
@@ -226,26 +244,23 @@ AIと対話しながら開発を進めましたが、回答の信憑性が低い
 この構成への変更に伴い、MySQLからPostgreSQLへの移行や、RenderとSDKの環境変数の処理方法の違いといった課題に直面し、様々な方法で検証し、コード内で明示的に処理することで問題を解決しました。  
 
 ## 今後の開発計画
-短期目標
-AI回答履歴の物理削除機能の実装
-バイク情報の論理削除済み情報の検索機能（以前所有していたバイクとして）
+### 短期目標
+- AI回答履歴の物理削除機能の実装
+- バイク情報の論理削除済み情報の検索機能（以前所有していたバイクとして）  
 
-中期目標
-バイク画像の登録機能の実装
-AIプロンプトの最適化・回答生成速度の改善
-ダッシュボードに最終整備日時から次回整備予定日時を表示
+### 中期目標
+- バイク画像の登録・更新・削除機能の実装
+- AIプロンプトの最適化・回答生成速度の改善
+- ダッシュボードに最終整備日時から次回整備予定日時を表示
 
-長期目標
-可読・堅牢性のある安全なコードにリファクタリング
-SpringSecrityの理解
-パフォーマンスの改善
-テストカバレッジの改善
+### 長期目標
+- 可読・堅牢性のある安全なコードにリファクタリング、Spring Securityの理解
+- パフォーマンスの改善
+- テストカバレッジの改善
 
 ## 製作期間
-2025.7月 ~ 2025年.8月
-制作時間　200時間
-
-## 注意事項
+2025年7月～8月
+制作時間　220時間
 
 ## リンク
 デプロイ版：https://rikuto-web.github.io/revox_frontend  
