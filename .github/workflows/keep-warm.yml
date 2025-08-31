@@ -11,4 +11,4 @@ jobs:
     steps:
       - name: Call warmup endpoint
         run: |
-          curl -s https://revox-portfolio.onrender.com/api/ping
+          curl -s https://revox-portfolio.onrender.com/api/auth/ping
