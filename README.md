@@ -13,13 +13,6 @@
   
 アプリ名「Revox（レボックス）」は、バイクのエンジン音を表す「Rev」と、声や響きを意味する「Vox」を組み合わせた造語です。既存のサービス名と被らない独自性を意識して命名しました。
 
-## ログイン画面
-<img width="600" height="776" alt="image" src="https://github.com/user-attachments/assets/1b1d2b40-97be-4ff5-948a-87451ece55c6"/>
-
-[ログイン画面](https://rikuto-web.github.io/revox_frontend)  
-Google認証、ゲストログインがあります。  
-*ゲストログインは閲覧のみ可能で、登録・更新・削除・AIへの質問はできません
-
 ## 使用技術
   ### バックエンド
   | カテゴリ | 使用技術 |
@@ -48,6 +41,15 @@ Google認証、ゲストログインがあります。
 | フロントエンド | GitHub Pages |
 | バックエンド | Render | 
 | データベース | Supabase |
+  
+
+## ログイン画面
+<img width="600" height="776" alt="image" src="https://github.com/user-attachments/assets/1b1d2b40-97be-4ff5-948a-87451ece55c6"/>
+
+[ログイン画面](https://rikuto-web.github.io/revox_frontend)  
+Google認証、ゲストログインがあります。  
+*ゲストログインは閲覧のみ可能で、登録・更新・削除・AIへの質問はできません
+  
 
 ## APIエンドポイント一覧
 [API仕様書はこちら](https://rikuto-web.github.io/revox/)
@@ -207,8 +209,7 @@ C4Context
 
 ## テスト結果
 <img width="1251" height="564" alt="image" src="https://github.com/user-attachments/assets/55cc3173-f6fb-4dfd-84e8-162cbd47717e" />
-行・ブランチカバレッジが低くテストコードの改善が必要であり今後の課題です。  
-またSpringSecrityや外部APIに関するテストは現状実施できていません。学習を継続し実装していきます。
+  
 
 ## 技術的な挑戦と学び
 ### 1. 自主的な技術選定と導入
