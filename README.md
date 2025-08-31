@@ -52,7 +52,7 @@ Google認証、ゲストログインがあります。
   
 
 ## APIエンドポイント一覧
-[API仕様書はこちら](https://rikuto-web.github.io/revox/)
+[API仕様書はこちら](https://rikuto-web.github.io/revox/))
 ### 外部認証に関する管理
 
 | HTTPメソッド | エンドポイント | 機能名 |
