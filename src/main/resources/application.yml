@@ -53,6 +53,7 @@ spring:
       maximum-pool-size: 10
       connection-test-query: SELECT 1
       initialization-fail-timeout: -1
+      baseline-on-migrate: true
 
 
   jpa:
@@ -67,3 +68,4 @@ spring:
     schemas: prod
     connect-retries: 10
     retry-interval: 5s
+    baseline-on-migrate: true
