@@ -40,7 +40,7 @@ dependencies {
     runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
 
     // --- データベースマイグレーション (Migration) ---
-    testImplementation 'org.flywaydb:flyway-database-postgresql:11.11.2'
+    implementation  'org.flywaydb:flyway-database-postgresql:11.11.2'
 
     // --- 開発・補助ツール (Development & Tools) ---
     implementation 'org.jetbrains:annotations:24.0.1'

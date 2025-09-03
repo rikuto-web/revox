@@ -54,6 +54,7 @@ spring:
       connection-test-query: SELECT 1
       initialization-fail-timeout: -1
 
+
   jpa:
     hibernate:
       ddl-auto: none
