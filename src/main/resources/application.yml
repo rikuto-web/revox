@@ -64,8 +64,8 @@ spring:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
 
   flyway:
-    enabled: true
+    enabled: false
     locations: classpath:db/migration
     schemas: prod
-    connect-retries: 10
-    retry-interval: 5s
+#    connect-retries: 10
+#    retry-interval: 5s
