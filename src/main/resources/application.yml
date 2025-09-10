@@ -53,6 +53,7 @@ spring:
       maximum-pool-size: 10
       connection-test-query: SELECT 1
       initialization-fail-timeout: -1
+      leak-detection-threshold: 20000
 #      baseline-on-migrate: true
 
 
